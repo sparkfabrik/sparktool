@@ -1,0 +1,16 @@
+{
+    "name": "sparkfabrik/spark",
+    "description": "Sparkfabrik command line tool",
+    "require": {
+        "symfony/console": "~2.6",
+        "symfony/config": "~2.6",
+        "symfony/finder": "~2.6"
+    },
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "Paolo Mainardi",
+            "email": "paolo@twinbit.it"
+        }
+    ]
+}
