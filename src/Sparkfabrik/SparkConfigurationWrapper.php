@@ -39,15 +39,16 @@ class SparkConfigurationWrapper {
   /**
    * Get value from configuration file.
    *
+   * @param string $type
    * @param string $name
    * @return mixed
    */
-  public function getValueFromConfig($name) {
+  public function getValueFromConfig($type, $name) {
     if (!isset($this->processedConfiguration)) {
       $this->loadConfig();
     }
-    if (isset($this->processedConfiguration[$name])) {
-      return $this->processedConfiguration[$name];
+    if (isset($this->processedConfiguration[$type][$name])) {
+      return $this->processedConfiguration[$type][$name];
     }
   }
 
@@ -60,11 +61,12 @@ class SparkConfigurationWrapper {
     $configs = array();
     $locator = new FileLocator(array($this->sparkHome));
     $loader = new YamlConfigLoader($locator);
-    $locations = $locator->locate(static::SPARK_CONFIG_FILE, getcwd(), false);
+    $locations = array_reverse($locator->locate(static::SPARK_CONFIG_FILE, getcwd(), false));
     // Merge global and specific project configuration file.
     foreach ($locations as $location) {
-      if ($yaml = $loader->load($location)) {
-        $configs = array_merge($configs, $yaml);
+      $yaml = $loader->load($location);
+      if (is_array($yaml) && isset($yaml['spark'])) {
+        $configs[] = $yaml['spark'];
       }
     }
     if (!$configs) {
