@@ -87,6 +87,7 @@ abstract class BaseCommand extends Command
     ));
     $rows = array();
     $estimated_time = 0;
+    $developers = array();
     foreach ($res[$key] as $val) {
       if (isset($val['estimated_hours'])) {
         $estimated_time += $val['estimated_hours'];
