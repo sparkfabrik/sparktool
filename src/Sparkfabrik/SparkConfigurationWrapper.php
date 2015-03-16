@@ -33,6 +33,8 @@ class SparkConfigurationWrapper {
     // @todo we need to handle errors.
     if (!$this->fs->exists($this->sparkHome)) {
       $this->fs->mkdir($this->sparkHome);
+      $defaultConfig = $this->dumpDefaultConfigurationFile();
+      file_put_contents($this->sparkHome . DIRECTORY_SEPARATOR . static::SPARK_CONFIG_FILE, $defaultConfig);
     }
   }
 
