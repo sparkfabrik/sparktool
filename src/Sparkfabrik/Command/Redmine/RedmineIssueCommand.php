@@ -4,6 +4,7 @@ namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\BaseCommand;
+use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
 use Redmine\Client as Redmine;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Command\Command;
@@ -42,35 +43,142 @@ class RedmineIssueCommand extends BaseCommand
       }
     }
 
+    /**
+     * Read status argument and translate to a redmine status_id.
+     *
+     * @param string|integer $status
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentStatusId($status) {
+      if (is_numeric($status)) {
+        return $status;
+      }
+      // Handle status (ex: Open, Closed, Feedback ecc..).
+      $status = strtolower($status);
+      $default_statues = array('*', 'open', 'close');
+      if (in_array($status, $default_statues)) {
+        return $status;
+      }
+      else {
+        $custom_statuses = $this->redmineClient->api('issue_status')->all()['issue_statuses'];
+        foreach ($custom_statuses as $custom_status) {
+          if (strtolower($custom_status['name']) === $status) {
+            $status_id = $custom_status['id'];
+            return $status_id;
+          }
+        }
+      }
+      throw new \Exception('Status not found.');
+    }
+
+    /**
+     * Read project_id argument and translate to a redmine project_id.
+     *
+     * @param string|integer $project_id
+     *
+     * @return integer|boolean
+     */
+    private function handleAgumentProjectId($project_id = null) {
+      return ($project_id ? $project_id : $this->redmineConfig['project_id']);
+    }
+
+    /**
+     * Read assigned argument and translate to a redmine assigned_to_id.
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentAssignedToId($assigned) {
+      if (is_numeric($assigned)) {
+        return $assigned;
+      }
+      if ($assigned !== 'all') {
+        // Instantiate proxy redmine user class, we need more power.
+        $redmineUserClient = new RedmineApiUser($this->redmineClient);
+
+        // Handle "me" alias.
+        if ($assigned === 'me') {
+          $assigned_id = $this->redmineClient->api('user')->getCurrentUser()['user']['id'];
+          return $assigned_id;
+        }
+        else {
+          // Translate string to id.
+          $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
+          if ($user_id === false) {
+            throw new \Exception('No user found.');
+          }
+          return $user_id;
+        }
+      }
+    }
+
+    /**
+     * Read version argument and translate to a redmine fixed_version_id.
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentFixedVersionId($sprint, $project_id) {
+      if (is_numeric($sprint)) {
+        return $sprint;
+      }
+      else {
+        // @todo check if getIdByName() suffers of autolimit of 25 records
+        // as it happens for users.
+        // @todo make this search case unsensitive.
+        $fixed_version_id = $this->redmineClient->api('version')->getIdByName($project_id, $sprint);
+        if ($fixed_version_id === false) {
+           throw new \Exception('No sprint version found.');
+        }
+        return $fixed_version_id;
+      }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
         $client = $this->redmineClient;
-        // Get project id, arguments overrides project.
-        $project_id = $input->getOption('project_id')
-          ? $input->getOption('project_id')
-          : $this->redmineConfig['project_id'];
+        $api_options = array();
+        $api_options['limit'] = $input->getOption('limit');
+        $api_options['sort'] = $input->getOption('sort');
 
-        $assigned_to_id = $input->getOption('assigned_to_id');
-        if ($assigned_to_id === 'me') {
-          $assigned_to_id = $client->api('user')->getCurrentUser()['user']['id'];
+        // Arguments handling.
+        try {
+          $project_id = $this->handleAgumentProjectId($input->getOption('project_id'));
+          if ($project_id) {
+            $api_options['project_id'] = $project_id;
+            // Versions depends on project_id.
+            if ($input->getOption('sprint')) {
+              $api_options['fixed_version_id'] = $this->handleArgumentFixedVersionId($input->getOption('sprint'), $project_id);
+            }
+          }
+          if ($input->getOption('status')) {
+            $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
+          }
+          if ($input->getOption('assigned')) {
+            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
+          }
         }
-        elseif ($assigned_to_id === 'all') {
-          $assigned_to_id = '';
+        catch (\Exception $e) {
+          return $output->writeln('<error>' . $e->getMessage() . '</error>');
         }
 
-        $issues = $client->api('issue')->all(array(
-          'limit' => $input->getOption('limit'),
-          'sort' => $input->getOption('sort'),
-          'project_id' => $project_id,
-          'tracker_id' => $input->getOption('tracker_id'),
-          'status_id' => $input->getOption('status_id'),
-          'assigned_to_id' => $assigned_to_id,
-        ));
+        // Print debug informations if required.
+        if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
+          if (function_exists('dump')) {
+            dump($api_options);
+          }
+          else {
+            var_dump($api_options);
+          }
+        }
 
-        // This is how redmine library return empty results :(.
-        if (count($issues) == 1 && ($issues[0] === 1)) {
+        // Run query.
+        $res = $client->api('issue')->all($api_options);
+        // This is how redmine library return empty results.
+        if (count($res) == 1 && ($res[0] === 1)
+          || (isset($res['total_count']) && $res['total_count'] === 0)) {
           return $output->writeln('<info>No results</info>');
         }
+
         // Fields to print.
         $fields = array(
           'id' => 'ID',
@@ -90,8 +198,13 @@ class RedmineIssueCommand extends BaseCommand
         if ($project_id) {
           unset($fields['project']);
         }
-        $this->tableOutput($output, $fields, $issues, 'issues')
+        // Render issue table.
+        $this->tableRedmineOutput($output, $fields, $res, 'issues')
              ->render();
+        if ($input->getOption('report')) {
+          $this->tableRedmineReportOutput($output, $res, 'issues')
+               ->render();
+        }
       }
       catch (Exception $e) {
         return $output->writeln('<error>'. $e->getMessage() . '</error>');
