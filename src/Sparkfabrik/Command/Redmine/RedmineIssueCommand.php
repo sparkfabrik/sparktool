@@ -37,10 +37,53 @@ class RedmineIssueCommand extends BaseCommand
       $this->createRedmineClient();
       $this->setName('redmine:list')
            ->setDescription('List redmine issues');
-      $options = $this->getOptions(__DIR__);
-      foreach ($options as $option) {
-        call_user_func_array(array($this, "addOption"), $option);
-      }
+      // Add options.
+      $this->addOption(
+        'report',
+        null,
+        InputOption::VALUE_NONE,
+        'Print a summary report'
+      );
+      $this->addOption(
+        'limit',
+        'l',
+        InputOption::VALUE_OPTIONAL,
+        'How many issues should be printed ?',
+        50
+      );
+      $this->addOption(
+        'sort',
+        's',
+        InputOption::VALUE_OPTIONAL,
+        'Issues sorting',
+        'updated_on:desc'
+      );
+      $this->addOption(
+        'project_id',
+        'p',
+        InputOption::VALUE_OPTIONAL,
+        'Filter by project machine name'
+      );
+      $this->addOption(
+        'status',
+        false,
+        InputOption::VALUE_OPTIONAL,
+        'Filter by project status name or id',
+        'open'
+      );
+      $this->addOption(
+        'assigned',
+        false,
+        InputOption::VALUE_OPTIONAL,
+        'Filter by assigned to user id or by user name',
+        'me'
+      );
+      $this->addOption(
+        'sprint',
+        false,
+        InputOption::VALUE_OPTIONAL,
+        'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
+      );
     }
 
     /**
