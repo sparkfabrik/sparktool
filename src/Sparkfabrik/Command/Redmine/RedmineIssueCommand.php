@@ -102,7 +102,11 @@ EOF
         'created',
         false,
         InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-        'Filter by creation date. Supported format: "(<=|=>) [any english textual datetime]"'
+        <<<EOF
+Single date format: "<=|=> [date]"
+Multiple date range format: "[date]"
+Where [date] can be any expression supported by strtotime.
+EOF
       );
       $this->addOption(
         'updated',
