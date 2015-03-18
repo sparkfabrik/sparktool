@@ -22,12 +22,18 @@ abstract class BaseCommand extends Command
     else {
       $truncate_func = 'substr';
     }
+    // Pretty print created/updated.
+    $dates_fields = array(
+      'created_on' => array('format' => 'd-m-Y'),
+      'updated_on' => array('format' => 'd-m-Y H:m:s')
+    );
     foreach ($res[$key] as $val) {
       $row = array();
       foreach ($fields as $field => $key) {
         if (isset($val[$field])) {
-          if ($field == 'created_on' || $field == 'updated_on') {
-            $field_val = date('d/m/Y', strtotime($val[$field]));
+          if (array_key_exists($field, $dates_fields)) {
+            $format = $dates_fields[$field]['format'];
+            $field_val = date($format, strtotime($val[$field]));
           }
           elseif (isset($val[$field]['name'])) {
             $field_val = $val[$field]['name'];

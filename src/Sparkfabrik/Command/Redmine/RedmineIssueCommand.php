@@ -35,8 +35,22 @@ class RedmineIssueCommand extends BaseCommand
       $this->redmineConfig = $configManager->getValueFromConfig('services', 'redmine_credentials');
       $this->redmineConfig['project_id'] = $configManager->getValueFromConfig('projects', 'redmine_project_id');
       $this->createRedmineClient();
-      $this->setName('redmine:list')
-           ->setDescription('List redmine issues');
+      $this
+        ->setName('redmine:list')
+        ->setDescription('List redmine issues')
+        ->setHelp(<<<EOF
+The <info>%command.name%</info> command displays help for a given command:
+
+  <info>php %command.full_name% list</info>
+
+You can also output the help in other formats by using the <comment>--format</comment> option:
+
+  <info>php %command.full_name% --format=xml list</info>
+
+To display the list of available commands, please use the <info>list</info> command.
+EOF
+        )
+      ;
       // Add options.
       $this->addOption(
         'report',
@@ -83,6 +97,22 @@ class RedmineIssueCommand extends BaseCommand
         false,
         InputOption::VALUE_OPTIONAL,
         'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
+      );
+      $this->addOption(
+        'created',
+        false,
+        InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+        <<<EOF
+Single date format: "<=|=> [date]"
+Multiple date range format: "[date]"
+Where [date] can be any expression supported by strtotime.
+EOF
+      );
+      $this->addOption(
+        'updated',
+        false,
+        InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+        'Filter by updated date. Supported format: (<=|=>) [any nglish textual datetime]'
       );
     }
 
@@ -176,6 +206,72 @@ class RedmineIssueCommand extends BaseCommand
       }
     }
 
+    /**
+     * Handle standard date and date with search operators: "<=" and ">="
+     *
+     * @link http://www.redmine.org/projects/redmine/wiki/Rest_Issues:
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentDateSingle($date, $use_operators = true) {
+      $date = strtolower($date);
+      if ($use_operators) {
+        $op = false;
+        $operators = array('<=', '>=');
+        foreach ($operators as $operator) {
+          if (strpos($date, $operator) !== false) {
+            $op = $operator;
+            $date = trim(str_replace($operator, '', $date));
+            break;
+          }
+        }
+      }
+      $timestamp = strtotime($date);
+      if (!$timestamp) {
+        throw new \Exception(sprintf('Date handler - invalid date format: "%s"', $date));
+      }
+      $date_option = date('Y-m-d', $timestamp);
+      if (isset($op) && $op !== false) {
+        $date_option = $op.$date_option;
+      }
+      return $date_option;
+    }
+
+    /**
+     * Handle date ranges.
+     *
+     * @link http://www.redmine.org/projects/redmine/wiki/Rest_Issues:
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentDateRange($args) {
+      $range = array();
+      foreach ($args as $date) {
+        $range[] = $this->handleArgumentDateSingle($date, false);
+      }
+      $range_date = '><' . implode('|', $range);
+      return $range_date;
+    }
+
+    /**
+     * Handle date arguments to parse single or ranges dates.
+     *
+     * @link http://www.redmine.org/projects/redmine/wiki/Rest_Issues:
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentDate($args) {
+      if (count($args) > 2) {
+        throw new Exception('Date handler: Too much dates dude!');
+      }
+      if (count($args) == 2)  {
+        return $this->handleArgumentDateRange($args);
+      }
+      else {
+        return $this->handleArgumentDateSingle(reset($args));
+      }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
         $client = $this->redmineClient;
@@ -199,6 +295,15 @@ class RedmineIssueCommand extends BaseCommand
           if ($input->getOption('assigned')) {
             $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
           }
+          if ($input->getOption('created')) {
+            $created_args = $input->getOption('created');
+            $api_options['created_on'] = $this->handleArgumentDate($created_args);
+
+          }
+          if ($input->getOption('updated')) {
+            $updated_args = $input->getOption('updated');
+            $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
+          }
         }
         catch (\Exception $e) {
           return $output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -216,10 +321,17 @@ class RedmineIssueCommand extends BaseCommand
 
         // Run query.
         $res = $client->api('issue')->all($api_options);
+
+        // Handle errors.
+        if (isset($res['errors'])) {
+          $errors = implode("\n", $res['errors']);
+          throw new \Exception($errors);
+        }
+
         // This is how redmine library return empty results.
         if (count($res) == 1 && ($res[0] === 1)
           || (isset($res['total_count']) && $res['total_count'] === 0)) {
-          return $output->writeln('<info>No results</info>');
+          return $output->writeln('<info>No issues found.</info>');
         }
 
         // Fields to print.
