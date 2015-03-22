@@ -82,14 +82,14 @@ EOF
         'status',
         false,
         InputOption::VALUE_OPTIONAL,
-        'Filter by project status name or id',
+        'Filter by project status name or id. Possible values: open, closed, *',
         'open'
       );
       $this->addOption(
         'assigned',
         false,
         InputOption::VALUE_OPTIONAL,
-        'Filter by assigned to user id or by user name',
+        'Filter by assigned to user-id or by username. Magic tokens: "me" or "all"',
         'me'
       );
       $this->addOption(
