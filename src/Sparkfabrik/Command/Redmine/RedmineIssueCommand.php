@@ -36,8 +36,8 @@ class RedmineIssueCommand extends BaseCommand
       $this->redmineConfig['project_id'] = $configManager->getValueFromConfig('projects', 'redmine_project_id');
       $this->createRedmineClient();
       $this
-        ->setName('redmine:list')
-        ->setDescription('List redmine issues')
+        ->setName('redmine:search')
+        ->setDescription('Search redmine issues')
         ->setHelp(<<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
@@ -293,6 +293,7 @@ EOF
             $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
           }
           if ($input->getOption('assigned')) {
+            $assignment = ($input->getOption('assigned') ? $input->getOption('assigned') : 'me');
             $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
           }
           if ($input->getOption('created')) {
