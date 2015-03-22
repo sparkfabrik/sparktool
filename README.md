@@ -14,6 +14,7 @@
 * "Vincenzo Di Biaggio" <vincenzo.dibiaggio@sparkfabrik.com>
 
 #<a name="installation"></a>Installation
+
 [TBD]
 
 #<a name="usage"></a>Usage
