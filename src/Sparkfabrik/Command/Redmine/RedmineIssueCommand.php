@@ -89,8 +89,17 @@ EOF
         'assigned',
         false,
         InputOption::VALUE_OPTIONAL,
-        'Filter by assigned to user-id or by username. Magic tokens: "me" or "all"',
-        'me'
+        <<<EOF
+Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
+Where:
+ - "me" issues assigned to the calling user
+ - "not me" issues not assigned to the calling user
+ - "all" issues assigned and not assigned
+ - "anyone" issues assigned
+ - "none" issues not assigned
+EOF
+      ,
+      'all'
       );
       $this->addOption(
         'sprint',
@@ -165,24 +174,25 @@ EOF
       if (is_numeric($assigned)) {
         return $assigned;
       }
-      if ($assigned !== 'all') {
-        // Instantiate proxy redmine user class, we need more power.
-        $redmineUserClient = new RedmineApiUser($this->redmineClient);
-
-        // Handle "me" alias.
-        if ($assigned === 'me') {
-          $assigned_id = $this->redmineClient->api('user')->getCurrentUser()['user']['id'];
-          return $assigned_id;
-        }
-        else {
-          // Translate string to id.
-          $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
-          if ($user_id === false) {
-            throw new \Exception('No user found.');
-          }
-          return $user_id;
-        }
+      // @link http://www.redmine.org/issues/8918#note-3
+      $magic_tokens = array(
+        'me' => 'me',
+        'not me' => '!me',
+        'anyone' => '*',
+        'none' => '!*',
+        'all' => '',
+      );
+      if (array_key_exists($assigned, $magic_tokens)) {
+        return $magic_tokens[$assigned];
       }
+      // Instantiate proxy redmine user class, we need more power.
+      $redmineUserClient = new RedmineApiUser($this->redmineClient);
+      // Translate string to id.
+      $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
+      if ($user_id === false) {
+        throw new \Exception('No user found.');
+      }
+      return $user_id;
     }
 
     /**
@@ -272,43 +282,53 @@ EOF
       }
     }
 
+
+    /**
+     * Handle standard arguments.
+     *
+     * @link http://www.redmine.org/projects/redmine/wiki/Rest_Issues:
+     *
+     * @return integer|boolean
+     */
+    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options) {
+      try {
+        $project_id = $this->handleAgumentProjectId($input->getOption('project_id'));
+        if ($project_id) {
+          $api_options['project_id'] = $project_id;
+          // Versions depends on project_id.
+          if ($input->getOption('sprint')) {
+            $api_options['fixed_version_id'] = $this->handleArgumentFixedVersionId($input->getOption('sprint'), $project_id);
+          }
+        }
+        if ($input->getOption('status')) {
+          $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
+        }
+        if ($input->getOption('assigned')) {
+          $assignment = ($input->getOption('assigned') ? $input->getOption('assigned') : 'me');
+          $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
+        }
+        if ($input->getOption('created')) {
+          $created_args = $input->getOption('created');
+          $api_options['created_on'] = $this->handleArgumentDate($created_args);
+
+        }
+        if ($input->getOption('updated')) {
+          $updated_args = $input->getOption('updated');
+          $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
+        }
+      }
+      catch (\Exception $e) {
+        return $output->writeln('<error>' . $e->getMessage() . '</error>');
+      }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
         $client = $this->redmineClient;
         $api_options = array();
         $api_options['limit'] = $input->getOption('limit');
         $api_options['sort'] = $input->getOption('sort');
-
-        // Arguments handling.
-        try {
-          $project_id = $this->handleAgumentProjectId($input->getOption('project_id'));
-          if ($project_id) {
-            $api_options['project_id'] = $project_id;
-            // Versions depends on project_id.
-            if ($input->getOption('sprint')) {
-              $api_options['fixed_version_id'] = $this->handleArgumentFixedVersionId($input->getOption('sprint'), $project_id);
-            }
-          }
-          if ($input->getOption('status')) {
-            $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
-          }
-          if ($input->getOption('assigned')) {
-            $assignment = ($input->getOption('assigned') ? $input->getOption('assigned') : 'me');
-            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
-          }
-          if ($input->getOption('created')) {
-            $created_args = $input->getOption('created');
-            $api_options['created_on'] = $this->handleArgumentDate($created_args);
-
-          }
-          if ($input->getOption('updated')) {
-            $updated_args = $input->getOption('updated');
-            $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
-          }
-        }
-        catch (\Exception $e) {
-          return $output->writeln('<error>' . $e->getMessage() . '</error>');
-        }
+        $this->handleArguments($input, $output, $api_options);
 
         // Print debug informations if required.
         if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
@@ -316,7 +336,7 @@ EOF
             dump($api_options);
           }
           else {
-            var_dump($api_options);
+            print_r($api_options);
           }
         }
 
@@ -330,7 +350,8 @@ EOF
         }
 
         // This is how redmine library return empty results.
-        if (count($res) == 1 && ($res[0] === 1)
+        if (!count($res)
+          || (count($res) == 1 && ($res[0] === 1))
           || (isset($res['total_count']) && $res['total_count'] === 0)) {
           return $output->writeln('<info>No issues found.</info>');
         }
@@ -351,15 +372,14 @@ EOF
         );
 
         // Hide project if it is already configured.
-        if ($project_id) {
+        if ($api_options['project_id']) {
           unset($fields['project']);
         }
+
         // Render issue table.
-        $this->tableRedmineOutput($output, $fields, $res, 'issues')
-             ->render();
+        $this->tableRedmineOutput($output, $fields, $res, 'issues');
         if ($input->getOption('report')) {
-          $this->tableRedmineReportOutput($output, $res, 'issues')
-               ->render();
+          $this->tableRedmineReportOutput($output, $res, 'issues');
         }
       }
       catch (Exception $e) {

@@ -49,8 +49,17 @@ abstract class BaseCommand extends Command
       }
       $rows[] = $row;
     }
-    $table->setRows($rows);
-    return $table;
+    $table->setRows($rows)->render();
+    // Warns the user about limit and total_count.
+    if ($res['limit'] < $res['total_count']) {
+      $info = sprintf("<info>Showing \"%d\" of \"%d\" issues</info> <comment>(you can adjust the limit using --limit argument)</comment>",
+        $res['limit'],
+        $res['total_count']
+      );
+      $output->writeln("");
+      $output->writeln($info);
+      $output->writeln("");
+    }
   }
 
   /**
@@ -81,7 +90,7 @@ abstract class BaseCommand extends Command
     $table->setRows(array(
       array(count($res[$key]), $estimated_time, ceil($estimated_time / 8), count($developers)))
     );
-    return $table;
+    return $table->render();
   }
 
 }
