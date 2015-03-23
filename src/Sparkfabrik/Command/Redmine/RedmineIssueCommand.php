@@ -372,7 +372,7 @@ EOF
         );
 
         // Hide project if it is already configured.
-        if ($api_options['project_id']) {
+        if (isset($api_options['project_id'])) {
           unset($fields['project']);
         }
 
