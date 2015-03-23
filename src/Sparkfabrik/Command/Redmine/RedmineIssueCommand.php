@@ -123,6 +123,12 @@ EOF
         InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
         'Filter by updated date. Supported format: (<=|=>) [any nglish textual datetime]'
       );
+      $this->addOption(
+        'not-estimated',
+        false,
+        InputOption::VALUE_NONE,
+        'Filter by not estimated issues.'
+      );
     }
 
     /**
@@ -354,6 +360,18 @@ EOF
           || (count($res) == 1 && ($res[0] === 1))
           || (isset($res['total_count']) && $res['total_count'] === 0)) {
           return $output->writeln('<info>No issues found.</info>');
+        }
+
+        // Reduce results, filter out estimated issues.
+        if ($input->getOption('not-estimated')) {
+          foreach ($res['issues'] as $key => $issue) {
+            if (isset($issue['estimated_hours'])) {
+              unset($res['issues'][$key]);
+              if (!is_array($res['total_count'])) {
+                --$res['total_count'];
+              }
+            }
+          }
         }
 
         // Fields to print.
