@@ -55,7 +55,7 @@ class SparkConfigurationWrapper {
         }
       }
       catch (\Exception $e) {
-        echo $e->getMessage() . PHP_EOL;
+        die($e->getMessage() . PHP_EOL);
       }
     }
   }
@@ -104,8 +104,8 @@ class SparkConfigurationWrapper {
         $configs
       );
     }
-    catch (Exception $e) {
-       echo $e->getMessage() . PHP_EOL;
+    catch (\Exception $e) {
+      die($e->getMessage() . PHP_EOL);
     }
   }
 
