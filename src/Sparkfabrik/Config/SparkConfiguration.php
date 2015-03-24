@@ -28,6 +28,13 @@ class SparkConfiguration implements ConfigurationInterface
             ->scalarNode('redmine_project_id')->end()
           ->end()
         ->end()
+        ->arrayNode('git')
+          ->children()
+            ->scalarNode('branch_pattern')
+              ->defaultValue('%(story_prefix)-%(story_code)_%(issue_id)_%(story_name)')
+            ->end()
+          ->end()
+        ->end()
       ->end()
     ;
     return $treeBuilder;

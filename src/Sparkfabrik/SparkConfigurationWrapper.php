@@ -9,6 +9,7 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
@@ -30,11 +31,32 @@ class SparkConfigurationWrapper {
 
   private function initConfig() {
     $this->fs = new Filesystem();
+    $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . static::SPARK_CONFIG_FILE;
     // @todo we need to handle errors.
-    if (!$this->fs->exists($this->sparkHome)) {
+    if (!$this->fs->exists($configFileStandardPath)) {
       $this->fs->mkdir($this->sparkHome);
       $defaultConfig = $this->dumpDefaultConfigurationFile();
-      file_put_contents($this->sparkHome . DIRECTORY_SEPARATOR . static::SPARK_CONFIG_FILE, $defaultConfig);
+      file_put_contents($configFileStandardPath, $defaultConfig);
+    }
+    else {
+      try {
+        // Merge configurations if needed.
+        $dumper = new Dumper();
+        $merge = array();
+        // Get default config.
+        $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
+
+        // Get Custom config.
+        $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
+        if (count($defaultConfig['spark']) !== count($customConfig['spark'])) {
+          $merge['spark'] = array_merge($defaultConfig['spark'], $customConfig['spark']);
+          $yaml_merged = $dumper->dump($merge, 5);
+          file_put_contents($configFileStandardPath, $yaml_merged);
+        }
+      }
+      catch (\Exception $e) {
+        echo $e->getMessage() . PHP_EOL;
+      }
     }
   }
 
