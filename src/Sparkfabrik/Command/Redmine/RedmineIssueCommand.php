@@ -383,8 +383,8 @@ EOF
         // Reduce results, filter by subject content.
         if ($input->getOption('subcon')) {
           foreach ($res['issues'] as $key => $issue) {
-            preg_match('/^.*(' . $input->getOption('subcon') . ').*/i', $issue['subject'], $results);
-            if (count($results) === 0) {
+
+            if (stripos($issue['subject'], $input->getOption('subcon')) === FALSE) {
               unset($res['issues'][$key]);
               if (!is_array($res['total_count'])) {
                 --$res['total_count'];
