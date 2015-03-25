@@ -121,13 +121,19 @@ EOF
         'updated',
         false,
         InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-        'Filter by updated date. Supported format: (<=|=>) [any nglish textual datetime]'
+        'Filter by updated date. Supported format: (<=|=>) [any english textual datetime]'
       );
       $this->addOption(
         'not-estimated',
         false,
         InputOption::VALUE_NONE,
         'Filter by not estimated issues.'
+      );
+      $this->addOption(
+        'subcon',
+        false,
+        InputOption::VALUE_OPTIONAL,
+        'Filter by issues, already filtered by other options, that contain (text) in the subject.'
       );
     }
 
@@ -366,6 +372,19 @@ EOF
         if ($input->getOption('not-estimated')) {
           foreach ($res['issues'] as $key => $issue) {
             if (isset($issue['estimated_hours'])) {
+              unset($res['issues'][$key]);
+              if (!is_array($res['total_count'])) {
+                --$res['total_count'];
+              }
+            }
+          }
+        }
+
+        // Reduce results, filter by subject content.
+        if ($input->getOption('subcon')) {
+          foreach ($res['issues'] as $key => $issue) {
+            preg_match('/^.*(' . $input->getOption('subcon') . ').*/i', $issue['subject'], $results);
+            if (count($results) === 0) {
               unset($res['issues'][$key]);
               if (!is_array($res['total_count'])) {
                 --$res['total_count'];
