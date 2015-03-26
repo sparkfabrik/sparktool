@@ -29,18 +29,6 @@ class RedmineGitBranchCommand extends RedmineCommand
       $this
         ->setName('redmine:git:branch')
         ->setDescription('Generate git branch name using issue subject')
-        ->setHelp(<<<EOF
-The <info>%command.name%</info> command displays help for a given command:
-
-  <info>php %command.full_name% list</info>
-
-You can also output the help in other formats by using the <comment>--format</comment> option:
-
-  <info>php %command.full_name% --format=xml list</info>
-
-To display the list of available commands, please use the <info>list</info> command.
-EOF
-        )
       ;
       $this->addArgument(
         'issue',
