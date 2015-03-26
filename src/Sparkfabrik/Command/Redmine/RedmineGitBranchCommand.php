@@ -58,6 +58,12 @@ class RedmineGitBranchCommand extends RedmineCommand
       // Extract items from issue info.
       $subject = $res['issue']['subject'];
       $subject_items = explode('-', $subject, 3);
+      // Punish not well named issues.
+      if (count($subject_items) != 3) {
+        return $output->writeln(PHP_EOL . '<error>Rename your issue please.</error>' .
+          PHP_EOL . '<info>Well named issues are: STORY_PREFIX-STORY_CODE_ISSUE-ID_STORY_NAME</info>' . PHP_EOL .
+          'Your issue instead is: "' . $subject . '"' . PHP_EOL);
+      }
       $story_prefix = trim($subject_items[0]);
       $story_code = trim($subject_items[1]);
       $story_name = trim($subject_items[2]);
