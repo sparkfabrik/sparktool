@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Spark tool package.
+ *
+ * (c) Paolo Mainardi <paolo.mainardi@sparkfabrik.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sparkfabrik\Tools\Spark\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -10,7 +19,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Yaml\Yaml;
 
-abstract class BaseCommand extends Command
+/**
+ * Base abstract class for all commands.
+ *
+ * @author Paolo Mainardi <paolo.mainardi@sparkfabrik.com>
+ *
+ * @api
+ */
+abstract class SparkCommand extends Command
 {
   protected function tableRedmineOutput($output, $fields, $res, $key) {
     $table = new Table($output);
@@ -50,8 +66,17 @@ abstract class BaseCommand extends Command
       $rows[] = $row;
     }
     $table->setRows($rows)->render();
+
     // Warns the user about limit and total_count.
-    if ($res['limit'] < $res['total_count']) {
+    $limit = $res['limit'];
+    $total_count = $res['total_count'];
+    if (is_array($res['limit'])) {
+      $limit = array_sum($res['limit']);
+    }
+    if (is_array($res['total_count'])) {
+      $total_count = reset($res['total_count']);
+    }
+    if ($limit < $total_count) {
       $info = sprintf("<info>Showing \"%d\" of \"%d\" issues</info> <comment>(you can adjust the limit using --limit argument)</comment>",
         $res['limit'],
         $res['total_count']
