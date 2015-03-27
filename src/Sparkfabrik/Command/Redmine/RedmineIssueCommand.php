@@ -1,40 +1,30 @@
 <?php
 
+/*
+ * This file is part of the Spark tool package.
+ *
+ * (c) Paolo Mainardi <paolo.mainardi@sparkfabrik.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
-use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
-use Sparkfabrik\Tools\Spark\Command\BaseCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
 use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
-use Redmine\Client as Redmine;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RedmineIssueCommand extends BaseCommand
+class RedmineIssueCommand extends RedmineCommand
 {
-    protected $redmineConfig;
-    protected $redmineClient;
-
-    private function createRedmineClient() {
-      try {
-        $this->redmineClient = new Redmine(
-          $this->redmineConfig['redmine_url'],
-          $this->redmineConfig['redmine_api_key']
-        );
-      }
-      catch (Exception $e) {
-        return $output->writeln('<error>'. $e->getMessage() . '</error>');
-      }
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     protected function configure() {
-      $configManager = new SparkConfigurationWrapper();
-      $this->redmineConfig = $configManager->getValueFromConfig('services', 'redmine_credentials');
-      $this->redmineConfig['project_id'] = $configManager->getValueFromConfig('projects', 'redmine_project_id');
-      $this->createRedmineClient();
       $this
         ->setName('redmine:search')
         ->setDescription('Search redmine issues')
@@ -149,7 +139,7 @@ EOF
         return $status;
       }
       else {
-        $custom_statuses = $this->redmineClient->api('issue_status')->all()['issue_statuses'];
+        $custom_statuses = $this->getRedmineClient()->api('issue_status')->all()['issue_statuses'];
         foreach ($custom_statuses as $custom_status) {
           if (strtolower($custom_status['name']) === $status) {
             $status_id = $custom_status['id'];
@@ -168,7 +158,7 @@ EOF
      * @return integer|boolean
      */
     private function handleAgumentProjectId($project_id = null) {
-      return ($project_id ? $project_id : $this->redmineConfig['project_id']);
+      return ($project_id ? $project_id : $this->getRedmineConfig()['project_id']);
     }
 
     /**
@@ -192,7 +182,7 @@ EOF
         return $magic_tokens[$assigned];
       }
       // Instantiate proxy redmine user class, we need more power.
-      $redmineUserClient = new RedmineApiUser($this->redmineClient);
+      $redmineUserClient = new RedmineApiUser($this->getRedmineClient());
       // Translate string to id.
       $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
       if ($user_id === false) {
@@ -214,7 +204,7 @@ EOF
         // @todo check if getIdByName() suffers of autolimit of 25 records
         // as it happens for users.
         // @todo make this search case unsensitive.
-        $fixed_version_id = $this->redmineClient->api('version')->getIdByName($project_id, $sprint);
+        $fixed_version_id = $this->getRedmineClient()->api('version')->getIdByName($project_id, $sprint);
         if ($fixed_version_id === false) {
            throw new \Exception('No sprint version found.');
         }
@@ -328,9 +318,12 @@ EOF
       }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
-        $client = $this->redmineClient;
+        $client = $this->getRedmineClient();
         $api_options = array();
         $api_options['limit'] = $input->getOption('limit');
         $api_options['sort'] = $input->getOption('sort');
@@ -345,10 +338,8 @@ EOF
             print_r($api_options);
           }
         }
-
         // Run query.
         $res = $client->api('issue')->all($api_options);
-
         // Handle errors.
         if (isset($res['errors'])) {
           $errors = implode("\n", $res['errors']);
