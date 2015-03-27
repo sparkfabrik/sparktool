@@ -28,7 +28,7 @@ class RedmineGitBranchCommand extends RedmineCommand
       $this->initConfig();
       $this
         ->setName('redmine:git:branch')
-        ->setDescription('Generate git branch name using issue subject')
+        ->setDescription('WIP: Generate git branch name using issue subject')
       ;
       $this->addArgument(
         'issue',
