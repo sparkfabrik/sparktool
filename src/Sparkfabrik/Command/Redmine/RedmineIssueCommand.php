@@ -120,10 +120,10 @@ EOF
         'Filter by not estimated issues.'
       );
       $this->addOption(
-        'subcon',
+        'subject',
         false,
         InputOption::VALUE_OPTIONAL,
-        'Filter by issues, already filtered by other options, that contain (text) in the subject.'
+        'Filter by subject, it filters contained text in the subject.'
       );
     }
 
@@ -372,10 +372,11 @@ EOF
         }
 
         // Reduce results, filter by subject content.
-        if ($input->getOption('subcon')) {
+        if ($input->getOption('subject')) {
+          $subject = $input->getOption('subject');
           foreach ($res['issues'] as $key => $issue) {
 
-            if (stripos($issue['subject'], $input->getOption('subcon')) === FALSE) {
+            if (stripos($issue['subject'], $subject) === FALSE) {
               unset($res['issues'][$key]);
               if (!is_array($res['total_count'])) {
                 --$res['total_count'];
