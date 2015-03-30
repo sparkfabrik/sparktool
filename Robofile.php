@@ -23,7 +23,7 @@ class RoboFile extends \Robo\Tasks
       $files = Finder::create()->ignoreVCS(true)
             ->files()
             ->name('*.php')
-            ->path('php-src')
+            ->path('src')
             ->path('vendor')
             ->notPath('patched-libraries')
             ->in(__DIR__);
