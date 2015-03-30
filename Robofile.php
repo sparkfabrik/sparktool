@@ -31,15 +31,7 @@ class RoboFile extends \Robo\Tasks
         $packer->addFile($file->getRelativePathname(), $file->getRealPath());
       }
 
-      // Add binaries yaml config.
-      $files = Finder::create()->ignoreVCS(true)
-           ->files()
-           ->name('binaries.yml')
-           ->in(__DIR__);
-      foreach ($files as $file) {
-        $packer->addFile($file->getRelativePathname(), $file->getRealPath());
-      }
-
+      // Executable.
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
