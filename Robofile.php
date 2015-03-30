@@ -1,0 +1,50 @@
+<?php
+
+use Symfony\Component\Finder\Finder as Finder;
+use Symfony\Component\Yaml\Parser as Parser;
+
+/**
+ * This is project's console commands configuration for the Drocker project.
+ */
+class RoboFile extends \Robo\Tasks
+{
+    /**
+     * Build the Drocker phar package
+     */
+    public function pharBuild() {
+      $yaml = new Parser();
+      $packer = $this->taskPackPhar('spark.phar');
+      $this->taskComposerInstall()
+            ->noDev()
+            ->printed(false)
+            ->run();
+
+      // Add php sources.
+      $files = Finder::create()->ignoreVCS(true)
+            ->files()
+            ->name('*.php')
+            ->path('php-src')
+            ->path('vendor')
+            ->notPath('patched-libraries')
+            ->in(__DIR__);
+      foreach ($files as $file) {
+        $packer->addFile($file->getRelativePathname(), $file->getRealPath());
+      }
+
+      // Add binaries yaml config.
+      $files = Finder::create()->ignoreVCS(true)
+           ->files()
+           ->name('binaries.yml')
+           ->in(__DIR__);
+      foreach ($files as $file) {
+        $packer->addFile($file->getRelativePathname(), $file->getRealPath());
+      }
+
+      $packer->addFile('spark.php', 'spark.php')
+             ->executable('spark.php')
+             ->run();
+      $this->taskComposerInstall()
+           ->printed(false)
+           ->run();
+    }
+}
