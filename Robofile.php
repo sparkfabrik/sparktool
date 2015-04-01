@@ -26,6 +26,7 @@ class RoboFile extends \Robo\Tasks
             ->path('src')
             ->path('vendor')
             ->notPath('patched-libraries')
+            ->notPath('vendor/codegyre')
             ->in(__DIR__);
       foreach ($files as $file) {
         $packer->addFile($file->getRelativePathname(), $file->getRealPath());
@@ -35,8 +36,5 @@ class RoboFile extends \Robo\Tasks
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
-      $this->taskComposerInstall()
-           ->printed(false)
-           ->run();
     }
 }
