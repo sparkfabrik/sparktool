@@ -5,7 +5,7 @@
  * @file
  * Spark cli executable.
  */
-if (strpos(basename(__FILE__), 'phar')){
+if (strpos(basename(__FILE__), 'phar')) {
     require_once 'phar://spark.phar/vendor/autoload.php';
 }
 else{
@@ -23,7 +23,11 @@ use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineIssueCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Robo\Task\Development\SemVer;
 try {
-  $semver = new SemVer('.semver');
+  $semver_file = '.semver';
+  if (strpos(basename(__FILE__), 'phar')) {
+    $semver_file = 'phar://spark.phar/.semver';
+  }
+  $semver = new SemVer($semver_file);
   $application = new Application('Spark', (string) $semver);
   $config = new SparkConfigurationWrapper();
   $config->loadConfig();

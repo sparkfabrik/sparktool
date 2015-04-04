@@ -8,6 +8,16 @@ use Symfony\Component\Yaml\Parser as Parser;
  */
 class Robofile extends \Robo\Tasks
 {
+
+    /**
+     * Build phar and increment version.
+     */
+    public function build() {
+      $this->yell("Releasing Spark...");
+      $this->buildPhar();
+      $this->buildSemver();
+    }
+
     /**
      * Build the Drocker phar package
      */
@@ -34,6 +44,7 @@ class Robofile extends \Robo\Tasks
       }
 
       // Executable.
+      $packer->addFile('.semver', '.semver');
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
