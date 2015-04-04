@@ -37,6 +37,7 @@ class Robofile extends \Robo\Tasks
           ->checkout('develop')
           ->run();
        $this->taskGitStack()
+          ->add('.semver')
           ->commit($release_commit_message)
           ->push('origin', 'develop')
           ->run();
