@@ -21,8 +21,10 @@ use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineIssueCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
+use Robo\Task\Development\SemVer;
 try {
-  $application = new Application('Spark', '0.1.0');
+  $semver = new SemVer('.semver');
+  $application = new Application('Spark', (string) $semver);
   $config = new SparkConfigurationWrapper();
   $config->loadConfig();
 

@@ -6,12 +6,13 @@ use Symfony\Component\Yaml\Parser as Parser;
 /**
  * This is project's console commands configuration for the Drocker project.
  */
-class RoboFile extends \Robo\Tasks
+class Robofile extends \Robo\Tasks
 {
     /**
      * Build the Drocker phar package
      */
-    public function pharBuild() {
+    public function buildPhar()
+    {
       $yaml = new Parser();
       $packer = $this->taskPackPhar('spark.phar');
       $this->taskComposerInstall()
@@ -36,5 +37,21 @@ class RoboFile extends \Robo\Tasks
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
+
+      // Semantic version file.
+      $this->taskSemVer('.semver')
+           ->increment()
+           ->run();
+      $this->buildSemver();
+    }
+
+  /**
+   * Increment semantic version file.
+   */
+    public function buildSemver($increment = 'patch') {
+      // Semantic version file.
+      $this->taskSemVer('.semver')
+           ->increment($increment)
+           ->run();
     }
 }
