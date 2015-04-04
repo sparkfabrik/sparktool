@@ -10,36 +10,37 @@ use Robo\Task\Development\SemVer;
 class Robofile extends \Robo\Tasks
 {
 
+    private function buildGetReleaseVersion() {
+      $semver_file = '.semver';
+      $semver = new SemVer($semver_file);
+      return (string) $semver;
+    }
+
     /**
      * Build phar and increment version.
      */
-    public function build() {
+    public function release() {
       $this->yell("Releasing Spark...");
+      $this->buildSemver();
       $this->buildPhar();
       $this->buildPublish();
-      $this->buildSemver();
     }
 
    /**
     * Publish the package on the release branch.
     */
     public function buildPublish() {
-      $semver_file = '.semver';
-      $semver = new SemVer($semver_file);
+      $version = $this->buildGetReleaseVersion();
       rename('spark.phar', 'spark-release.phar');
       $this->taskGitStack()->checkout('release')->run();
       rename('spark-release.phar', 'spark.phar');
-      $release_commit_message = 'spark ' . (string) $semver . ' released';
+      $release_commit_message = 'Phar: spark ' . $version . ' released';
       $this->taskGitStack()
+          ->stopOnFail()
           ->add('spark.phar')
           ->commit($release_commit_message)
           ->push('origin', 'release')
           ->checkout('develop')
-          ->run();
-       $this->taskGitStack()
-          ->add('.semver')
-          ->commit($release_commit_message)
-          ->push('origin', 'develop')
           ->run();
     }
 
@@ -80,8 +81,18 @@ class Robofile extends \Robo\Tasks
    */
     public function buildSemver($increment = 'patch') {
       // Semantic version file.
+      $version = $this->buildGetReleaseVersion();
       $this->taskSemVer('.semver')
            ->increment($increment)
+           ->run();
+
+      // Commit release version.
+      $release_commit_message = 'Release: spark ' . $version . ' released';
+      $this->taskGitStack()
+           ->stopOnFail()
+           ->add('.semver')
+           ->commit($release_commit_message)
+           ->push('origin', 'develop')
            ->run();
     }
 }
