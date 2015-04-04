@@ -81,12 +81,12 @@ class Robofile extends \Robo\Tasks
    */
     public function buildSemver($increment = 'patch') {
       // Semantic version file.
-      $version = $this->buildGetReleaseVersion();
       $this->taskSemVer('.semver')
            ->increment($increment)
            ->run();
 
       // Commit release version.
+      $version = $this->buildGetReleaseVersion();
       $release_commit_message = 'Release: spark ' . $version . ' released';
       $this->taskGitStack()
            ->stopOnFail()
