@@ -72,7 +72,6 @@ class Robofile extends \Robo\Tasks
       $this->taskSemVer('.semver')
            ->increment()
            ->run();
-      $this->buildSemver();
     }
 
   /**
