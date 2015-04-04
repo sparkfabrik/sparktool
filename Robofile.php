@@ -29,11 +29,16 @@ class Robofile extends \Robo\Tasks
       rename('spark.phar', 'spark-release.phar');
       $this->taskGitStack()->checkout('release')->run();
       rename('spark-release.phar', 'spark.phar');
+      $release_commit_message = 'spark ' . (string) $semver . ' released';
       $this->taskGitStack()
           ->add('spark.phar')
-          ->commit('spark ' . (string) $semver . ' released')
+          ->commit($release_commit_message)
           ->push('origin', 'release')
           ->checkout('develop')
+          ->run();
+       $this->taskGitStack()
+          ->commit($release_commit_message)
+          ->push('origin', 'develop')
           ->run();
     }
 
