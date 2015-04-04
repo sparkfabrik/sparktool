@@ -67,11 +67,6 @@ class Robofile extends \Robo\Tasks
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
-
-      // Semantic version file.
-      $this->taskSemVer('.semver')
-           ->increment()
-           ->run();
     }
 
   /**
