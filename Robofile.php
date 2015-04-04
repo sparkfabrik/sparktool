@@ -2,6 +2,7 @@
 
 use Symfony\Component\Finder\Finder as Finder;
 use Symfony\Component\Yaml\Parser as Parser;
+use Robo\Task\Development\SemVer;
 
 /**
  * This is project's console commands configuration for the Drocker project.
@@ -15,7 +16,25 @@ class Robofile extends \Robo\Tasks
     public function build() {
       $this->yell("Releasing Spark...");
       $this->buildPhar();
+      $this->buildPublish();
       $this->buildSemver();
+    }
+
+   /**
+    * Publish the package on the release branch.
+    */
+    public function buildPublish() {
+      $semver_file = '.semver';
+      $semver = new SemVer($semver_file);
+      rename('spark.phar', 'spark-release.phar');
+      $this->taskGitStack()->checkout('release')->run();
+      rename('spark-release.phar', 'spark.phar');
+      $this->taskGitStack()
+          ->add('spark.phar')
+          ->commit('spark ' . (string) $semver . ' released')
+          ->push('origin', 'release')
+          ->checkout('develop')
+          ->run();
     }
 
     /**
@@ -48,12 +67,6 @@ class Robofile extends \Robo\Tasks
       $packer->addFile('spark.php', 'spark.php')
              ->executable('spark.php')
              ->run();
-
-      // Semantic version file.
-      $this->taskSemVer('.semver')
-           ->increment()
-           ->run();
-      $this->buildSemver();
     }
 
   /**
