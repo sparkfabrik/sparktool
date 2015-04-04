@@ -16,8 +16,8 @@ class Robofile extends \Robo\Tasks
     public function build() {
       $this->yell("Releasing Spark...");
       $this->buildPhar();
-      $this->buildSemver();
       $this->buildPublish();
+      $this->buildSemver();
     }
 
    /**
