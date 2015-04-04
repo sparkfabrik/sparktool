@@ -24,7 +24,7 @@ use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Robo\Task\Development\SemVer;
 try {
   $semver_file = '.semver';
-  if (strpos(basename(__FILE__), 'phar')) {
+  if (!file_exists($semver_file)) {
     $semver_file = 'phar://spark.phar/.semver';
   }
   $semver = new SemVer($semver_file);
