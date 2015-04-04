@@ -1,5 +1,3 @@
-.semver
-patched-libraries
-composer.lock
-.spark.yml
-vendor
+*
+!.gitignore
+!spark.phar
