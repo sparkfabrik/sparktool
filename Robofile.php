@@ -21,6 +21,15 @@ class Robofile extends \Robo\Tasks
      */
     public function release() {
       $this->yell("Releasing Spark...");
+      // Try to detect git status.
+      $status = $this->taskExec('git status')
+                      ->arg('-s')
+                      ->printed(false)
+                      ->run()
+                      ->getMessage();
+      if (!empty($status)) {
+        throw new Exception('Seems that you have some file not yet commited, check your git status.');
+      }
       $this->buildSemver();
       $this->buildPhar();
       $this->buildPublish();
