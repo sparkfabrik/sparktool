@@ -52,13 +52,18 @@ class SparkConfigurationWrapper {
         // Merge configurations if needed.
         $dumper = new Dumper();
         $merge = array();
+
         // Get default config.
         $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
 
         // Get Custom config.
         $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
-        if (count($defaultConfig['spark']) !== count($customConfig['spark'])) {
-          $merge['spark'] = array_merge($defaultConfig['spark'], $customConfig['spark']);
+
+        // Merge default and custom.
+        $merge['spark'] = array_merge($defaultConfig['spark'], $customConfig['spark']);
+        $merge['spark']['services'] = array_merge($defaultConfig['spark']['services'], $customConfig['spark']['services']);
+        $merge['spark']['projects'] = array_merge($defaultConfig['spark']['projects'], $customConfig['spark']['projects']);
+        if ($customConfig['spark'] != $merge['spark']) {
           $yaml_merged = $dumper->dump($merge, 5);
           file_put_contents($configFileStandardPath, $yaml_merged);
         }

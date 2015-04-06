@@ -21,6 +21,7 @@ use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineIssueCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
+use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabMergeRequestCommand;
 use Robo\Task\Development\SemVer;
 try {
   $semver_file = '.semver';
@@ -35,9 +36,10 @@ try {
   // Load commands.
   $application->add(new RedmineIssueCommand);
   $application->add(new RedmineGitBranchCommand);
+  $application->add(new GitlabMergeRequestCommand);
   $application->run();
 }
 catch (Exception $e) {
-  print $e->getMessage() . PHP_EOL;
+  print 'Error: ' . $e->getMessage() . PHP_EOL;
 }
 
