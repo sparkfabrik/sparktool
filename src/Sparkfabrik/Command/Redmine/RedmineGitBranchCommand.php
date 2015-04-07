@@ -18,6 +18,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class RedmineGitBranchCommand extends RedmineCommand
 {
@@ -28,12 +30,18 @@ class RedmineGitBranchCommand extends RedmineCommand
       $this->initConfig();
       $this
         ->setName('redmine:git:branch')
-        ->setDescription('WIP: Generate git branch name using issue subject')
+        ->setDescription('Generate branch using git-flow, the branch name is generated starting from issue subject.')
       ;
       $this->addArgument(
         'issue',
         InputArgument::REQUIRED,
         'Issue id'
+      );
+      $this->addOption(
+        'dry-run',
+        FALSE,
+        InputOption::VALUE_NONE,
+        'Just print the branch name, not execute git flow.'
       );
     }
 
@@ -41,8 +49,10 @@ class RedmineGitBranchCommand extends RedmineCommand
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
+      $branch = $this->getRedmineConfig()['git_pattern'];
       $client = $this->getRedmineClient();
       $issue = $input->getArgument('issue');
+      $dry_run = $input->getOption('dry-run');
       $res = $client->api('issue')->show($issue);
 
       // Handle errors.
@@ -71,10 +81,33 @@ class RedmineGitBranchCommand extends RedmineCommand
       // Clean story name.
       $story_name = str_replace(array('[', ']'), '', $story_name);
       $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
-      $story_name = str_replace('__', '_', $story_name);
+      $story_name = implode((array_filter(explode(' ', str_replace('_', ' ', $story_name)))), '_');
 
-      dump($story_prefix);
-      dump($story_code);
-      dump($story_name);
+      // Replace patterns in branch name.
+      $branch = str_replace('%(story_prefix)', $story_prefix, $branch);
+      $branch = str_replace('%(story_code)', $story_code, $branch);
+      $branch = str_replace('%(issue_id)', (string) $issue, $branch);
+      $branch = str_replace('%(story_name)', $story_name, $branch);
+
+      // Execute git flow.
+      if (!$dry_run) {
+        try {
+          // Git flow.
+          $git_flow_process = new Process('git flow feature start ' . $branch);
+          $git_flow_process->mustRun();
+          $output->writeln("<info>Branch: \"{$branch}\" created </info>");
+
+          // Auto track of branch.
+          $git_track_branch = new Process('git push --set-upstream origin feature/' . $branch);
+          $git_track_branch->mustRun();
+          $output->writeln("<info>Branch: \"{$branch}\" tracked </info>");
+        }
+        catch (ProcessFailedException $e) {
+          return $output->writeln("<comment>Error: " . $git_flow_process->getErrorOutput() . "</comment>");
+        }
+      }
+      else {
+        $output->writeln($branch);
+      }
     }
 }
