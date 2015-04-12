@@ -12,6 +12,7 @@
 namespace Sparkfabrik\Tools\Spark\Tests;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Dumper;
 
 class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -88,6 +89,31 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue(is_array($values['projects']));
     $this->assertArrayHasKey('git', $values);
     $this->assertTrue(is_array($values['git']));
+  }
+
+  public function testGetValueFromConfig() {
+    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
+    $value_from_config = $this->configuration->getValueFromConfig('git', 'branch_pattern');
+    $this->assertNotEmpty($value_from_config);
+  }
+
+  public function testMergeConfigurations() {
+    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
+    $customConfig = Yaml::parse(file_get_contents($this->fullPath));
+
+    // Unset an attribute (this can happen when the user has an old configuration file).
+    unset($customConfig['spark']['git']);
+
+    // Write the file to workspace.
+    $dumper = new Dumper();
+    $yaml_merged = $dumper->dump($customConfig, 5);
+    file_put_contents($this->fullPath, $yaml_merged);
+
+    // Reinit and test if they are equal.
+    $this->configuration->initConfig();
+    $defaultConfig = serialize(Yaml::parse($this->configuration->dumpDefaultConfigurationFile()));
+    $customConfig = serialize(Yaml::parse(file_get_contents($this->fullPath)));
+    $this->assertEquals($defaultConfig, $customConfig);
   }
 
 }

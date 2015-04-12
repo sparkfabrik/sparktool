@@ -42,7 +42,7 @@ class SparkConfigurationWrapper {
     $this->initConfig();
   }
 
-  protected function initConfig() {
+  public function initConfig() {
     $this->fs = new Filesystem();
     $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . $this->spark_config_file;
     // @todo we need to handle errors.
