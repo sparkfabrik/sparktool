@@ -21,5 +21,9 @@
     "autoload": {
         "psr-4": { "Sparkfabrik\\Tools\\Spark\\": "src/Sparkfabrik" }
     },
+    "require-dev": {
+        "phpunit/phpunit": "4.6.*",
+        "phpunit/php-code-coverage": "~2.0"
+    },
     "target-dir": "Sparkfabrik/Tools/Spark"
 }

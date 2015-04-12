@@ -23,8 +23,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class SparkConfigurationWrapper {
-  const SPARK_CONFIG_FILE = '.spark.yml';
-
   /**
    * @var array
    */
@@ -32,15 +30,21 @@ class SparkConfigurationWrapper {
   protected $fs;
   protected $sparkHome;
 
-  public function __construct() {
+  public function __construct($workspace = NULL, $spark_config_file = '.spark.yml') {
     // @todo this is not compatible with non unixes OS.
-    $this->sparkHome = getenv('HOME') . DIRECTORY_SEPARATOR . '.spark';
+    if (!$workspace) {
+      $this->sparkHome = getenv('HOME') . DIRECTORY_SEPARATOR . '.spark';
+    }
+    else {
+      $this->sparkHome = $workspace;
+    }
+    $this->spark_config_file = $spark_config_file;
     $this->initConfig();
   }
 
-  private function initConfig() {
+  protected function initConfig() {
     $this->fs = new Filesystem();
-    $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . static::SPARK_CONFIG_FILE;
+    $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . $this->spark_config_file;
     // @todo we need to handle errors.
     if (!$this->fs->exists($configFileStandardPath)) {
       $this->fs->mkdir($this->sparkHome);
@@ -77,9 +81,7 @@ class SparkConfigurationWrapper {
    * @return mixed
    */
   public function getValueFromConfig($type, $name) {
-    if (!isset($this->processedConfiguration)) {
-      $this->loadConfig();
-    }
+    $this->getProcessedConfigurations();
     if (isset($this->processedConfiguration[$type][$name])) {
       return $this->processedConfiguration[$type][$name];
     }
@@ -94,7 +96,7 @@ class SparkConfigurationWrapper {
     $configs = array();
     $locator = new FileLocator(array($this->sparkHome));
     $loader = new YamlConfigLoader($locator);
-    $locations = array_reverse($locator->locate(static::SPARK_CONFIG_FILE, getcwd(), false));
+    $locations = array_reverse($locator->locate($this->spark_config_file, getcwd(), false));
     // Merge global and specific project configuration file.
     foreach ($locations as $location) {
       $yaml = $loader->load($location);
@@ -127,5 +129,17 @@ class SparkConfigurationWrapper {
     $dumper = new YamlReferenceDumper();
     $configuration = new SparkConfiguration();
     return $dumper->dump($configuration);
+  }
+
+  /**
+   * Return processed configurations.
+   *
+   * @return mixed
+   */
+  public function getProcessedConfigurations() {
+    if (!isset($this->processedConfiguration)) {
+      $this->loadConfig();
+    }
+    return $this->processedConfiguration;
   }
 }
