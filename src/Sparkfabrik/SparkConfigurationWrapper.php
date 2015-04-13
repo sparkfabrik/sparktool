@@ -23,31 +23,25 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class SparkConfigurationWrapper {
-  /**
-   * @var array
-   */
-  protected $processedConfiguration;
-  protected $fs;
-  protected $sparkHome;
+  private $processedConfiguration;
+  private $fs;
+  private $options = array();
 
-  public function __construct($workspace = NULL, $spark_config_file = '.spark.yml') {
-    // @todo this is not compatible with non unixes OS.
-    if (!$workspace) {
-      $this->sparkHome = getenv('HOME') . DIRECTORY_SEPARATOR . '.spark';
-    }
-    else {
-      $this->sparkHome = $workspace;
-    }
-    $this->spark_config_file = $spark_config_file;
+  public function __construct($options = array()) {
+    $this->options = array_replace(
+      array(
+        'sparkHome' => getenv('HOME') . DIRECTORY_SEPARATOR . '.spark',
+        'sparkConfigFile' => '.spark.yml',
+        'currentDir' => getcwd(),
+      ), $options);
     $this->initConfig();
   }
 
   public function initConfig() {
     $this->fs = new Filesystem();
-    $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . $this->spark_config_file;
-    // @todo we need to handle errors.
+    $configFileStandardPath = $this->options['sparkHome'] . DIRECTORY_SEPARATOR . $this->options['sparkConfigFile'];
     if (!$this->fs->exists($configFileStandardPath)) {
-      $this->fs->mkdir($this->sparkHome);
+      $this->fs->mkdir($this->options['sparkHome']);
       $defaultConfig = $this->dumpDefaultConfigurationFile();
       file_put_contents($configFileStandardPath, $defaultConfig);
     }
@@ -56,6 +50,7 @@ class SparkConfigurationWrapper {
         // Merge configurations if needed.
         $dumper = new Dumper();
         $merge = array();
+
         // Get default config.
         $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
 
@@ -94,9 +89,9 @@ class SparkConfigurationWrapper {
    */
   public function loadConfig() {
     $configs = array();
-    $locator = new FileLocator(array($this->sparkHome));
+    $locator = new FileLocator(array($this->options['sparkHome']));
     $loader = new YamlConfigLoader($locator);
-    $locations = array_reverse($locator->locate($this->spark_config_file, getcwd(), false));
+    $locations = array_reverse($locator->locate($this->options['sparkConfigFile'], $this->options['currentDir'], false));
     // Merge global and specific project configuration file.
     foreach ($locations as $location) {
       $yaml = $loader->load($location);

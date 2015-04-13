@@ -19,12 +19,21 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 {
-  public function testCommand()
+  private $application;
+  private $tester;
+
+  protected function setUp()
   {
-    // $application = new Application();
-    // $command = new RedmineIssueCommand();
-    // $commandTester = new CommandTester($command);
-    // $application->add($command);
-    // $res = $commandTester->execute(array('command' => $command->getName()));
+    $this->application = new Application();
+    $this->application->add(new RedmineIssueCommand());
+    $command = $this->application->find('redmine:search');
+    $this->tester = new CommandTester($command);
+
+  }
+
+  public function testCommand() {
+    $command = $this->application->find('redmine:search');
+    //$this->tester->execute(array('command' => $command->getName()));
+    //dump($this->tester->getDisplay());
   }
 }

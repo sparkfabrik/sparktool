@@ -16,30 +16,34 @@ use Symfony\Component\Yaml\Dumper;
 
 class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 {
-  /**
-   * @var \Symfony\Component\Filesystem\Filesystem $filesystem
-   */
   private $configuration = null;
   private $sparkFileName = '.spark.yml';
+  private $workspace = null;
+  private $workspace_project = null;
+  private $fullPathWorkspace = null;
+  protected static $fixturesPath;
 
-  /**
-   * @var string $workspace
-   */
-  protected $workspace = null;
-  protected $fullPath = null;
+  public static function setUpBeforeClass()
+  {
+    self::$fixturesPath = __DIR__ . '/Fixtures/';
+  }
 
   protected function setUp()
   {
     $this->umask = umask(0);
     $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().rand(0, 1000);
+    $this->workspace_project = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().rand(0, 1000);
     mkdir($this->workspace, 0777, true);
+    mkdir($this->workspace_project, 0777, true);
     $this->workspace = realpath($this->workspace);
-    $this->fullPath = $this->workspace . DIRECTORY_SEPARATOR . $this->sparkFileName;
+    $this->workspace_project = realpath($this->workspace_project);
+    $this->fullPathWorkspace = $this->workspace . DIRECTORY_SEPARATOR . $this->sparkFileName;
   }
 
   protected function tearDown()
   {
       $this->clean($this->workspace);
+      $this->clean($this->workspace_project);
       umask($this->umask);
   }
 
@@ -60,26 +64,38 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
       }
   }
 
+  protected function getArguments() {
+    return array(
+      'sparkHome' => $this->workspace,
+      'sparkConfigFile' => '.spark.yml',
+      'currentDir' => $this->workspace_project
+    );
+  }
+
   public function testFileNotExists()
   {
-    $this->assertFileNotExists($this->fullPath);
+    $this->assertFileNotExists($this->fullPathWorkspace);
   }
 
   public function testFileExists()
   {
-    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
-    $this->assertFileExists($this->fullPath);
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+    $this->assertFileExists($this->fullPathWorkspace);
   }
 
-  public function testDefaultConfigEqualsToCustomConfiguarion() {
-    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
+  public function testDefaultConfigEqualsToCustomConfiguration()
+  {
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+
     $defaultConfig = serialize(Yaml::parse($this->configuration->dumpDefaultConfigurationFile()));
-    $customConfig = serialize(Yaml::parse(file_get_contents($this->fullPath)));
+    $customConfig = serialize(Yaml::parse(file_get_contents($this->fullPathWorkspace)));
+
     $this->assertEquals($defaultConfig, $customConfig);
   }
 
-  public function testGetProcessedConfigurations() {
-    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
+  public function testGetProcessedConfigurations()
+  {
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
     $values = $this->configuration->getProcessedConfigurations();
     $this->assertTrue(is_array($values));
     $this->assertTrue(count($values) > 0);
@@ -91,29 +107,66 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue(is_array($values['git']));
   }
 
-  public function testGetValueFromConfig() {
-    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
+  public function testGetValueFromConfig()
+  {
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
     $value_from_config = $this->configuration->getValueFromConfig('git', 'branch_pattern');
     $this->assertNotEmpty($value_from_config);
   }
 
-  public function testMergeConfigurations() {
-    $this->configuration = new SparkConfigurationWrapper($this->workspace, $this->sparkFileName);
-    $customConfig = Yaml::parse(file_get_contents($this->fullPath));
-
-    // Unset an attribute (this can happen when the user has an old configuration file).
-    unset($customConfig['spark']['git']);
-
-    // Write the file to workspace.
+  protected function configurationDeleteElements($customConfig) {
     $dumper = new Dumper();
     $yaml_merged = $dumper->dump($customConfig, 5);
-    file_put_contents($this->fullPath, $yaml_merged);
+    file_put_contents($this->fullPathWorkspace, $yaml_merged);
 
     // Reinit and test if they are equal.
     $this->configuration->initConfig();
+
     $defaultConfig = serialize(Yaml::parse($this->configuration->dumpDefaultConfigurationFile()));
-    $customConfig = serialize(Yaml::parse(file_get_contents($this->fullPath)));
+    $customConfig = serialize(Yaml::parse(file_get_contents($this->fullPathWorkspace)));
     $this->assertEquals($defaultConfig, $customConfig);
   }
 
+  public function testConfigurationsAddNewElementsFromDefaultToConfigurationFirstLevel()
+  {
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+    $customConfig = Yaml::parse(file_get_contents($this->fullPathWorkspace));
+
+    unset($customConfig['spark']['git']);
+    $this->configurationDeleteElements($customConfig);
+  }
+
+  public function testConfigurationsAddNewElementsFromDefaultToConfigurationSecondLevel() {
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+    $customConfig = Yaml::parse(file_get_contents($this->fullPathWorkspace));
+
+    unset($customConfig['spark']['services']['redmine_project_id']);
+    $this->configurationDeleteElements($customConfig);
+  }
+
+  public function testConfigurationMergeProjectConfigurationWithDefault() {
+    $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHome.yml');
+    $project_conf_parsed = Yaml::parse($project_conf);
+
+    // Write configuration file to workspace home.
+    file_put_contents($this->fullPathWorkspace, $project_conf);
+
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+
+    // Check they get correctly merged.
+    $value_from_config = $this->configuration->getValueFromConfig('projects', 'redmine_project_id');
+    $this->assertEquals($value_from_config, $project_conf_parsed['spark']['projects']['redmine_project_id']);
+  }
+
+  /**
+   * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
+   */
+  public function testConfigurationMergeProjectConfigurationWithDefaultWrongOptions() {
+    $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHomeWrongOptions.yml');
+    $project_conf_parsed = Yaml::parse($project_conf);
+
+    // Write configuration file to workspace home.
+    file_put_contents($this->fullPathWorkspace, $project_conf);
+    $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+  }
 }
