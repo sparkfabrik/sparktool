@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Yaml\Yaml;
-use Redmine\Client as Redmine;
+use Redmine\Client;
 
 /**
  * Base class for all redmine commands.
@@ -65,11 +65,21 @@ class RedmineCommand extends SparkCommand
     return $client;
   }
 
+
+  /**
+   * @param
+   *
+   * Set redmine client.
+   */
+  public function setRedmineClient(\Redmine\Client $client) {
+    $this->redmineClient = $client;
+  }
+
   /**
    * Create redmine client.
    */
   private function createRedmineClient() {
-    $this->redmineClient = new Redmine(
+    $this->redmineClient = new \Redmine\Client(
       $this->redmineConfig['redmine_url'],
       $this->redmineConfig['redmine_api_key']
     );

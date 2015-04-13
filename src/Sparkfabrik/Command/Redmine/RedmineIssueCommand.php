@@ -346,8 +346,10 @@ EOF
             print_r($api_options);
           }
         }
+
         // Run query.
         $res = $client->api('issue')->all($api_options);
+
         // Handle errors.
         if (isset($res['errors'])) {
           $errors = implode("\n", $res['errors']);

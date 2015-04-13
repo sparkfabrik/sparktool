@@ -31,9 +31,77 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 
   }
 
-  public function testCommand() {
+  private function getMockedRedmineClient() {
+    $redmineClient = $this->getMockBuilder('\Redmine\Client')
+      ->setConstructorArgs(array('mock_url', 'mock_key'))
+      ->getMock();
+    return $redmineClient;
+  }
+
+  private function getMockedRedmineApiIssue() {
+    $redmineApiIssue = $this->getMockBuilder('\Redmine\Api\Issue')
+      ->disableOriginalConstructor()
+      ->getMock();
+    return $redmineApiIssue;
+  }
+
+  public function testNoIssuesFound() {
     $command = $this->application->find('redmine:search');
-    //$this->tester->execute(array('command' => $command->getName()));
-    //dump($this->tester->getDisplay());
+    $redmineClient = $this->getMockedRedmineClient();
+    $redmineApiIssue = $this->getMockedRedmineApiIssue();
+
+    // Mock method all of redmine api.
+    $redmineApiIssue->expects($this->once())
+      ->method('all')
+      ->will($this->returnValue(array()));
+
+    // Mock method api of redmine client.
+    $redmineClient->expects($this->once())
+        ->method('api')
+        ->will($this->returnValue($redmineApiIssue));
+
+    // Set the mocked client.
+    $command->setRedmineClient($redmineClient);
+
+    // Execute.
+    $this->tester->execute(
+      array(
+        'command' => $command->getName(),
+        '--project_id' => 'test_project_id',
+      )
+    );
+    $res = trim($this->tester->getDisplay());
+    $this->assertEquals($res, 'No issues found.');
+  }
+
+  /**
+   * @expectedException  Exception
+   * @expectedExceptionMessage errors
+   */
+  public function testIssueErrorResponse() {
+    $command = $this->application->find('redmine:search');
+    $redmineClient = $this->getMockedRedmineClient();
+    $redmineApiIssue = $this->getMockedRedmineApiIssue();
+
+    // Mock method all of redmine api.
+    $redmineApiIssue->expects($this->once())
+      ->method('all')
+      ->will($this->returnValue(array('errors' => array('errors'))));
+
+    // Mock method api of redmine client.
+    $redmineClient->expects($this->once())
+        ->method('api')
+        ->will($this->returnValue($redmineApiIssue));
+
+    // Set the mocked client.
+    $command->setRedmineClient($redmineClient);
+
+    // Execute.
+    $this->tester->execute(
+      array(
+        'command' => $command->getName(),
+        '--project_id' => 'test_project_id',
+      )
+    );
   }
 }
