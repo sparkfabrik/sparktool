@@ -129,6 +129,105 @@ EOF
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output) {
+      try {
+        $client = $this->getRedmineClient();
+        $api_options = array();
+        $api_options['limit'] = $input->getOption('limit');
+        $api_options['sort'] = $input->getOption('sort');
+        try {
+          $this->handleArguments($input, $output, $api_options);
+        }
+        catch (\Exception $e) {
+          return $output->writeln('<error>' . $e->getMessage() . '</error>');
+        }
+
+        // Print debug informations if required.
+        if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
+          if (function_exists('dump')) {
+            dump($api_options);
+          }
+          else {
+            print_r($api_options);
+          }
+        }
+
+        // Run query.
+        $res = $client->api('issue')->all($api_options);
+
+        // Handle errors.
+        if (isset($res['errors'])) {
+          $errors = implode("\n", $res['errors']);
+          throw new \Exception($errors);
+        }
+
+        // This is how redmine library return empty results.
+        if (!count($res)
+          || (count($res) == 1 && ($res[0] === 1))
+          || (isset($res['total_count']) && $res['total_count'] === 0)) {
+          return $output->writeln('<info>No issues found.</info>');
+        }
+
+        // Reduce results, filter out estimated issues.
+        if ($input->getOption('not-estimated')) {
+          foreach ($res['issues'] as $key => $issue) {
+            if (isset($issue['estimated_hours'])) {
+              unset($res['issues'][$key]);
+              if (!is_array($res['total_count'])) {
+                --$res['total_count'];
+              }
+            }
+          }
+        }
+
+        // Reduce results, filter by subject content.
+        if ($input->getOption('subject')) {
+          $subject = $input->getOption('subject');
+          foreach ($res['issues'] as $key => $issue) {
+
+            if (stripos($issue['subject'], $subject) === FALSE) {
+              unset($res['issues'][$key]);
+              if (!is_array($res['total_count'])) {
+                --$res['total_count'];
+              }
+            }
+          }
+        }
+
+        // Fields to print.
+        $fields = array(
+          'id' => 'ID',
+          'project' => 'Project',
+          'created_on' => 'Created',
+          'updated_on' => 'Updated',
+          'tracker' => 'Tracker',
+          'fixed_version' => 'Version',
+          'author' => 'Author',
+          'assigned_to' => 'Assigned',
+          'status' => 'Status',
+          'estimated_hours' => 'Estimated',
+          'subject' => 'Subject',
+        );
+
+        // Hide project if it is already configured.
+        if (isset($api_options['project_id'])) {
+          unset($fields['project']);
+        }
+
+        // Render issue table.
+        $this->tableRedmineOutput($output, $fields, $res, 'issues');
+        if ($input->getOption('report')) {
+          $this->tableRedmineReportOutput($output, $res, 'issues');
+        }
+      }
+      catch (Exception $e) {
+        return $output->writeln('<error>'. $e->getMessage() . '</error>');
+      }
+    }
+
+    /**
      * Read status argument and translate to a redmine status_id.
      *
      * @param string|integer $status
@@ -318,105 +417,6 @@ EOF
       if ($input->getOption('updated')) {
         $updated_args = $input->getOption('updated');
         $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
-      }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output) {
-      try {
-        $client = $this->getRedmineClient();
-        $api_options = array();
-        $api_options['limit'] = $input->getOption('limit');
-        $api_options['sort'] = $input->getOption('sort');
-        try {
-          $this->handleArguments($input, $output, $api_options);
-        }
-        catch (\Exception $e) {
-          return $output->writeln('<error>' . $e->getMessage() . '</error>');
-        }
-
-        // Print debug informations if required.
-        if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
-          if (function_exists('dump')) {
-            dump($api_options);
-          }
-          else {
-            print_r($api_options);
-          }
-        }
-
-        // Run query.
-        $res = $client->api('issue')->all($api_options);
-
-        // Handle errors.
-        if (isset($res['errors'])) {
-          $errors = implode("\n", $res['errors']);
-          throw new \Exception($errors);
-        }
-
-        // This is how redmine library return empty results.
-        if (!count($res)
-          || (count($res) == 1 && ($res[0] === 1))
-          || (isset($res['total_count']) && $res['total_count'] === 0)) {
-          return $output->writeln('<info>No issues found.</info>');
-        }
-
-        // Reduce results, filter out estimated issues.
-        if ($input->getOption('not-estimated')) {
-          foreach ($res['issues'] as $key => $issue) {
-            if (isset($issue['estimated_hours'])) {
-              unset($res['issues'][$key]);
-              if (!is_array($res['total_count'])) {
-                --$res['total_count'];
-              }
-            }
-          }
-        }
-
-        // Reduce results, filter by subject content.
-        if ($input->getOption('subject')) {
-          $subject = $input->getOption('subject');
-          foreach ($res['issues'] as $key => $issue) {
-
-            if (stripos($issue['subject'], $subject) === FALSE) {
-              unset($res['issues'][$key]);
-              if (!is_array($res['total_count'])) {
-                --$res['total_count'];
-              }
-            }
-          }
-        }
-
-        // Fields to print.
-        $fields = array(
-          'id' => 'ID',
-          'project' => 'Project',
-          'created_on' => 'Created',
-          'updated_on' => 'Updated',
-          'tracker' => 'Tracker',
-          'fixed_version' => 'Version',
-          'author' => 'Author',
-          'assigned_to' => 'Assigned',
-          'status' => 'Status',
-          'estimated_hours' => 'Estimated',
-          'subject' => 'Subject',
-        );
-
-        // Hide project if it is already configured.
-        if (isset($api_options['project_id'])) {
-          unset($fields['project']);
-        }
-
-        // Render issue table.
-        $this->tableRedmineOutput($output, $fields, $res, 'issues');
-        if ($input->getOption('report')) {
-          $this->tableRedmineReportOutput($output, $res, 'issues');
-        }
-      }
-      catch (Exception $e) {
-        return $output->writeln('<error>'. $e->getMessage() . '</error>');
       }
     }
 }
