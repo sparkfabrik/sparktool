@@ -23,27 +23,25 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class SparkConfigurationWrapper {
-  const SPARK_CONFIG_FILE = '.spark.yml';
+  private $processedConfiguration;
+  private $fs;
+  private $options = array();
 
-  /**
-   * @var array
-   */
-  protected $processedConfiguration;
-  protected $fs;
-  protected $sparkHome;
-
-  public function __construct() {
-    // @todo this is not compatible with non unixes OS.
-    $this->sparkHome = getenv('HOME') . DIRECTORY_SEPARATOR . '.spark';
+  public function __construct($options = array()) {
+    $this->options = array_replace(
+      array(
+        'sparkHome' => getenv('HOME') . DIRECTORY_SEPARATOR . '.spark',
+        'sparkConfigFile' => '.spark.yml',
+        'currentDir' => getcwd(),
+      ), $options);
     $this->initConfig();
   }
 
-  private function initConfig() {
+  public function initConfig() {
     $this->fs = new Filesystem();
-    $configFileStandardPath = $this->sparkHome . DIRECTORY_SEPARATOR . static::SPARK_CONFIG_FILE;
-    // @todo we need to handle errors.
+    $configFileStandardPath = $this->options['sparkHome'] . DIRECTORY_SEPARATOR . $this->options['sparkConfigFile'];
     if (!$this->fs->exists($configFileStandardPath)) {
-      $this->fs->mkdir($this->sparkHome);
+      $this->fs->mkdir($this->options['sparkHome']);
       $defaultConfig = $this->dumpDefaultConfigurationFile();
       file_put_contents($configFileStandardPath, $defaultConfig);
     }
@@ -52,6 +50,7 @@ class SparkConfigurationWrapper {
         // Merge configurations if needed.
         $dumper = new Dumper();
         $merge = array();
+
         // Get default config.
         $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
 
@@ -77,9 +76,7 @@ class SparkConfigurationWrapper {
    * @return mixed
    */
   public function getValueFromConfig($type, $name) {
-    if (!isset($this->processedConfiguration)) {
-      $this->loadConfig();
-    }
+    $this->getProcessedConfigurations();
     if (isset($this->processedConfiguration[$type][$name])) {
       return $this->processedConfiguration[$type][$name];
     }
@@ -92,9 +89,9 @@ class SparkConfigurationWrapper {
    */
   public function loadConfig() {
     $configs = array();
-    $locator = new FileLocator(array($this->sparkHome));
+    $locator = new FileLocator(array($this->options['sparkHome']));
     $loader = new YamlConfigLoader($locator);
-    $locations = array_reverse($locator->locate(static::SPARK_CONFIG_FILE, getcwd(), false));
+    $locations = array_reverse($locator->locate($this->options['sparkConfigFile'], $this->options['currentDir'], false));
     // Merge global and specific project configuration file.
     foreach ($locations as $location) {
       $yaml = $loader->load($location);
@@ -127,5 +124,17 @@ class SparkConfigurationWrapper {
     $dumper = new YamlReferenceDumper();
     $configuration = new SparkConfiguration();
     return $dumper->dump($configuration);
+  }
+
+  /**
+   * Return processed configurations.
+   *
+   * @return mixed
+   */
+  public function getProcessedConfigurations() {
+    if (!isset($this->processedConfiguration)) {
+      $this->loadConfig();
+    }
+    return $this->processedConfiguration;
   }
 }
