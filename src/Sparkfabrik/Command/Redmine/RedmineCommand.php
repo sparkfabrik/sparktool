@@ -77,6 +77,7 @@ class RedmineCommand extends SparkCommand
     $configManager = new SparkConfigurationWrapper();
     $this->redmineConfig = $configManager->getValueFromConfig('services', 'redmine_credentials');
     $this->redmineConfig['project_id'] = $configManager->getValueFromConfig('projects', 'redmine_project_id');
+    $this->redmineConfig['git_pattern'] = $configManager->getValueFromConfig('git', 'branch_pattern');
     $this->createRedmineClient();
   }
 }
