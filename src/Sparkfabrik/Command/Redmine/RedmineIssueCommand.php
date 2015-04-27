@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Redmine\Api\Tracker;
 
 class RedmineIssueCommand extends RedmineCommand
 {
@@ -125,6 +126,12 @@ EOF
         false,
         InputOption::VALUE_OPTIONAL,
         'Filter by subject, it filters contained text in the subject.'
+      );
+      $this->addOption(
+        'tracker',
+        false,
+        InputOption::VALUE_OPTIONAL,
+        'Filter by tracker.'
       );
     }
 
@@ -385,6 +392,26 @@ EOF
       }
     }
 
+    /**
+     * Handle tracker argument.
+     * 
+     * @todo verify multiple values against this request:
+     *  https://github.com/kbsali/php-redmine-api/issues/127 .
+     *  
+     * @param $args array|string
+     * 
+     * @return string
+     */
+    private function handleArgumentTracker($args){
+ 	  $tracker = new Tracker($this->getRedmineClient());
+ 	  $trackerId = $tracker->getIdByName($args);
+ 	  
+ 	  if (!$trackerId) {
+ 	  	throw new \Exception("Unrecognized tracker given by argument.");
+ 	  }
+ 	  
+ 	  return $trackerId;
+    }
 
     /**
      * Handle standard arguments.
@@ -412,11 +439,14 @@ EOF
       if ($input->getOption('created')) {
         $created_args = $input->getOption('created');
         $api_options['created_on'] = $this->handleArgumentDate($created_args);
-
       }
       if ($input->getOption('updated')) {
         $updated_args = $input->getOption('updated');
         $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
+      }
+      if($input->getOption('tracker')){
+      	$tracker_args = $input->getOption('tracker');
+      	$api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
       }
     }
 }
