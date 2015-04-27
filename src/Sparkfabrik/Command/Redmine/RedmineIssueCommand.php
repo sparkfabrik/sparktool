@@ -403,14 +403,14 @@ EOF
      * @return string
      */
     private function handleArgumentTracker($args){
- 	  $tracker = new Tracker($this->getRedmineClient());
- 	  $trackerId = $tracker->getIdByName($args);
- 	  
- 	  if (!$trackerId) {
- 	  	throw new \Exception("Unrecognized tracker given by argument.");
- 	  }
- 	  
- 	  return $trackerId;
+      $tracker = new Tracker($this->getRedmineClient());
+      $trackerId = $tracker->getIdByName($args);
+
+      if (!$trackerId) {
+        throw new \Exception("Unrecognized tracker given by argument.");
+      }
+
+      return $trackerId;
     }
 
     /**
