@@ -394,19 +394,27 @@ EOF
 
     /**
      * Handle tracker argument.
-     * 
+     *
      * @todo verify multiple values against this request:
      *  https://github.com/kbsali/php-redmine-api/issues/127 .
-     *  
-     * @param $args array|string
-     * 
+     *
+     * @param $args integer|string
+     *
      * @return string
      */
     private function handleArgumentTracker($args){
-      $tracker = new Tracker($this->getRedmineClient());
-      $trackerId = $tracker->getIdByName($args);
+      $trackerId = 0;
 
-      if (!$trackerId) {
+      if (is_numeric($args)) {
+        $trackers = $this->getRedmineClient()->api('tracker')->listing();
+        if (in_array($args, $trackers)) {
+          $trackerId = $args;
+        }
+      } else {
+        $trackerId = $this->getRedmineClient()->api('tracker')->getIdByName($args);
+      }
+
+      if ($trackerId==0) {
         throw new \Exception("Unrecognized tracker given by argument.");
       }
 
