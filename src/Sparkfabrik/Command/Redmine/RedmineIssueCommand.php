@@ -405,13 +405,18 @@ EOF
     private function handleArgumentTracker($args){
       $trackerId = 0;
 
+      $trackers = $this->getRedmineClient()->api('tracker')->listing();
       if (is_numeric($args)) {
-        $trackers = $this->getRedmineClient()->api('tracker')->listing();
         if (in_array($args, $trackers)) {
           $trackerId = $args;
         }
       } else {
-        $trackerId = $this->getRedmineClient()->api('tracker')->getIdByName($args);
+        $args = strtolower($args);
+        foreach ($trackers as $tname => $tid) {
+          if ($args === strtolower($tname)) {
+            $trackerId = $tid;
+          }
+        }
       }
 
       if ($trackerId==0) {
