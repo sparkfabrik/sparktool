@@ -43,6 +43,12 @@ class RedmineShowCommand extends RedmineCommand
         InputOption::VALUE_NONE,
         'Dump the merge requests.'
       );
+      $this->addOption(
+        'description',
+        false,
+        InputOption::VALUE_NONE,
+        'Show the description.'
+      );
     }
 
     /**
@@ -50,10 +56,12 @@ class RedmineShowCommand extends RedmineCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
       $client = $this->getRedmineClient();
-      $issue = $input->getArgument('issue');
+      $issue_id = $input->getArgument('issue');
+      $redmine_url = $this->getRedmineConfig()['redmine_url'];
       $show_mr = $input->getOption('mr');
-      $params = array('include' => 'changesets, journals, attachments');
-      $res = $client->api('issue')->show($issue, $params);
+      $description = $input->getOption('description');
+      $params = array('include' => 'journals');
+      $res = $client->api('issue')->show($issue_id, $params);
       $extra_output = array();
 
       // Handle errors.
@@ -64,7 +72,9 @@ class RedmineShowCommand extends RedmineCommand
       if ($res === 1) {
         return $output->writeln('<info>No issues found.</info>');
       }
-      if ($show_mr && count($res['issue']['journals'])) {
+
+      $issue = $res['issue'];
+      if ($show_mr && count($issue['journals'])) {
         $regex = '#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#';
         $comments = $res['issue']['journals'];
         foreach ($comments as $comment) {
@@ -77,6 +87,18 @@ class RedmineShowCommand extends RedmineCommand
           }
         }
       }
-      dump($extra_output);
+      $output->writeln('<info>Subject: </info>'. $issue['subject']);
+      $output->writeln('<info>URL: </info>'. $redmine_url . '/issues/' . $issue_id);
+      if ($description) {
+        $output->writeln('<info>Description: </info>');
+        $output->writeln(trim($issue['description']));
+      }
+      foreach ($extra_output as $name => $elements) {
+        $output->writeln('<info>' . strtoupper($name) . ':</info>');
+        foreach ($elements as $element) {
+          $output->writeln($element);
+        }
+      }
+      $output->writeln("");
     }
 }
