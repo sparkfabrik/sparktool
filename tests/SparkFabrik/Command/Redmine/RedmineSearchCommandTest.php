@@ -14,10 +14,10 @@ namespace Sparkfabrik\Tools\Spark\Tests\Command\Redmine;
 use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\Command\SparkCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
-use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineIssueCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
+class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 {
   private $application;
   private $tester;
@@ -25,7 +25,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
   protected function setUp()
   {
     $this->application = new Application();
-    $this->application->add(new RedmineIssueCommand());
+    $this->application->add(new RedmineSearchCommand());
     $command = $this->application->find('redmine:search');
     $this->tester = new CommandTester($command);
 

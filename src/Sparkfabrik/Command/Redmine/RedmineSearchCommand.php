@@ -21,7 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Redmine\Api\Tracker;
 
-class RedmineIssueCommand extends RedmineCommand
+class RedmineSearchCommand extends RedmineCommand
 {
     /**
      * {@inheritdoc}
