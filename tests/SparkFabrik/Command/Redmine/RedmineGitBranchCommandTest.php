@@ -15,11 +15,11 @@ use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\Service\RedmineService;
 use Sparkfabrik\Tools\Spark\Command\SparkCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
-use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
+class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
 {
   private $application;
   private $tester;
@@ -30,11 +30,14 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
   private $redmineClient;
   private $redmineApiIssue;
 
+  private $issue_subject = 'SP-000 - Testing branch name';
+  private $issue_subject_wrong = 'BUG: testing_branch_name';
+
   protected function setUp()
   {
     $this->application = new Application();
-    $this->application->add(new RedmineSearchCommand());
-    $command = $this->application->find('redmine:search');
+    $this->application->add(new RedmineGitBranchCommand());
+    $command = $this->application->find('redmine:git:branch');
     $this->tester = new CommandTester($command);
 
   }
@@ -42,6 +45,10 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
   private function getMockedService() {
     $service = $this->getMockBuilder('\Sparkfabrik\Tools\Spark\Services\RedmineService')
       ->getMock();
+    $service
+      ->expects($this->once())
+      ->method('getConfig')
+      ->will($this->returnValue(array('git_pattern' => '%(story_prefix)-%(story_code)_%(issue_id)_%(story_name)')));
     return $service;
   }
 
@@ -70,14 +77,14 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
     // Default returns for mock objects.
     $default_options = array_replace(
-      array('redmineApiIssueAll' => array()),
+      array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject))),
       $options
     );
 
     // Mock methods.
     $this->redmineApiIssue->expects($this->any())
-      ->method('all')
-      ->will($this->returnValue($default_options['redmineApiIssueAll']));
+      ->method('show')
+      ->will($this->returnValue($default_options['redmineApiIssueShow']));
 
     // Mock method api of redmine client.
     $this->redmineClient->expects($this->any())
@@ -93,68 +100,34 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     $this->command->setService($this->service);
   }
 
-  public function testNoIssuesFound() {
-    $command = $this->createCommand('redmine:search');
-    $this->createMocks();
-
-    // Execute with project_id
-    $options = array(
-      'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
-    );
-    $this->tester->execute($options);
-    $res = trim($this->tester->getDisplay());
-    $this->assertEquals('No issues found.', $res);
-
-    // Execute without project_id.
-    unset($options['--project_id']);
-    $this->tester->execute($options);
-    $res = trim($this->tester->getDisplay());
-    $this->assertEquals('No issues found.', $res);
-  }
-
-  /**
-   * Test verbosity.
-   */
-  public function testSearchWithDebugVerbosity() {
-    $command = $this->createCommand('redmine:search');
+  public function testCreateGitBranch() {
+    $command = $this->createCommand('redmine:git:branch');
     $this->createMocks();
 
     // Execute with project_id
     $input = array(
       'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
+      'issue' => '1234',
+      '--dry-run' => TRUE,
     );
-    $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
-    $this->tester->execute($input, $options);
+    $this->tester->execute($input);
     $res = trim($this->tester->getDisplay());
-    $expected_string = var_export(
-      array(
-        'limit' => 50,
-        'sort' => 'updated_on:desc',
-        'project_id' => 'test_project_id',
-        'status_id' => 'open',
-        'assigned_to_id' => '',
-      ), TRUE);
-    $this->assertContains('No issues found', $res);
-    $this->assertContains($expected_string, $res);
+    $this->assertEquals('SP-000_1234_testing_branch_name', $res);
   }
 
-  /**
-   * @expectedException  Exception
-   * @expectedExceptionMessage errors
-   */
-  public function testIssueErrorResponse() {
-    $command = $this->createCommand('redmine:search');
-    $error_response = array('errors' => array('errors'));
-    $this->createMocks(array('redmineApiIssueAll' => $error_response));
+  public function testCreateGitBranchWithAwrongIssueFormat() {
+    $command = $this->createCommand('redmine:git:branch');
+    $options = array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject_wrong)));
+    $this->createMocks($options);
 
-    // Execute.
-    $this->tester->execute(
-      array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
-      )
+    // Execute with project_id
+    $input = array(
+      'command' => $this->command->getName(),
+      'issue' => '1234',
+      '--dry-run' => TRUE,
     );
+    $this->tester->execute($input);
+    $res = trim($this->tester->getDisplay());
+    $this->assertContains('Rename your issue please.', $res);
   }
 }

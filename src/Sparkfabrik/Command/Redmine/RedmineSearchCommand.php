@@ -140,7 +140,7 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
-        $client = $this->getRedmineClient();
+        $client = $this->getService()->getClient();
         $api_options = array();
         $api_options['limit'] = $input->getOption('limit');
         $api_options['sort'] = $input->getOption('sort');
@@ -154,16 +154,12 @@ EOF
         // Print debug informations if required.
         if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
           if (function_exists('dump')) {
-            dump($api_options);
-          }
-          else {
-            print_r($api_options);
+            $output->writeln('<info>' . var_export($api_options, true) . '</info>');
           }
         }
 
         // Run query.
         $res = $client->api('issue')->all($api_options);
-
         // Handle errors.
         if (isset($res['errors'])) {
           $errors = implode("\n", $res['errors']);
@@ -271,7 +267,7 @@ EOF
      * @return integer|boolean
      */
     private function handleAgumentProjectId($project_id = null) {
-      return ($project_id ? $project_id : $this->getRedmineConfig()['project_id']);
+      return ($project_id ? $project_id : $this->getService()->getConfig()['project_id']);
     }
 
     /**
