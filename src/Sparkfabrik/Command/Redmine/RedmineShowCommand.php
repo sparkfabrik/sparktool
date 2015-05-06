@@ -87,6 +87,7 @@ class RedmineShowCommand extends RedmineCommand
       $redmine_url = $this->service->getConfig()['redmine_url'];
       $show_mr = $input->getOption('mr');
       $open = $input->getOption('open');
+      $open_command = (PHP_OS === 'Darwin' ? 'open' : 'xdg-open');
       $description = $input->getOption('description');
 
       $params = array('include' => 'journals');
@@ -130,12 +131,12 @@ class RedmineShowCommand extends RedmineCommand
           $table->render();
           if ($open) {
             // This is needed just to open the browser.
-            $command = 'open -Wn http://example.com';
+            $command = $open_command . ' -Wn http://example.com';
             $process = new Process($command);
             $process->run();
 
             // Open merge requests.
-            $command = 'open ' . implode(' ', $mrs);
+            $command = $open_command . ' ' . implode(' ', $mrs);
             $process = new Process($command);
             $process->run();
           }
@@ -143,7 +144,7 @@ class RedmineShowCommand extends RedmineCommand
       }
 
       if ($open && !$show_mr) {
-        $command = 'open ' . $redmine_issue_url;
+        $command = $open_command . ' ' . $redmine_issue_url;
         $process = new Process($command);
         $process->run();
       }

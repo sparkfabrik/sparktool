@@ -10,6 +10,7 @@
  */
 
 namespace Sparkfabrik\Tools\Spark\Services;
+use Sparkfabrik\Tools\Spark\SparkConfigurationWrapperInterface;
 
 /**
  * Base abstract class for all commands.
@@ -28,7 +29,7 @@ abstract class AbstractService implements ServiceInterface
    *
    * @api
    */
-  protected abstract function initConfig();
+  protected abstract function initConfig(SparkConfigurationWrapperInterface $config = NULL);
 
   /**
    * Init client.

@@ -25,21 +25,24 @@ use Redmine\Client;
  */
 class RedmineService extends AbstractService
 {
-  protected function initConfig() {
-    $config = new SparkConfigurationWrapper();
+  protected function initConfig(SparkConfigurationWrapperInterface $config = NULL) {
+    if (empty($config)) {
+      $config = new SparkConfigurationWrapper();
+    }
     $this->config = $config->getValueFromConfig('services', 'redmine_credentials');
     $this->config['project_id'] = $config->getValueFromConfig('projects', 'redmine_project_id');
     $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
   }
 
   protected function initClient() {
-    $client = new \Redmine\Client(
-      $this->config['redmine_url'],
-      $this->config['redmine_api_key']
-    );
-    if (empty($client)) {
-      throw new Exception('Cannot connect to redmine client, check your configurations.');
+    if (empty($this->client)) {
+      $this->client = new \Redmine\Client(
+        $this->config['redmine_url'],
+        $this->config['redmine_api_key']
+      );
+      if (empty($this->client)) {
+        throw new \Exception('Cannot connect to redmine client, check your configurations.');
+      }
     }
-    $this->setClient($client);
   }
 }
