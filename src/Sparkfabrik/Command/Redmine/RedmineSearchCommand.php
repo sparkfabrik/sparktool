@@ -291,7 +291,7 @@ EOF
         return $magic_tokens[$assigned];
       }
       // Instantiate proxy redmine user class, we need more power.
-      $redmineUserClient = new RedmineApiUser($this->getRedmineClient());
+      $redmineUserClient = new RedmineApiUser($this->getService()->getClient());
       // Translate string to id.
       $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
       if ($user_id === false) {
@@ -310,7 +310,7 @@ EOF
         return $sprint;
       }
       else {
-        $redmineVersionClient = new RedmineApiVersion($this->getRedmineClient());
+        $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
         // Set a very high limit.
         $fixed_version_id = $redmineVersionClient->getIdByName($project_id, $sprint, array(
           'limit' => 500
@@ -401,7 +401,7 @@ EOF
     private function handleArgumentTracker($tracker){
       $trackerId = 0;
 
-      $trackers = $this->getRedmineClient()->api('tracker')->listing();
+      $trackers = $this->getService()->getClient()->api('tracker')->listing();
       if (is_numeric($tracker)) {
         if (in_array($tracker, $trackers)) {
           $trackerId = $tracker;
