@@ -248,7 +248,7 @@ EOF
         return $status;
       }
       else {
-        $custom_statuses = $this->getRedmineClient()->api('issue_status')->all()['issue_statuses'];
+        $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
         foreach ($custom_statuses as $custom_status) {
           if (strtolower($custom_status['name']) === $status) {
             $status_id = $custom_status['id'];
