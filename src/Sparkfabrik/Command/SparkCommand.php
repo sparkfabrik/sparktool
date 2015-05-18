@@ -22,14 +22,24 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
  */
 abstract class SparkCommand extends Command
 {
-
-  protected abstract function initconfig();
+  protected $service;
+  protected abstract function initService();
 
   /**
-   * Initialize configurations and client.
+   * Return redmine service.
    */
-  protected function getConfigurationManager() {
-    $configManager = new SparkConfigurationWrapper();
-    return $configManager;
+  public function getService() {
+    if (empty($this->service)) {
+      $this->initService();
+    }
+    return $this->service;
   }
+
+  /**
+   * Set redmine service.
+   */
+  public function setService($service) {
+    $this->service = $service;
+  }
+
 }

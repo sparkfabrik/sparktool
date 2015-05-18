@@ -27,7 +27,6 @@ class RedmineGitBranchCommand extends RedmineCommand
      * {@inheritdoc}
      */
     protected function configure() {
-      $this->initConfig();
       $this
         ->setName('redmine:git:branch')
         ->setDescription('Generate branch using git-flow, the branch name is generated starting from issue subject.')
@@ -49,8 +48,8 @@ class RedmineGitBranchCommand extends RedmineCommand
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
-      $branch = $this->getRedmineConfig()['git_pattern'];
-      $client = $this->getRedmineClient();
+      $branch = $this->getService()->getConfig()['git_pattern'];
+      $client = $this->getService()->getClient();
       $issue = $input->getArgument('issue');
       $dry_run = $input->getOption('dry-run');
       $res = $client->api('issue')->show($issue);
@@ -68,10 +67,11 @@ class RedmineGitBranchCommand extends RedmineCommand
       // Extract items from issue info.
       $subject = $res['issue']['subject'];
       $subject_items = explode('-', $subject, 3);
+
       // Punish not well named issues.
       if (count($subject_items) != 3) {
         return $output->writeln(PHP_EOL . '<error>Rename your issue please.</error>' .
-          PHP_EOL . '<info>Well named issues are: STORY_PREFIX-STORY_CODE_ISSUE-ID_STORY_NAME</info>' . PHP_EOL .
+          PHP_EOL . '<info>Well named issues are: STORY_PREFIX-STORY_CODE_ISSUE_ID - STORY_NAME (es: SP-000 - Citrix friendly site)</info>' . PHP_EOL .
           'Your issue instead is: "' . $subject . '"' . PHP_EOL);
       }
       $story_prefix = trim($subject_items[0]);

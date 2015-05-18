@@ -12,6 +12,7 @@
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\Command\SparkCommand;
+use Sparkfabrik\Tools\Spark\Services\RedmineService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,9 +31,6 @@ use Redmine\Client;
  */
 class RedmineCommand extends SparkCommand
 {
-  private $redmineConfig;
-  private $redmineClient;
-
   /**
    * Constructor.
    *
@@ -44,56 +42,14 @@ class RedmineCommand extends SparkCommand
    */
   public function __construct($name = null) {
     parent::__construct($name);
-    $this->initConfig();
-  }
-
-  /**
-   * Return redmine configuration.
-   */
-  public function getRedmineConfig() {
-    return $this->redmineConfig;
-  }
-
-  /**
-   * Return redmine client.
-   */
-  public function getRedmineClient() {
-    $client = $this->redmineClient;
-    if (!$client) {
-      throw new \Exception('Redmine client not defined');
-    }
-    return $client;
-  }
-
-
-  /**
-   * @param
-   *
-   * Set redmine client.
-   */
-  public function setRedmineClient(\Redmine\Client $client) {
-    $this->redmineClient = $client;
-  }
-
-  /**
-   * Create redmine client.
-   */
-  private function createRedmineClient() {
-    $this->redmineClient = new \Redmine\Client(
-      $this->redmineConfig['redmine_url'],
-      $this->redmineConfig['redmine_api_key']
-    );
   }
 
   /**
    * Initialize configurations and client.
    */
-  protected function initConfig() {
-    $configManager = $this->getConfigurationManager();
-    $this->redmineConfig = $configManager->getValueFromConfig('services', 'redmine_credentials');
-    $this->redmineConfig['project_id'] = $configManager->getValueFromConfig('projects', 'redmine_project_id');
-    $this->redmineConfig['git_pattern'] = $configManager->getValueFromConfig('git', 'branch_pattern');
-    $this->createRedmineClient();
+  protected function initService() {
+    $this->service = new RedmineService();
+    $this->service->run();
   }
 
   /**

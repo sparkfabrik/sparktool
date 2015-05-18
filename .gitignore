@@ -3,3 +3,5 @@ patched-libraries
 composer.lock
 .spark.yml
 vendor
+log
+reports

@@ -19,7 +19,8 @@ else{
 }
 use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
-use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineIssueCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Robo\Task\Development\SemVer;
 try {
@@ -33,7 +34,8 @@ try {
   $config->loadConfig();
 
   // Load commands.
-  $application->add(new RedmineIssueCommand);
+  $application->add(new RedmineSearchCommand);
+  $application->add(new RedmineShowCommand);
   $application->add(new RedmineGitBranchCommand);
   $application->run();
 }

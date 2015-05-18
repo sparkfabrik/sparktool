@@ -21,7 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Redmine\Api\Tracker;
 
-class RedmineIssueCommand extends RedmineCommand
+class RedmineSearchCommand extends RedmineCommand
 {
     /**
      * {@inheritdoc}
@@ -140,7 +140,7 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
       try {
-        $client = $this->getRedmineClient();
+        $client = $this->getService()->getClient();
         $api_options = array();
         $api_options['limit'] = $input->getOption('limit');
         $api_options['sort'] = $input->getOption('sort');
@@ -154,16 +154,12 @@ EOF
         // Print debug informations if required.
         if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
           if (function_exists('dump')) {
-            dump($api_options);
-          }
-          else {
-            print_r($api_options);
+            $output->writeln('<info>' . var_export($api_options, true) . '</info>');
           }
         }
 
         // Run query.
         $res = $client->api('issue')->all($api_options);
-
         // Handle errors.
         if (isset($res['errors'])) {
           $errors = implode("\n", $res['errors']);
@@ -252,7 +248,7 @@ EOF
         return $status;
       }
       else {
-        $custom_statuses = $this->getRedmineClient()->api('issue_status')->all()['issue_statuses'];
+        $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
         foreach ($custom_statuses as $custom_status) {
           if (strtolower($custom_status['name']) === $status) {
             $status_id = $custom_status['id'];
@@ -271,7 +267,7 @@ EOF
      * @return integer|boolean
      */
     private function handleAgumentProjectId($project_id = null) {
-      return ($project_id ? $project_id : $this->getRedmineConfig()['project_id']);
+      return ($project_id ? $project_id : $this->getService()->getConfig()['project_id']);
     }
 
     /**
@@ -295,7 +291,7 @@ EOF
         return $magic_tokens[$assigned];
       }
       // Instantiate proxy redmine user class, we need more power.
-      $redmineUserClient = new RedmineApiUser($this->getRedmineClient());
+      $redmineUserClient = new RedmineApiUser($this->getService()->getClient());
       // Translate string to id.
       $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
       if ($user_id === false) {
@@ -314,7 +310,7 @@ EOF
         return $sprint;
       }
       else {
-        $redmineVersionClient = new RedmineApiVersion($this->getRedmineClient());
+        $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
         // Set a very high limit.
         $fixed_version_id = $redmineVersionClient->getIdByName($project_id, $sprint, array(
           'limit' => 500
@@ -405,7 +401,7 @@ EOF
     private function handleArgumentTracker($tracker){
       $trackerId = 0;
 
-      $trackers = $this->getRedmineClient()->api('tracker')->listing();
+      $trackers = $this->getService()->getClient()->api('tracker')->listing();
       if (is_numeric($tracker)) {
         if (in_array($tracker, $trackers)) {
           $trackerId = $tracker;
