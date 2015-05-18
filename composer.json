@@ -26,5 +26,8 @@
         "phpunit/phpunit": "4.6.*",
         "phpunit/php-code-coverage": "~2.0"
     },
+    "config": {
+      "bin-dir": "bin/"
+    },
     "target-dir": "Sparkfabrik/Tools/Spark"
 }

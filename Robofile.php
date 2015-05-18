@@ -58,7 +58,7 @@ class Robofile extends \Robo\Tasks
      */
     public function buildPhar()
     {
-      $yaml = new Parser();
+      $yaml = new \Symfony\Component\Yaml\Parser();
       $packer = $this->taskPackPhar('spark.phar');
       $this->taskComposerInstall()
             ->noDev()
