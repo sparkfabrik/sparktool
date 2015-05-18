@@ -1,7 +1,9 @@
 <?php
 
+require_once __DIR__.'/vendor/autoload.php';
+
 use Symfony\Component\Finder\Finder as Finder;
-use Symfony\Component\Yaml\Parser as Parser;
+use Symfony\Component\Yaml\Parser;
 use Robo\Task\Development\SemVer;
 
 /**
@@ -58,7 +60,7 @@ class Robofile extends \Robo\Tasks
      */
     public function buildPhar()
     {
-      $yaml = new \Symfony\Component\Yaml\Parser();
+      $yaml = new Parser();
       $packer = $this->taskPackPhar('spark.phar');
       $this->taskComposerInstall()
             ->noDev()
