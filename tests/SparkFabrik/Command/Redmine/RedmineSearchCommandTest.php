@@ -63,6 +63,9 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     $this->command = $this->application->find($name);
   }
 
+  /**
+   * Create mocks.
+   */
   private function createMocks($options = array()) {
     $this->service = $this->getMockedService();
     $this->redmineClient = $this->getMockedRedmineClient();
@@ -93,6 +96,9 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     $this->command->setService($this->service);
   }
 
+  /**
+   * Test no issues found.
+   */
   public function testNoIssuesFound() {
     $command = $this->createCommand('redmine:search');
     $this->createMocks();
@@ -111,6 +117,46 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     $this->tester->execute($options);
     $res = trim($this->tester->getDisplay());
     $this->assertEquals('No issues found.', $res);
+  }
+
+  /**
+   * Test syntax error.
+   *
+   * @expectedException  Exception
+   * @expectedExceptionMessage Failed to parse response
+   *
+   */
+  public function testSyntaxError() {
+    $command = $this->createCommand('redmine:search');
+    $options = array('redmineApiIssueAll' => array('Syntax error'));
+    $this->createMocks($options);
+
+    // Execute with project_id
+    $options = array(
+      'command' => $this->command->getName(),
+      '--project_id' => 'test_project_id',
+    );
+    $this->tester->execute($options);
+  }
+
+  /**
+   * Test false return result set.
+   *
+   * @expectedException  Exception
+   * @expectedExceptionMessage Failed to parse response
+   *
+   */
+  public function testFalseResult() {
+    $command = $this->createCommand('redmine:search');
+    $options = array('redmineApiIssueAll' => FALSE);
+    $this->createMocks($options);
+
+    // Execute with project_id
+    $options = array(
+      'command' => $this->command->getName(),
+      '--project_id' => 'test_project_id',
+    );
+    $this->tester->execute($options);
   }
 
   /**

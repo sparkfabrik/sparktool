@@ -160,6 +160,13 @@ EOF
 
         // Run query.
         $res = $client->api('issue')->all($api_options);
+
+        // JSON Syntax error or just false result.
+        if ((isset($res[0]) && ($res[0] === 'Syntax error'))
+          || $res === false) {
+          throw new \Exception('Failed to parse response.');
+        }
+
         // Handle errors.
         if (isset($res['errors'])) {
           $errors = implode("\n", $res['errors']);
@@ -169,7 +176,8 @@ EOF
         // This is how redmine library return empty results.
         if (!count($res)
           || (count($res) == 1 && ($res[0] === 1))
-          || (isset($res['total_count']) && $res['total_count'] === 0)) {
+          || (isset($res['total_count']) && $res['total_count'] === 0)
+          || (empty($res))) {
           return $output->writeln('<info>No issues found.</info>');
         }
 
