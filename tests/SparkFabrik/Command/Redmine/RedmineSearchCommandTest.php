@@ -21,103 +21,109 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 {
-  private $application;
-  private $tester;
-  private $command;
+    private $application;
+    private $tester;
+    private $command;
 
   // Mocks
-  private $service;
-  private $redmineClient;
-  private $redmineApiIssue;
+    private $service;
+    private $redmineClient;
+    private $redmineApiIssue;
 
-  protected function setUp()
-  {
-    $this->application = new Application();
-    $this->application->add(new RedmineSearchCommand());
-    $command = $this->application->find('redmine:search');
-    $this->tester = new CommandTester($command);
+    protected function setUp()
+    {
+        $this->application = new Application();
+        $this->application->add(new RedmineSearchCommand());
+        $command = $this->application->find('redmine:search');
+        $this->tester = new CommandTester($command);
 
-  }
+    }
 
-  private function getMockedService() {
-    $service = $this->getMockBuilder('\Sparkfabrik\Tools\Spark\Services\RedmineService')
-      ->getMock();
-    return $service;
-  }
+    private function getMockedService()
+    {
+        $service = $this->getMockBuilder('\Sparkfabrik\Tools\Spark\Services\RedmineService')
+        ->getMock();
+        return $service;
+    }
 
-  private function getMockedRedmineClient() {
-    $redmineClient = $this->getMockBuilder('\Redmine\Client')
-      ->setConstructorArgs(array('mock_url', 'mock_key'))
-      ->getMock();
-    return $redmineClient;
-  }
+    private function getMockedRedmineClient()
+    {
+        $redmineClient = $this->getMockBuilder('\Redmine\Client')
+        ->setConstructorArgs(array('mock_url', 'mock_key'))
+        ->getMock();
+        return $redmineClient;
+    }
 
-  private function getMockedRedmineApiIssue() {
-    $redmineApiIssue = $this->getMockBuilder('\Redmine\Api\Issue')
-      ->disableOriginalConstructor()
-      ->getMock();
-    return $redmineApiIssue;
-  }
+    private function getMockedRedmineApiIssue()
+    {
+        $redmineApiIssue = $this->getMockBuilder('\Redmine\Api\Issue')
+        ->disableOriginalConstructor()
+        ->getMock();
+        return $redmineApiIssue;
+    }
 
-  private function createCommand($name) {
-    $this->command = $this->application->find($name);
-  }
+    private function createCommand($name)
+    {
+        $this->command = $this->application->find($name);
+    }
 
   /**
    * Create mocks.
    */
-  private function createMocks($options = array()) {
-    $this->service = $this->getMockedService();
-    $this->redmineClient = $this->getMockedRedmineClient();
-    $this->redmineApiIssue = $this->getMockedRedmineApiIssue();
+    private function createMocks($options = array())
+    {
+        $this->service = $this->getMockedService();
+        $this->redmineClient = $this->getMockedRedmineClient();
+        $this->redmineApiIssue = $this->getMockedRedmineApiIssue();
 
-    // Default returns for mock objects.
-    $default_options = array_replace(
-      array('redmineApiIssueAll' => array()),
-      $options
-    );
+      // Default returns for mock objects.
+        $default_options = array_replace(
+            array('redmineApiIssueAll' => array()),
+            $options
+        );
 
-    // Mock methods.
-    $this->redmineApiIssue->expects($this->any())
-      ->method('all')
-      ->will($this->returnValue($default_options['redmineApiIssueAll']));
+      // Mock methods.
+        $this->redmineApiIssue->expects($this->any())
+        ->method('all')
+        ->will($this->returnValue($default_options['redmineApiIssueAll']));
 
-    // Mock method api of redmine client.
-    $this->redmineClient->expects($this->any())
+      // Mock method api of redmine client.
+        $this->redmineClient->expects($this->any())
         ->method('api')
         ->will($this->returnValue($this->redmineApiIssue));
 
-    // Mock getClient on service object, just return mock redmine.
-    $this->service->expects($this->any())
-      ->method('getClient')
-      ->will($this->returnValue($this->redmineClient));
+      // Mock getClient on service object, just return mock redmine.
+        $this->service->expects($this->any())
+        ->method('getClient')
+        ->will($this->returnValue($this->redmineClient));
 
-    // Set the mocked client.
-    $this->command->setService($this->service);
-  }
+      // Set the mocked client.
+        $this->command->setService($this->service);
+    }
 
   /**
    * Test no issues found.
    */
-  public function testNoIssuesFound() {
-    $command = $this->createCommand('redmine:search');
-    $this->createMocks();
+    public function testNoIssuesFound()
+    {
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks();
 
-    // Execute with project_id
-    $options = array(
-      'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
-    );
-    $this->tester->execute($options);
-    $res = trim($this->tester->getDisplay());
-    $this->assertEquals('No issues found.', $res);
+      // Execute with project_id
+        $options = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('No issues found.', $res);
 
-    // Execute without project_id.
-    unset($options['--project_id']);
-    $this->tester->execute($options);
-    $res = trim($this->tester->getDisplay());
-    $this->assertEquals('No issues found.', $res);
-  }
+      // Execute without project_id.
+        unset($options['--project_id']);
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('No issues found.', $res);
+    }
 
   /**
    * Test syntax error.
@@ -126,18 +132,19 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
    * @expectedExceptionMessage Failed to parse response
    *
    */
-  public function testSyntaxError() {
-    $command = $this->createCommand('redmine:search');
-    $options = array('redmineApiIssueAll' => array('Syntax error'));
-    $this->createMocks($options);
+    public function testSyntaxError()
+    {
+        $command = $this->createCommand('redmine:search');
+        $options = array('redmineApiIssueAll' => array('Syntax error'));
+        $this->createMocks($options);
 
-    // Execute with project_id
-    $options = array(
-      'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
-    );
-    $this->tester->execute($options);
-  }
+      // Execute with project_id
+        $options = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $this->tester->execute($options);
+    }
 
   /**
    * Test false return result set.
@@ -146,61 +153,66 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
    * @expectedExceptionMessage Failed to parse response
    *
    */
-  public function testFalseResult() {
-    $command = $this->createCommand('redmine:search');
-    $options = array('redmineApiIssueAll' => FALSE);
-    $this->createMocks($options);
+    public function testFalseResult()
+    {
+        $command = $this->createCommand('redmine:search');
+        $options = array('redmineApiIssueAll' => false);
+        $this->createMocks($options);
 
-    // Execute with project_id
-    $options = array(
-      'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
-    );
-    $this->tester->execute($options);
-  }
+      // Execute with project_id
+        $options = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $this->tester->execute($options);
+    }
 
   /**
    * Test verbosity.
    */
-  public function testSearchWithDebugVerbosity() {
-    $command = $this->createCommand('redmine:search');
-    $this->createMocks();
+    public function testSearchWithDebugVerbosity()
+    {
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks();
 
-    // Execute with project_id
-    $input = array(
-      'command' => $this->command->getName(),
-      '--project_id' => 'test_project_id',
-    );
-    $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
-    $this->tester->execute($input, $options);
-    $res = trim($this->tester->getDisplay());
-    $expected_string = var_export(
-      array(
-        'limit' => 50,
-        'sort' => 'updated_on:desc',
-        'project_id' => 'test_project_id',
-        'status_id' => 'open',
-        'assigned_to_id' => '',
-      ), TRUE);
-    $this->assertContains('No issues found', $res);
-    $this->assertContains($expected_string, $res);
-  }
+      // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $expected_string = var_export(
+            array(
+            'limit' => 50,
+            'sort' => 'updated_on:desc',
+            'project_id' => 'test_project_id',
+            'status_id' => 'open',
+            'assigned_to_id' => '',
+            ),
+            true
+        );
+      //$this->assertContains('No issues found', $res);.
+        $this->assertContains($expected_string, $res);
+    }
 
   /**
    * @expectedException  Exception
    * @expectedExceptionMessage errors
    */
-  public function testIssueErrorResponse() {
-    $command = $this->createCommand('redmine:search');
-    $error_response = array('errors' => array('errors'));
-    $this->createMocks(array('redmineApiIssueAll' => $error_response));
+    public function testIssueErrorResponse()
+    {
+        $command = $this->createCommand('redmine:search');
+        $error_response = array('errors' => array('errors'));
+        $this->createMocks(array('redmineApiIssueAll' => $error_response));
 
-    // Execute.
-    $this->tester->execute(
-      array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
-      )
-    );
-  }
+      // Execute.
+        $this->tester->execute(
+            array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            )
+        );
+    }
 }
