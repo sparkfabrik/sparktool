@@ -14,8 +14,8 @@
 [Explan the project]
 
 # <a name="team-members"></a>Team Members
-* "Paolo Mainardi" <paolo.mainardi@sparkfabrik.com>
-* "Vincenzo Di Biaggio" <vincenzo.dibiaggio@sparkfabrik.com>
+
+https://github.com/orgs/sparkfabrik/people
 
 #<a name="installation"></a>Installation
 
