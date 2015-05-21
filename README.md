@@ -1,3 +1,7 @@
+[![Code Climate](https://codeclimate.com/github/sparkfabrik/sparktool/badges/gpa.svg)](https://codeclimate.com/github/sparkfabrik/sparktool)
+[![Test Coverage](https://codeclimate.com/github/sparkfabrik/sparktool/badges/coverage.svg)](https://codeclimate.com/github/sparkfabrik/sparktool/coverage)
+[![Travis Build](https://api.travis-ci.org/sparkfabrik/sparktool.svg?branch=develop)](https://travis-ci.org/sparkfabrik/sparktool)
+
 # Table of Contents
 
 * [Synopsis](#synopsis)
