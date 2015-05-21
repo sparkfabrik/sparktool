@@ -170,32 +170,33 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
   /**
    * Test verbosity.
    */
-    #public function testSearchWithDebugVerbosity()
-    #{
-    #    $command = $this->createCommand('redmine:search');
-    #    $this->createMocks();
-    #
-    #    // Execute with project_id
-    #    $input = array(
-    #    'command' => $this->command->getName(),
-    #    '--project_id' => 'test_project_id',
-    #    );
-    #    $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
-    #    $this->tester->execute($input, $options);
-    #    $res = trim($this->tester->getDisplay());
-    #    $expected_string = var_export(
-    #        array(
-    #        'limit' => 50,
-    #        'sort' => 'updated_on:desc',
-    #        'project_id' => 'test_project_id',
-    #        'status_id' => 'open',
-    #        'assigned_to_id' => '',
-    #        ),
-    #        true
-    #    );
-    #    //$this->assertContains('No issues found', $res);.
-    #    $this->assertContains($expected_string, $res);
-    #}
+    public function testSearchWithDebugVerbosity()
+    {
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks();
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $expected_string = var_export(
+            array(
+                'limit' => 50,
+                'sort' => 'updated_on:desc',
+                'project_id' => 'test_project_id',
+                'status_id' => 'open',
+                'assigned_to_id' => '',
+            ),
+            true
+        );
+        // @todo these assertions do not work on travis.ci (i don't know why).
+        //$this->assertContains('No issues found', $res);
+        $this->assertContains($expected_string, $res);
+    }
 
   /**
    * @expectedException  Exception
@@ -207,7 +208,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $error_response = array('errors' => array('errors'));
         $this->createMocks(array('redmineApiIssueAll' => $error_response));
 
-      // Execute.
+        // Execute.
         $this->tester->execute(
             array(
             'command' => $this->command->getName(),

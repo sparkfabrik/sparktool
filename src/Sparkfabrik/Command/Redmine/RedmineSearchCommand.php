@@ -162,22 +162,22 @@ EOF
                 }
             }
 
-          // Run query.
+            // Run query.
             $res = $client->api('issue')->all($api_options);
 
-          // JSON Syntax error or just false result.
+            // JSON Syntax error or just false result.
             if ((isset($res[0]) && ($res[0] === 'Syntax error'))
             || $res === false) {
                 throw new \Exception('Failed to parse response.');
             }
 
-          // Handle errors.
+            // Handle errors.
             if (isset($res['errors'])) {
                 $errors = implode("\n", $res['errors']);
                 throw new \Exception($errors);
             }
 
-          // This is how redmine library return empty results.
+            // This is how redmine library return empty results.
             if (!count($res)
             || (count($res) == 1 && ($res[0] === 1))
             || (isset($res['total_count']) && $res['total_count'] === 0)
@@ -185,7 +185,7 @@ EOF
                 return $output->writeln('<info>No issues found.</info>');
             }
 
-          // Reduce results, filter out estimated issues.
+            // Reduce results, filter out estimated issues.
             if ($input->getOption('not-estimated')) {
                 foreach ($res['issues'] as $key => $issue) {
                     if (isset($issue['estimated_hours'])) {

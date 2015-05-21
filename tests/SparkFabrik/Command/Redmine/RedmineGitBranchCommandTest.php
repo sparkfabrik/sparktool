@@ -110,7 +110,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $command = $this->createCommand('redmine:git:branch');
         $this->createMocks();
 
-      // Execute with project_id
+        // Execute with project_id
         $input = array(
         'command' => $this->command->getName(),
         'issue' => '1234',
@@ -127,7 +127,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $options = array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject_wrong)));
         $this->createMocks($options);
 
-      // Execute with project_id
+        // Execute with project_id
         $input = array(
         'command' => $this->command->getName(),
         'issue' => '1234',
