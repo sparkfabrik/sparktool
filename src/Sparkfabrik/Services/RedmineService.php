@@ -10,6 +10,7 @@
  */
 
 namespace Sparkfabrik\Tools\Spark\Services;
+
 use Sparkfabrik\Tools\Spark\Services\AbstractService;
 use Sparkfabrik\Tools\Spark\Services\ServiceInterface;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
@@ -25,24 +26,26 @@ use Redmine\Client;
  */
 class RedmineService extends AbstractService
 {
-  protected function initConfig(SparkConfigurationWrapperInterface $config = NULL) {
-    if (empty($config)) {
-      $config = new SparkConfigurationWrapper();
+    protected function initConfig(SparkConfigurationWrapperInterface $config = null)
+    {
+        if (empty($config)) {
+            $config = new SparkConfigurationWrapper();
+        }
+        $this->config = $config->getValueFromConfig('services', 'redmine_credentials');
+        $this->config['project_id'] = $config->getValueFromConfig('projects', 'redmine_project_id');
+        $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
     }
-    $this->config = $config->getValueFromConfig('services', 'redmine_credentials');
-    $this->config['project_id'] = $config->getValueFromConfig('projects', 'redmine_project_id');
-    $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
-  }
 
-  protected function initClient() {
-    if (empty($this->client)) {
-      $this->client = new \Redmine\Client(
-        $this->config['redmine_url'],
-        $this->config['redmine_api_key']
-      );
-      if (empty($this->client)) {
-        throw new \Exception('Cannot connect to redmine client, check your configurations.');
-      }
+    protected function initClient()
+    {
+        if (empty($this->client)) {
+            $this->client = new \Redmine\Client(
+                $this->config['redmine_url'],
+                $this->config['redmine_api_key']
+            );
+            if (empty($this->client)) {
+                throw new \Exception('Cannot connect to redmine client, check your configurations.');
+            }
+        }
     }
-  }
 }

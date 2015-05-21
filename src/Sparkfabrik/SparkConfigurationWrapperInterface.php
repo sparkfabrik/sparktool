@@ -14,7 +14,7 @@ namespace Sparkfabrik\Tools\Spark;
 /**
  * ServiceInterfaces is the interface implemented by all Service classes.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Paolo Mainardi <paolo.mainardi@sparkfabrik.com>
  *
  * @api
  */
