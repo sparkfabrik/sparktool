@@ -6,8 +6,13 @@ php:
   - hhvm
   - nightly
 
-install: composer install
+install:
+ - composer install
+ - composer require satooshi/php-coveralls:~0.6@stable
 script: bin/phpunit
 after_script:
   - bin/test-reporter --coverage-report=build/logs/clover.xml
   - bin/phpcs --standard=PSR2 --error-severity=1 --warning-severity=8 src tests
+after_success:
+  - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php vendor/bin/coveralls -v; fi;'
+
