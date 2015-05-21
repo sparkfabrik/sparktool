@@ -8,11 +8,9 @@ php:
 
 install:
  - composer install
- - composer require satooshi/php-coveralls:~0.6@stable
 script:
   - bin/phpunit
   - bin/phpcs --standard=PSR2 --error-severity=1 --warning-severity=8 src tests
 after_success:
   - bin/test-reporter --coverage-report=build/logs/clover.xml
-  - bin/coveralls -v
 
