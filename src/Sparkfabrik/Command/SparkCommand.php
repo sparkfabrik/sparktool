@@ -10,6 +10,7 @@
  */
 
 namespace Sparkfabrik\Tools\Spark\Command;
+
 use Symfony\Component\Console\Command\Command;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 
@@ -22,24 +23,25 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
  */
 abstract class SparkCommand extends Command
 {
-  protected $service;
-  protected abstract function initService();
+    protected $service;
+    abstract protected function initService();
 
-  /**
+    /**
    * Return redmine service.
    */
-  public function getService() {
-    if (empty($this->service)) {
-      $this->initService();
+    public function getService()
+    {
+        if (empty($this->service)) {
+            $this->initService();
+        }
+        return $this->service;
     }
-    return $this->service;
-  }
 
-  /**
+    /**
    * Set redmine service.
    */
-  public function setService($service) {
-    $this->service = $service;
-  }
-
+    public function setService($service)
+    {
+        $this->service = $service;
+    }
 }
