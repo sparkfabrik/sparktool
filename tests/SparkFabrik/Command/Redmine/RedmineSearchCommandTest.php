@@ -193,8 +193,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             ),
             true
         );
-        // @todo these assertions do not work on travis.ci (i don't know why).
-        //$this->assertContains('No issues found', $res);
+        $this->assertContains('No issues found', $res);
         $this->assertContains($expected_string, $res);
     }
 

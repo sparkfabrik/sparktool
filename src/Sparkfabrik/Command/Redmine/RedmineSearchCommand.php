@@ -155,11 +155,9 @@ EOF
                 return $output->writeln('<error>' . $e->getMessage() . '</error>');
             }
 
-          // Print debug informations if required.
+            // Print debug informations if required.
             if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
-                if (function_exists('dump')) {
-                    $output->writeln('<info>' . var_export($api_options, true) . '</info>');
-                }
+                $output->writeln('<info>' . var_export($api_options, true) . '</info>');
             }
 
             // Run query.
