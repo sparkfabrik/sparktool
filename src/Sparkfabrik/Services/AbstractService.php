@@ -10,6 +10,7 @@
  */
 
 namespace Sparkfabrik\Tools\Spark\Services;
+
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapperInterface;
 
 /**
@@ -21,72 +22,77 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapperInterface;
  */
 abstract class AbstractService implements ServiceInterface
 {
-  protected $config = array();
-  protected $client;
+    protected $config = array();
+    protected $client;
 
-  /**
+    /**
    * Init configuration manager.
    *
    * @api
    */
-  protected abstract function initConfig(SparkConfigurationWrapperInterface $config = NULL);
+    abstract protected function initConfig(SparkConfigurationWrapperInterface $config = null);
 
-  /**
+    /**
    * Init client.
    *
    * @api
    */
-  protected abstract function initClient();
+    abstract protected function initClient();
 
-  /**
+    /**
    * Instantiate config and client.
    *
    * @api
    */
-  public function run() {
-    $this->initConfig();
-    $this->initClient();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @api
-   */
-  public function getClient() {
-    if (empty($this->client)) {
-      $this->initClient();
+    public function run()
+    {
+        $this->initConfig();
+        $this->initClient();
     }
-    return $this->client;
-  }
 
-  /**
+    /**
    * {@inheritDoc}
    *
    * @api
    */
-  public function setClient($client) {
-    $this->client = $client;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @api
-   */
-  public function getConfig() {
-    if (empty($this->config)) {
-      $this->initConfig();
+    public function getClient()
+    {
+        if (empty($this->client)) {
+            $this->initClient();
+        }
+        return $this->client;
     }
-    return $this->config;
-  }
 
-  /**
+    /**
+   * {@inheritDoc}
+   *
+   * @api
+   */
+    public function setClient($client)
+    {
+        $this->client = $client;
+    }
+
+    /**
+   * {@inheritDoc}
+   *
+   * @api
+   */
+    public function getConfig()
+    {
+        if (empty($this->config)) {
+            $this->initConfig();
+        }
+        return $this->config;
+    }
+
+    /**
    * Set service configuration.
    *
    * @api
    */
-  public function setConfig($config) {
-    $this->config = $config;
-  }
+    public function setConfig($config)
+    {
+        $this->config = $config;
+    }
 }

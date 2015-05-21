@@ -1,8 +1,8 @@
 spark.phar
 patched-libraries
-composer.lock
 .spark.yml
 vendor
 log
+build
 reports
 bin
