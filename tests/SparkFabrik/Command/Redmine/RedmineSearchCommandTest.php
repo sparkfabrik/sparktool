@@ -36,13 +36,6 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         self::$fixturesPath = __DIR__.'/../../Fixtures/';
     }
 
-    private static $fixturesPath;
-
-    public static function setUpBeforeClass()
-    {
-        self::$fixturesPath = __DIR__.'/../../Fixtures/';
-    }
-
     protected function setUp()
     {
         $this->application = new Application();
