@@ -109,12 +109,12 @@ EOF
                 $git_process = new Process('git checkout ' . $origin_branch);
                 $git_process = new Process('git checkout -b feature/' . $branch);
                 $git_process->mustRun();
-                $output->writeln("<info>Branch: \"{$branch}\" created </info>");
+                $output->writeln("<info>Branch: \"{$branch}\" created</info>");
 
                 // Auto track of branch.
                 $git_track_branch = new Process('git push --set-upstream origin feature/' . $branch);
                 $git_track_branch->mustRun();
-                $output->writeln("<info>Branch: \"{$branch}\" tracked </info>");
+                $output->writeln("<info>Branch: \"{$branch}\" tracked</info>");
             } catch (ProcessFailedException $e) {
                 return $output->writeln("<comment>Error: " . $git_process->getErrorOutput() . "</comment>");
             }

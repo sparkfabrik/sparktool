@@ -105,7 +105,10 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $this->command->setService($this->service);
     }
 
-    public function testCreateGitBranch()
+    /**
+     * Test git branch creation with --dry-run
+     */
+    public function testCreateGitBranchDryRun()
     {
         $command = $this->createCommand('redmine:git:branch');
         $this->createMocks();
@@ -124,6 +127,9 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('I will execute: git push --set-upstream origin feature/SP-000_1234_testing_branch_name', $res[2]);
     }
 
+    /**
+     * Test git branch creation with wrong issue name fomat.
+     */
     public function testCreateGitBranchWithAwrongIssueFormat()
     {
         $command = $this->createCommand('redmine:git:branch');
@@ -167,5 +173,23 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
+    }
+
+    /**
+     * Test missing issue.
+     */
+    public function testCreateGitBranchMissingIssue()
+    {
+        $command = $this->createCommand('redmine:git:branch');
+        $options = array('redmineApiIssueShow' => 1);
+        $this->createMocks($options);
+        $input = array(
+            'command' => $this->command->getName(),
+            'issue' => '1234',
+            '--dry-run' => true,
+        );
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('No issues found.', $res);
     }
 }
