@@ -137,6 +137,25 @@ EOF
             InputOption::VALUE_OPTIONAL,
             'Filter by tracker.'
         );
+        $this->addOption(
+            'fields',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            <<<EOF
+Filter by field. Available fields are:
+- id
+- project
+- created_on
+- updated_on
+- tracker
+- fixed_version
+- author
+- assigned_to
+- status
+- estimated_hours
+- subject
+EOF
+        );
     }
 
     /**
@@ -222,6 +241,15 @@ EOF
             'estimated_hours' => 'Estimated',
             'subject' => 'Subject',
             );
+
+            if ($input->getOption('fields')) {
+                $filters = explode(',', strtolower($input->getOption('fields')));
+                $fields = array_intersect_key($fields, array_flip($filters));
+                $incorrect_filters = implode(', ', array_keys(array_diff_key(array_flip($filters), $fields)));
+                if (!empty($incorrect_filters)) {
+                    $output->writeln('<error>Incorrect filters inserted: ' . $incorrect_filters . '</error>');
+                }
+            }
 
             // Hide project if it is already configured.
             if (isset($api_options['project_id'])) {
