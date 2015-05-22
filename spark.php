@@ -22,6 +22,7 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
+use Sparkfabrik\Tools\Spark\Command\Welcome\WelcomeCommand;
 use Robo\Task\Development\SemVer;
 try {
   $semver_file = '.semver';
@@ -37,6 +38,7 @@ try {
   $application->add(new RedmineSearchCommand);
   $application->add(new RedmineShowCommand);
   $application->add(new RedmineGitBranchCommand);
+  $application->add(new WelcomeCommand);
   $application->run();
 }
 catch (Exception $e) {
