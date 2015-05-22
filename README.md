@@ -14,8 +14,8 @@
 [Explan the project]
 
 # <a name="team-members"></a>Team Members
-* "Paolo Mainardi" <paolo.mainardi@sparkfabrik.com>
-* "Vincenzo Di Biaggio" <vincenzo.dibiaggio@sparkfabrik.com>
+
+https://github.com/orgs/sparkfabrik/people
 
 #<a name="installation"></a>Installation
 
@@ -25,7 +25,7 @@ Download the latest release:
 wget -O /usr/local/bin/spark https://gitlab.agavee.com/paolo.mainardi/spark-tool/raw/release/spark.phar
 ```
 
-Or just clone the project from: `gitlab@gitlab.agavee.com:paolo.mainardi/spark-tool.git`
+Or just clone the project from: `git@github.com:sparkfabrik/sparktool.git`
 
 
 [TBD]
