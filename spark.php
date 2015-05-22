@@ -39,6 +39,8 @@ try {
   $application->add(new RedmineShowCommand);
   $application->add(new RedmineGitBranchCommand);
   $application->add(new WelcomeCommand);
+  
+  $application->setDefaultCommand('spark:welcome');
   $application->run();
 }
 catch (Exception $e) {
