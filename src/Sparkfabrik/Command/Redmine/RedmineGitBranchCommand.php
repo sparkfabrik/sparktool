@@ -87,7 +87,15 @@ EOF
         $story_name = trim($subject_items[2]);
 
         // Clean story name.
-        $story_name = str_replace(array('[', ']'), '', $story_name);
+        if (mb_detect_encoding($story_name) === 'UTF-8') {
+            $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
+            if ($story_name_converted) {
+                $story_name = $story_name_converted;
+            } else {
+                $story_name = iconv('UTF-8', 'ASCII//IGNORE', $story_name);
+            }
+        }
+        $story_name = preg_replace("/[^a-z0-9 -]/i", '', $story_name);
         $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
         $story_name = implode((array_filter(explode(' ', str_replace('_', ' ', $story_name)))), '_');
 
