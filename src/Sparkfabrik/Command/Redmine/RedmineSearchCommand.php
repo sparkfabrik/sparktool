@@ -12,10 +12,9 @@
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
-use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
-use Sparkfabrik\Tools\Spark\RedmineApi\Version as RedmineApiVersion;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\FormatterHelper;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,6 +23,8 @@ use Redmine\Api\Tracker;
 
 class RedmineSearchCommand extends RedmineCommand
 {
+    // Include helper trait.
+    use \Sparkfabrik\Tools\Spark\Helpers\Traits\Command\Redmine\RedmineSearchTrait;
 
     /**
      * {@inheritdoc}
@@ -139,6 +140,25 @@ EOF
             'Filter by tracker.'
         );
         $this->addOption(
+            'fields',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            <<<EOF
+Filter by field. Available fields are:
+- id
+- project
+- created_on
+- updated_on
+- tracker
+- fixed_version
+- author
+- assigned_to
+- status
+- estimated_hours
+- subject
+EOF
+        );
+        $this->addOption(
             'preset',
             false,
             InputOption::VALUE_OPTIONAL,
@@ -248,6 +268,15 @@ EOF
             'subject' => 'Subject',
             );
 
+            if ($input->getOption('fields')) {
+                $filters = explode(',', strtolower($input->getOption('fields')));
+                $fields = array_intersect_key($fields, array_flip($filters));
+                $incorrect_filters = implode(', ', array_keys(array_diff_key(array_flip($filters), $fields)));
+                if (!empty($incorrect_filters)) {
+                    $output->writeln('<error>Incorrect filters inserted: ' . $incorrect_filters . '</error>');
+                }
+            }
+
             // Hide project if it is already configured.
             if (isset($api_options['project_id'])) {
                 unset($fields['project']);
@@ -287,8 +316,7 @@ EOF
      */
     private function handleArgumentPresetName(InputInterface $input, OutputInterface $output, &$preset = null, &$can_save = false)
     {
-        $helper = $this->getHelperSet();
-        $dialog = $helper->get('dialog');
+        $helper = $this->getHelper('question');
 
         if (empty($preset)) {
             $preset = $input->getOption('save-preset');
@@ -296,8 +324,13 @@ EOF
 
         if ($this->getSearchPreset($preset)) {
             $actions = array('overwrite', 'change', 'abort');
-            $question = sprintf('Preset %s already exists. Tell me how to proceed [%s]:', $preset, implode('/', $actions));
-            $preset_action = $dialog->ask($output, $question, 'change', $actions);
+            $question = new ChoiceQuestion(
+                sprintf('Preset %s already exists. Tell me how to proceed (default: change):', $preset),
+                $actions,
+                1
+            );
+            $question->setErrorMessage('You have selected an invalid option.');
+            $preset_action = $helper->ask($input, $output, $question);
 
             if (!in_array($preset_action, $actions)) {
                 throw new \Exception('You have selected an invalid option.');
@@ -309,7 +342,8 @@ EOF
                 break;
 
             case 'change':
-                $preset = $dialog->ask($output, 'Preset name:');
+                $question = new Question('Preset name:');
+                $preset = $helper->ask($input, $output, $question);
                 $this->handleArgumentPresetName($input, $output, $preset, $can_save);
                 break;
 
@@ -377,17 +411,29 @@ EOF
 
         // Handle status (ex: Open, Closed, Feedback ecc..).
         $status = strtolower($status);
-        $default_statues = array('*', 'open', 'close');
-        if (in_array($status, $default_statues)) {
-            return $status;
+        if (strpos($status, ',') !== false) {
+            $statuses = explode(',', $status);
         } else {
-            $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
-            foreach ($custom_statuses as $custom_status) {
-                if (strtolower($custom_status['name']) === $status) {
-                    $status_id = $custom_status['id'];
-                    return $status_id;
+            $statuses = array($status);
+        }
+        $default_statues = array('*', 'open', 'close');
+        $status_params = array();
+        foreach ($statuses as &$requested_status) {
+            $requested_status = trim($requested_status);
+            if (in_array($requested_status, $default_statues)) {
+                array_push($status_params, $requested_status);
+            } else {
+                $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
+                foreach ($custom_statuses as $custom_status) {
+                    if (strtolower($custom_status['name']) === $requested_status) {
+                        array_push($status_params, $custom_status['id']);
+                    }
                 }
             }
+        }
+        $status_params = implode('|', $status_params);
+        if (strlen($status_params) != 0) {
+            return $status_params;
         }
         throw new \Exception('Status not found.');
     }
@@ -417,44 +463,39 @@ EOF
 
         // @link http://www.redmine.org/issues/8918#note-3
         $magic_tokens = array(
-        'me' => 'me',
-        'not me' => '!me',
-        'anyone' => '*',
-        'none' => '!*',
-        'all' => '',
+            'me' => 'me',
+            'not me' => '!me',
+            'anyone' => '*',
+            'none' => '!*',
+            'all' => '',
         );
         if (array_key_exists($assigned, $magic_tokens)) {
             return $magic_tokens[$assigned];
         }
 
-        // Instantiate proxy redmine user class, we need more power.
-        $redmineUserClient = new RedmineApiUser($this->getService()->getClient());
-
-        // Translate string to id.
-        $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
-        if ($user_id === false) {
+        // Translate object to first+last name.
+        $name = strtolower($assigned);
+        $users = $this->getService()->getClient()->api('user')->all(array('limit' => 200));
+        $usernames = $this->redmineUsersObjectToFirstLastname($users);
+        if (!isset($name, $usernames)) {
             throw new \Exception('No user found.');
         }
-        return $user_id;
+        return $usernames[$name];
     }
 
     /**
-     * Read version argument and translate to a redmine fixed_version_id.
-     *
-     * @return integer|boolean
-     */
+   * Read version argument and translate to a redmine fixed_version_id.
+   *
+   * @return integer|boolean
+   */
     private function handleArgumentFixedVersionId($sprint, $project_id)
     {
         if (is_numeric($sprint)) {
             return $sprint;
         } else {
-            $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
             // Set a very high limit.
-            $fixed_version_id = $redmineVersionClient->getIdByName(
-                $project_id, $sprint, array(
-                'limit' => 500
-                )
-            );
+            $version_client = $this->getService()->getClient()->api('version');
+            $fixed_version_id = $version_client->getIdByName($project_id, $sprint, array('limit' => 500));
             if ($fixed_version_id === false) {
                 throw new \Exception('No sprint version found.');
             }

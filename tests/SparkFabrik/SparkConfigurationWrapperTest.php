@@ -68,9 +68,9 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
     protected function getArguments()
     {
         return array(
-        'sparkHome' => $this->workspace,
-        'sparkConfigFile' => '.spark.yml',
-        'currentDir' => $this->workspace_project
+            'sparkHome'       => $this->workspace,
+            'sparkConfigFile' => '.spark.yml',
+            'currentDir'      => $this->workspace_project
         );
     }
 
@@ -97,6 +97,8 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGetProcessedConfigurations()
     {
+        $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHome.yml');
+        file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
         $values = $this->configuration->getProcessedConfigurations();
         $this->assertTrue(is_array($values));
@@ -111,6 +113,8 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGetValueFromConfig()
     {
+        $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHome.yml');
+        file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
         $value_from_config = $this->configuration->getValueFromConfig('git', 'branch_pattern');
         $this->assertNotEmpty($value_from_config);
@@ -122,7 +126,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $yaml_merged = $dumper->dump($customConfig, 5);
         file_put_contents($this->fullPathWorkspace, $yaml_merged);
 
-      // Reinit and test if they are equal.
+        // Reinit and test if they are equal.
         $this->configuration->initConfig();
 
         $defaultConfig = serialize(Yaml::parse($this->configuration->dumpDefaultConfigurationFile()));
@@ -153,19 +157,19 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHome.yml');
         $project_conf_parsed = Yaml::parse($project_conf);
 
-      // Write configuration file to workspace home.
+        // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
 
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
 
-      // Check they get correctly merged.
+        // Check they get correctly merged.
         $value_from_config = $this->configuration->getValueFromConfig('projects', 'redmine_project_id');
         $this->assertEquals($value_from_config, $project_conf_parsed['spark']['projects']['redmine_project_id']);
     }
 
-  /**
-   * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
-   */
+    /**
+     * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
+     */
     public function testConfigurationMergeProjectConfigurationWithDefaultWrongOptions()
     {
         $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHomeWrongOptions.yml');
@@ -174,5 +178,19 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
       // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
+    }
+
+    /**
+     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
+    public function testConfigurationWithout()
+    {
+        $nullmock = $this->getMockBuilder('Symfony\Component\Console\Output\NullOutput')
+                ->getMock();
+        $stub = $this->getMockBuilder('Symfony\Component\Console\Output\ConsoleOutput')
+                ->getMock();
+        $stub->method('getErrorOutput')->will($this->returnValue($nullmock));
+        $this->configuration = new SparkConfigurationWrapper($this->getArguments(), $stub);
+        $values = $this->configuration->getProcessedConfigurations();
     }
 }
