@@ -209,7 +209,6 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Issues to mock.
         $issues = unserialize(file_get_contents(self::$fixturesPath . "redmine-search-not-estimated.serialized"));
-
         // Create mocks.
         $this->createMocks(array('redmineApiIssueAll' => $issues));
 
@@ -221,23 +220,23 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
-        $expect = <<<EOF
+        $expected = <<<EOF
 +------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
 | ID   | Created    | Updated             | Tracker | Version | Author          | Assigned | Status      | Estimated | Subject                                            |
 +------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
-| 8924 | 22-05-2015 | 22-05-2015 11:05:22 | Feature |         | Paolo Pustorino |          | In Progress |           | XMP-009 - Feed the troll                           |
-| 8925 | 22-05-2015 | 22-05-2015 11:05:00 | Feature |         | Paolo Pustorino |          | On hold     |           | XMP-010 - Congratulate with the ne who wrote this  |
-| 8918 | 22-05-2015 | 22-05-2015 10:05:49 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-003 - Take a look at "The Purge" without pukin |
-| 8916 | 22-05-2015 | 22-05-2015 10:05:48 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-001 - Find who killed Laura Palmer             |
-| 8923 | 22-05-2015 | 22-05-2015 00:05:45 | Feature |         | Paolo Pustorino |          | New         |           | XMP-008 - Walk like an egyptian                    |
-| 8922 | 22-05-2015 | 22-05-2015 00:05:22 | Feature |         | Paolo Pustorino |          | New         |           | XMP-007 - Tamarrow never dies!                     |
-| 8919 | 22-05-2015 | 22-05-2015 00:05:08 | Feature |         | Paolo Pustorino |          | New         |           | XMP-004 - Deliver a message to Vasco Rossi         |
-| 8917 | 22-05-2015 | 22-05-2015 00:05:56 | Bug     |         | Paolo Pustorino |          | New         |           | XMP-002 - Paolo Mainardi's dog is thirsty          |
-| 8915 | 22-05-2015 | 22-05-2015 00:05:21 | Feature |         | Paolo Pustorino |          | New         |           | XMP-000 - Check if the moon is made of cheese      |
+| 8924 | 21-05-2015 | 22-05-2015 09:42:22 | Feature |         | Paolo Pustorino |          | In Progress |           | XMP-009 - Feed the troll                           |
+| 8925 | 21-05-2015 | 22-05-2015 09:42:00 | Feature |         | Paolo Pustorino |          | On hold     |           | XMP-010 - Congratulate with the ne who wrote this  |
+| 8918 | 21-05-2015 | 22-05-2015 08:14:49 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-003 - Take a look at "The Purge" without pukin |
+| 8916 | 21-05-2015 | 22-05-2015 08:14:48 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-001 - Find who killed Laura Palmer             |
+| 8923 | 21-05-2015 | 21-05-2015 22:43:45 | Feature |         | Paolo Pustorino |          | New         |           | XMP-008 - Walk like an egyptian                    |
+| 8922 | 21-05-2015 | 21-05-2015 22:42:22 | Feature |         | Paolo Pustorino |          | New         |           | XMP-007 - Tamarrow never dies!                     |
+| 8919 | 21-05-2015 | 21-05-2015 22:34:08 | Feature |         | Paolo Pustorino |          | New         |           | XMP-004 - Deliver a message to Vasco Rossi         |
+| 8917 | 21-05-2015 | 21-05-2015 22:30:56 | Bug     |         | Paolo Pustorino |          | New         |           | XMP-002 - Paolo Mainardi's dog is thirsty          |
+| 8915 | 21-05-2015 | 21-05-2015 22:29:21 | Feature |         | Paolo Pustorino |          | New         |           | XMP-000 - Check if the moon is made of cheese      |
 +------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
 EOF
         ;
-        $this->assertContains($expect, $res);
+        $this->assertEquals($expected, $res);
     }
 
    /**
