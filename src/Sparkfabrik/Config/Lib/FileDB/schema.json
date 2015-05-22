@@ -1,0 +1,23 @@
+[
+    {
+        "table": "redmine_search_presets",
+        "fields": [
+            {
+                "name": "preset",
+                "type": "string",
+                "maxLength": false,
+                "autoincrement": false,
+                "nullable": false,
+                "primaryKey": true
+            },
+            {
+                "name": "query",
+                "type": "string",
+                "maxLength": false,
+                "autoincrement": false,
+                "nullable": false,
+                "primaryKey": false
+            }
+        ]
+    }
+]

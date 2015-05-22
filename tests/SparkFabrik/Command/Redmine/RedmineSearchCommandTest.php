@@ -396,10 +396,10 @@ EOF
         }
 
         /**
-     * Test search by more than one status.
-     *
-     * @group fail
-     */
+         * Test search by more than one status.
+         *
+         * @group fail
+         */
         public function testSearchByMoreThanOneStatus()
         {
             $response_mock = file_get_contents(self::$fixturesPath . 'response_two_issue_new_and_in_progress.serialized');
@@ -421,4 +421,22 @@ EOF
             $this->assertContains('New', $res);
             $this->assertContains('In Progress', $res);
         }
+
+      /**
+       * Test search preset save.
+       */
+      public function testSearchPresetSave() {
+        /*
+        $GLOBALS['filedb_settings']['db'] = '/tmp/db';
+        $this->createCommand('redmine:search');
+        $this->createMocks();
+        $input = array(
+          'command' => $this->command->getName(),
+          '--project_id' => 'test_project_id',
+          '--assigned' => 'me',
+          '--preset-save' => 'test-preset',
+        );
+        $this->tester->execute($input);
+        */
+      }
 }

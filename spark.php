@@ -16,8 +16,9 @@ if (strpos(basename(__FILE__), 'phar')) {
         include_once 'phar://spark.phar/vendor/autoload.php';
     }
 }
-if (file_exists(__DIR__.'/vendor/adrianocori/filedb/filedb.inc')) {
-    include_once __DIR__.'/vendor/adrianocori/filedb/filedb.inc';
+if (file_exists(__DIR__ . '/vendor/adrianocori/filedb/filedb.inc')) {
+    $GLOBALS['filedb_root'] = __DIR__ . '/src/Sparkfabrik/Config/Lib/FileDB';
+    include_once __DIR__ . '/vendor/adrianocori/filedb/filedb.inc';
 }
 use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;

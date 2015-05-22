@@ -471,12 +471,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Fatal-Error/filedb.git",
-                "reference": "3ce03a53c7b7c4d43a10da637fdd07be58264879"
+                "reference": "c1bcc5dfe21d9a8a82ee5bbf3aa507785b04cf7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fatal-Error/filedb/zipball/3ce03a53c7b7c4d43a10da637fdd07be58264879",
-                "reference": "3ce03a53c7b7c4d43a10da637fdd07be58264879",
+                "url": "https://api.github.com/repos/Fatal-Error/filedb/zipball/c1bcc5dfe21d9a8a82ee5bbf3aa507785b04cf7d",
+                "reference": "c1bcc5dfe21d9a8a82ee5bbf3aa507785b04cf7d",
                 "shasum": ""
             },
             "require": {
@@ -494,7 +494,7 @@
                 }
             ],
             "description": "Php Object Persister. A Database on files.",
-            "time": "2015-05-22 13:57:38"
+            "time": "2015-05-22 17:16:22"
         },
         {
             "name": "codeclimate/php-test-reporter",

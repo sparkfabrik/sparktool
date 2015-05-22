@@ -90,6 +90,7 @@ EOF
     {
         $presets = \FileDB::select('redmine_search_presets', 'rsp')
           ->fields('rsp')
+          ->orderBy('rsp.preset', SORT_ASC)
           ->execute()
           ->fetchAll(false, false);
 
