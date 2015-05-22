@@ -25,7 +25,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private $tester;
     private $command;
 
-  // Mocks
+    // Mocks
     private $service;
     private $redmineClient;
     private $redmineApiIssue;
@@ -67,9 +67,9 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->command = $this->application->find($name);
     }
 
-  /**
-   * Create mocks.
-   */
+    /**
+     * Create mocks.
+    */
     private function createMocks($options = array())
     {
         $this->service = $this->getMockedService();
@@ -101,15 +101,15 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->command->setService($this->service);
     }
 
-  /**
-   * Test no issues found.
-   */
+    /**
+     * Test no issues found.
+    */
     public function testNoIssuesFound()
     {
         $command = $this->createCommand('redmine:search');
         $this->createMocks();
 
-      // Execute with project_id
+        // Execute with project_id
         $options = array(
         'command' => $this->command->getName(),
         '--project_id' => 'test_project_id',
@@ -118,20 +118,20 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $res = trim($this->tester->getDisplay());
         $this->assertEquals('No issues found.', $res);
 
-      // Execute without project_id.
+        // Execute without project_id.
         unset($options['--project_id']);
         $this->tester->execute($options);
         $res = trim($this->tester->getDisplay());
         $this->assertEquals('No issues found.', $res);
     }
 
-  /**
-   * Test syntax error.
-   *
-   * @expectedException  Exception
-   * @expectedExceptionMessage Failed to parse response
-   *
-   */
+    /**
+     * Test syntax error.
+     *
+     * @expectedException  Exception
+     * @expectedExceptionMessage Failed to parse response
+     *
+    */
     public function testSyntaxError()
     {
         $command = $this->createCommand('redmine:search');
@@ -146,20 +146,20 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->tester->execute($options);
     }
 
-  /**
-   * Test false return result set.
-   *
-   * @expectedException  Exception
-   * @expectedExceptionMessage Failed to parse response
-   *
-   */
+    /**
+     * Test false return result set.
+     *
+     * @expectedException  Exception
+     * @expectedExceptionMessage Failed to parse response
+     *
+    */
     public function testFalseResult()
     {
         $command = $this->createCommand('redmine:search');
         $options = array('redmineApiIssueAll' => false);
         $this->createMocks($options);
 
-      // Execute with project_id
+        // Execute with project_id
         $options = array(
         'command' => $this->command->getName(),
         '--project_id' => 'test_project_id',
@@ -167,9 +167,9 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->tester->execute($options);
     }
 
-  /**
-   * Test verbosity.
-   */
+    /**
+     * Test verbosity.
+    */
     public function testSearchWithDebugVerbosity()
     {
         $command = $this->createCommand('redmine:search');
@@ -197,10 +197,10 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($expected_string, $res);
     }
 
-  /**
-   * @expectedException  Exception
-   * @expectedExceptionMessage errors
-   */
+    /**
+     * @expectedException  Exception
+     * @expectedExceptionMessage errors
+    */
     public function testIssueErrorResponse()
     {
         $command = $this->createCommand('redmine:search');
@@ -214,5 +214,52 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             '--project_id' => 'test_project_id',
             )
         );
+    }
+
+    /**
+     * Test search by status.
+     */
+    public function testSearchByStatus()
+    {
+        $path = getcwd();
+        $path = $path . '/tests/SparkFabrik/Fixtures/';
+        $response_mock = file_get_contents($path . 'response_one_issue_new.serialized');
+        // file_put_contents($path . 'response_one_issue_new.serialized', serialize($this->response_new_issue));die;
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
+
+        $options = array('--status' => 'new');
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+    }
+
+    /**
+     * Test search by more than one status.
+     */
+    public function testSearchByMoreThanOneStatus()
+    {
+        $path = getcwd();
+        $path = $path . '/tests/SparkFabrik/Fixtures/';
+        $response_mock = file_get_contents($path . 'response_two_issue_new_and_in_progress.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
+
+        $options = array('--status' => 'new, in progress');
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+        $this->assertContains('In Progress', $res);
     }
 }
