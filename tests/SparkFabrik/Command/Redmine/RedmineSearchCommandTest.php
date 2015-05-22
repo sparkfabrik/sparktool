@@ -215,4 +215,26 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             )
         );
     }
+
+  /**
+   * Test incorrect fields arguments.
+   *
+   * @group fail
+   */
+    public function testIncorrectFields()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(getcwd() . '/tests/SparkFabrik/Fixtures/RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'incorrect_field');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
+    }
 }
