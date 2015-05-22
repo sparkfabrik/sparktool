@@ -14,6 +14,7 @@ namespace Sparkfabrik\Tools\Spark\Command\Welcome;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Implements Welcome command
@@ -35,6 +36,17 @@ class WelcomeCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln("\033[01;31m Welcome! :) \033[0m");
+        $sparkLogo = file_get_contents('.banner.txt');
+        $sparkLogo = strtr($sparkLogo, ['\033' => "\033"]);
+        $output->writeln($sparkLogo);
+
+        $listCommand = $this->getApplication()->find('list');
+
+        $arguments = array(
+            'command' => '',
+        );
+
+        $input = new ArrayInput($arguments);
+        $returnCode = $listCommand->run($input, $output);
     }
 }
