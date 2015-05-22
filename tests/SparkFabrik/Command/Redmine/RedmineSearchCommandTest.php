@@ -42,23 +42,23 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private function getMockedService()
     {
         $service = $this->getMockBuilder('\Sparkfabrik\Tools\Spark\Services\RedmineService')
-        ->getMock();
+            ->getMock();
         return $service;
     }
 
     private function getMockedRedmineClient()
     {
         $redmineClient = $this->getMockBuilder('\Redmine\Client')
-        ->setConstructorArgs(array('mock_url', 'mock_key'))
-        ->getMock();
+            ->setConstructorArgs(array('mock_url', 'mock_key'))
+            ->getMock();
         return $redmineClient;
     }
 
     private function getMockedRedmineApiIssue()
     {
         $redmineApiIssue = $this->getMockBuilder('\Redmine\Api\Issue')
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
         return $redmineApiIssue;
     }
 
@@ -76,28 +76,28 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->redmineClient = $this->getMockedRedmineClient();
         $this->redmineApiIssue = $this->getMockedRedmineApiIssue();
 
-      // Default returns for mock objects.
+        // Default returns for mock objects.
         $default_options = array_replace(
             array('redmineApiIssueAll' => array()),
             $options
         );
 
-      // Mock methods.
+        // Mock methods.
         $this->redmineApiIssue->expects($this->any())
-        ->method('all')
-        ->will($this->returnValue($default_options['redmineApiIssueAll']));
+            ->method('all')
+            ->will($this->returnValue($default_options['redmineApiIssueAll']));
 
-      // Mock method api of redmine client.
+        // Mock method api of redmine client.
         $this->redmineClient->expects($this->any())
-        ->method('api')
-        ->will($this->returnValue($this->redmineApiIssue));
+            ->method('api')
+            ->will($this->returnValue($this->redmineApiIssue));
 
-      // Mock getClient on service object, just return mock redmine.
+        // Mock getClient on service object, just return mock redmine.
         $this->service->expects($this->any())
-        ->method('getClient')
-        ->will($this->returnValue($this->redmineClient));
+            ->method('getClient')
+            ->will($this->returnValue($this->redmineClient));
 
-      // Set the mocked client.
+        // Set the mocked client.
         $this->command->setService($this->service);
     }
 
@@ -138,7 +138,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $options = array('redmineApiIssueAll' => array('Syntax error'));
         $this->createMocks($options);
 
-      // Execute with project_id
+        // Execute with project_id
         $options = array(
         'command' => $this->command->getName(),
         '--project_id' => 'test_project_id',
