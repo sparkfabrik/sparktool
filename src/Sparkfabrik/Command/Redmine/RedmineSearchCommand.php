@@ -14,6 +14,7 @@ namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
 use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
 use Sparkfabrik\Tools\Spark\RedmineApi\Version as RedmineApiVersion;
+use Sparkfabrik\Tools\Spark\RedmineApi\Issue as RedmineApiIssue;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,18 +22,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Redmine\Api\Tracker;
 
-class RedmineSearchCommand extends RedmineCommand
-{
+class RedmineSearchCommand extends RedmineCommand {
 
     /**
      * {@inheritdoc}
      */
-    protected function configure()
-    {
+    protected function configure() {
         $this
-          ->setName('redmine:search')
-          ->setDescription('Search redmine issues')
-          ->setHelp(<<<EOF
+            ->setName('redmine:search')
+            ->setDescription('Search redmine issues')
+            ->setHelp(<<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
@@ -43,48 +42,27 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-          )
+            )
         ;
         // Add options.
         $this->addOption(
-            'report',
-            null,
-            InputOption::VALUE_NONE,
-            'Print a summary report'
+            'report', null, InputOption::VALUE_NONE, 'Print a summary report'
         );
         $this->addOption(
-            'limit',
-            'l',
-            InputOption::VALUE_OPTIONAL,
-            'How many issues should be printed ?',
-            50
+            'limit', 'l', InputOption::VALUE_OPTIONAL, 'How many issues should be printed ?', 50
         );
         $this->addOption(
-            'sort',
-            's',
-            InputOption::VALUE_OPTIONAL,
-            'Issues sorting',
-            'updated_on:desc'
+            'sort', 's', InputOption::VALUE_OPTIONAL, 'Issues sorting', 'updated_on:desc'
         );
         $this->addOption(
-            'project_id',
-            'p',
-            InputOption::VALUE_OPTIONAL,
-            'Filter by project machine name'
+            'project_id', 'p', InputOption::VALUE_OPTIONAL, 'Filter by project machine name'
         );
         $this->addOption(
-            'status',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            'Filter by project status name or id. Possible values: open, closed, *',
-            'open'
+            'status', false, InputOption::VALUE_OPTIONAL, 'Filter by project status name or id. Possible values: open, closed, *', 'open'
         );
         // @codingStandardsIgnoreStart
         $this->addOption(
-            'assigned',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            <<<EOF
+            'assigned', false, InputOption::VALUE_OPTIONAL, <<<EOF
 Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
 Where:
  - "me" issues assigned to the calling user
@@ -93,57 +71,37 @@ Where:
  - "anyone" issues assigned
  - "none" issues not assigned
 EOF
-            ,
-            'all'
+            , 'all'
         );
         // @codingStandardsIgnoreEnd
         $this->addOption(
-            'sprint',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
+            'sprint', false, InputOption::VALUE_OPTIONAL, 'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
         );
         $this->addOption(
-            'created',
-            false,
-            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            <<<EOF
+            'created', false, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, <<<EOF
 Single date format: "<=|=> [date]"
 Multiple date range format: "[date]"
 Where [date] can be any expression supported by strtotime.
 EOF
         );
         $this->addOption(
-            'updated',
-            false,
-            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            'Filter by updated date. Supported format: (<=|=>) [any english textual datetime]'
+            'updated', false, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Filter by updated date. Supported format: (<=|=>) [any english textual datetime]'
         );
         $this->addOption(
-            'not-estimated',
-            false,
-            InputOption::VALUE_NONE,
-            'Filter by not estimated issues.'
+            'not-estimated', false, InputOption::VALUE_NONE, 'Filter by not estimated issues.'
         );
         $this->addOption(
-            'subject',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            'Filter by subject, it filters contained text in the subject.'
+            'subject', false, InputOption::VALUE_OPTIONAL, 'Filter by subject, it filters contained text in the subject.'
         );
         $this->addOption(
-            'tracker',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            'Filter by tracker.'
+            'tracker', false, InputOption::VALUE_OPTIONAL, 'Filter by tracker.'
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
+    protected function execute(InputInterface $input, OutputInterface $output) {
         try {
             $client = $this->getService()->getClient();
             $api_options = array();
@@ -160,12 +118,17 @@ EOF
                 $output->writeln('<info>' . var_export($api_options, true) . '</info>');
             }
 
-            // Run query.
-            $res = $client->api('issue')->all($api_options);
+            $res = array();
+            if ($input->getOption('subject')) {
+                $subject = $input->getOption('subject');
+                $res = $this->filterBySubject($subject, $api_options);
+            } else {
+                // Run query.
+                $res = $client->api('issue')->all($api_options);
+            }
 
             // JSON Syntax error or just false result.
-            if ((isset($res[0]) && ($res[0] === 'Syntax error'))
-            || $res === false) {
+            if ((isset($res[0]) && ($res[0] === 'Syntax error')) || $res === false) {
                 throw new \Exception('Failed to parse response.');
             }
 
@@ -176,10 +139,7 @@ EOF
             }
 
             // This is how redmine library return empty results.
-            if (!count($res)
-            || (count($res) == 1 && ($res[0] === 1))
-            || (isset($res['total_count']) && $res['total_count'] === 0)
-            || (empty($res))) {
+            if (!count($res) || (count($res) == 1 && ($res[0] === 1)) || (isset($res['total_count']) && $res['total_count'] === 0) || (empty($res))) {
                 return $output->writeln('<info>No issues found.</info>');
             }
 
@@ -195,32 +155,20 @@ EOF
                 }
             }
 
-          // Reduce results, filter by subject content.
-            if ($input->getOption('subject')) {
-                $subject = $input->getOption('subject');
-                foreach ($res['issues'] as $key => $issue) {
-                    if (stripos($issue['subject'], $subject) === false) {
-                        unset($res['issues'][$key]);
-                        if (!is_array($res['total_count'])) {
-                            --$res['total_count'];
-                        }
-                    }
-                }
-            }
 
             // Fields to print.
             $fields = array(
-            'id' => 'ID',
-            'project' => 'Project',
-            'created_on' => 'Created',
-            'updated_on' => 'Updated',
-            'tracker' => 'Tracker',
-            'fixed_version' => 'Version',
-            'author' => 'Author',
-            'assigned_to' => 'Assigned',
-            'status' => 'Status',
-            'estimated_hours' => 'Estimated',
-            'subject' => 'Subject',
+                'id' => 'ID',
+                'project' => 'Project',
+                'created_on' => 'Created',
+                'updated_on' => 'Updated',
+                'tracker' => 'Tracker',
+                'fixed_version' => 'Version',
+                'author' => 'Author',
+                'assigned_to' => 'Assigned',
+                'status' => 'Status',
+                'estimated_hours' => 'Estimated',
+                'subject' => 'Subject',
             );
 
             // Hide project if it is already configured.
@@ -234,8 +182,21 @@ EOF
                 $this->tableRedmineReportOutput($output, $res, 'issues');
             }
         } catch (Exception $e) {
-            return $output->writeln('<error>'. $e->getMessage() . '</error>');
+            return $output->writeln('<error>' . $e->getMessage() . '</error>');
         }
+    }
+
+    /**
+     * Perform custom search filtering on subjects.
+     *
+     * @param string $subject
+     * @param array $api_options
+     */
+    private function filterBySubject($subject, $api_options) {
+        $subjects = split(",", $subject);
+        $redmineIssueClient = new RedmineApiIssue($this->getService()->getClient());
+        $res = $redmineIssueClient->getByMultipleSubjects($subjects, $api_options);
+        return $res;
     }
 
     /**
@@ -245,8 +206,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentStatusId($status)
-    {
+    private function handleArgumentStatusId($status) {
         if (is_numeric($status)) {
             return $status;
         }
@@ -275,8 +235,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleAgumentProjectId($project_id = null)
-    {
+    private function handleAgumentProjectId($project_id = null) {
         return ($project_id ? $project_id : $this->getService()->getConfig()['project_id']);
     }
 
@@ -285,19 +244,18 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentAssignedToId($assigned)
-    {
+    private function handleArgumentAssignedToId($assigned) {
         if (is_numeric($assigned)) {
             return $assigned;
         }
 
         // @link http://www.redmine.org/issues/8918#note-3
         $magic_tokens = array(
-        'me' => 'me',
-        'not me' => '!me',
-        'anyone' => '*',
-        'none' => '!*',
-        'all' => '',
+            'me' => 'me',
+            'not me' => '!me',
+            'anyone' => '*',
+            'none' => '!*',
+            'all' => '',
         );
         if (array_key_exists($assigned, $magic_tokens)) {
             return $magic_tokens[$assigned];
@@ -319,15 +277,14 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentFixedVersionId($sprint, $project_id)
-    {
+    private function handleArgumentFixedVersionId($sprint, $project_id) {
         if (is_numeric($sprint)) {
             return $sprint;
         } else {
             $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
             // Set a very high limit.
             $fixed_version_id = $redmineVersionClient->getIdByName($project_id, $sprint, array(
-            'limit' => 500
+                'limit' => 500
             ));
             if ($fixed_version_id === false) {
                 throw new \Exception('No sprint version found.');
@@ -343,8 +300,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDateSingle($date, $use_operators = true)
-    {
+    private function handleArgumentDateSingle($date, $use_operators = true) {
         $date = strtolower($date);
         if ($use_operators) {
             $op = false;
@@ -363,7 +319,7 @@ EOF
         }
         $date_option = date('Y-m-d', $timestamp);
         if (isset($op) && $op !== false) {
-            $date_option = $op.$date_option;
+            $date_option = $op . $date_option;
         }
         return $date_option;
     }
@@ -375,8 +331,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDateRange($args)
-    {
+    private function handleArgumentDateRange($args) {
         $range = array();
         foreach ($args as $date) {
             $range[] = $this->handleArgumentDateSingle($date, false);
@@ -392,8 +347,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDate($args)
-    {
+    private function handleArgumentDate($args) {
         if (count($args) > 2) {
             throw new Exception('Date handler: Too much dates dude!');
         }
@@ -414,8 +368,7 @@ EOF
      *
      * @return integer
      */
-    private function handleArgumentTracker($tracker)
-    {
+    private function handleArgumentTracker($tracker) {
         $trackerId = 0;
 
         $trackers = $this->getService()->getClient()->api('tracker')->listing();
@@ -447,8 +400,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options)
-    {
+    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options) {
         $project_id = $this->handleAgumentProjectId($input->getOption('project_id'));
         if ($project_id) {
             $api_options['project_id'] = $project_id;
@@ -456,8 +408,7 @@ EOF
             // Versions depends on project_id.
             if ($input->getOption('sprint')) {
                 $api_options['fixed_version_id'] = $this->handleArgumentFixedVersionId(
-                    $input->getOption('sprint'),
-                    $project_id
+                    $input->getOption('sprint'), $project_id
                 );
             }
         }
@@ -481,4 +432,5 @@ EOF
             $api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
         }
     }
+
 }
