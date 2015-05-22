@@ -30,10 +30,10 @@ class RedmineSearchCommand extends RedmineCommand
     protected function configure()
     {
         $this
-          ->setName('redmine:search')
-          ->setDescription('Search redmine issues')
-          ->setHelp(
-<<<EOF
+            ->setName('redmine:search')
+            ->setDescription('Search redmine issues')
+            ->setHelp(
+                <<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
@@ -44,8 +44,7 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-          )
-        ;
+            );
         // Add options.
         $this->addOption(
             'report',
