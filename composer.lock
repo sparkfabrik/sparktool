@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "25b88c80321336134b1a38864505b6eb",
+    "hash": "98b436a8cdc03f93863d534dd29156b2",
     "packages": [
         {
             "name": "kbsali/redmine-api",
-            "version": "v1.5.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kbsali/php-redmine-api.git",
-                "reference": "c8cc794ee03c1d179b29bdb22e0d946b307c7139"
+                "reference": "8cd81b967a66d5f4f46564d53514ff4bbfb1ba71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kbsali/php-redmine-api/zipball/c8cc794ee03c1d179b29bdb22e0d946b307c7139",
-                "reference": "c8cc794ee03c1d179b29bdb22e0d946b307c7139",
+                "url": "https://api.github.com/repos/kbsali/php-redmine-api/zipball/8cd81b967a66d5f4f46564d53514ff4bbfb1ba71",
+                "reference": "8cd81b967a66d5f4f46564d53514ff4bbfb1ba71",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
                 "api",
                 "redmine"
             ],
-            "time": "2015-03-05 08:47:56"
+            "time": "2015-05-15 12:59:23"
         },
         {
             "name": "kriswallsmith/buzz",
@@ -1931,6 +1931,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/console": 10,
+        "kbsali/redmine-api": 20,
         "codeclimate/php-test-reporter": 20
     },
     "prefer-stable": false,

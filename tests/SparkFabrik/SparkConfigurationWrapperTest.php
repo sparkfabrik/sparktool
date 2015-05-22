@@ -48,7 +48,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         umask($this->umask);
     }
 
-  /**
+    /**
    * @param string $file
    */
     protected function clean($file)
@@ -122,7 +122,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $yaml_merged = $dumper->dump($customConfig, 5);
         file_put_contents($this->fullPathWorkspace, $yaml_merged);
 
-      // Reinit and test if they are equal.
+        // Reinit and test if they are equal.
         $this->configuration->initConfig();
 
         $defaultConfig = serialize(Yaml::parse($this->configuration->dumpDefaultConfigurationFile()));
@@ -153,17 +153,17 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHome.yml');
         $project_conf_parsed = Yaml::parse($project_conf);
 
-      // Write configuration file to workspace home.
+        // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
 
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
 
-      // Check they get correctly merged.
+        // Check they get correctly merged.
         $value_from_config = $this->configuration->getValueFromConfig('projects', 'redmine_project_id');
         $this->assertEquals($value_from_config, $project_conf_parsed['spark']['projects']['redmine_project_id']);
     }
 
-  /**
+    /**
    * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
    */
     public function testConfigurationMergeProjectConfigurationWithDefaultWrongOptions()
@@ -171,7 +171,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHomeWrongOptions.yml');
         $project_conf_parsed = Yaml::parse($project_conf);
 
-      // Write configuration file to workspace home.
+        // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
     }
