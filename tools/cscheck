@@ -1,0 +1,2 @@
+#!/bin/bash
+bin/phpcs --standard=PSR2 --error-severity=1 --warning-severity=8 src tests
