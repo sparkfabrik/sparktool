@@ -120,7 +120,7 @@ class RedmineShowCommand extends RedmineCommand
             return $output->writeln('<info>No issues found.</info>');
         }
 
-        // Issue essentials.
+        // Issue subject and description.
         $issue = $res['issue'];
         $redmine_issue_url = $redmine_url . '/issues/' . $issue_id;
         $output->writeln('');
@@ -130,14 +130,25 @@ class RedmineShowCommand extends RedmineCommand
         }
         $output->writeln('');
 
-        // Issue details.
+        // Issue details list.
+        $details = array(
+            'tracker' => 'Type (Tracker)',
+            'assigned_to' => 'Assigned to',
+            'status' => 'Status',
+            'priority' => 'Priority',
+            'category' => 'Category',
+            'fixed_version' => 'Fixed version',
+        );
+
         $table = new Table($output);
-        $table ->setRows(array(
-            array('<info>Type (Tracker): </info>', $issue['tracker']['name']),
-            array('<info>Assigned to: </info>', $issue['assigned_to']['name']),
-            array('<info>Status: </info>', $issue['status']['name']),
-            array('<info>Priority: </info>', $issue['priority']['name']),
-        ));
+        foreach ($details as $key => $label) {
+            if (!empty($issue[$key])) {
+                $table ->addRow(array(
+                    '<info>' . $label . ': </info>',
+                    $issue[$key]['name']
+                ));
+            }
+        }
 
         // Separate custom fields form the above.
         if (!empty($issue['custom_fields'])) {
@@ -155,7 +166,7 @@ class RedmineShowCommand extends RedmineCommand
             }
         }
 
-        // Only verbose display should include the following.
+        // Include the following details only when requested.
         if ($show_info || $show_me_everything) {
             $issue['start_date'] = date('d-m-Y', strtotime($issue['start_date']));
             $table->addRows(array(
@@ -168,7 +179,7 @@ class RedmineShowCommand extends RedmineCommand
             ));
         }
 
-        // Finally render the table.
+        // Finally render the details table.
         $table->render();
         $output->writeln('');
 
@@ -195,11 +206,8 @@ class RedmineShowCommand extends RedmineCommand
                         $process->run();
                     }
                 }
-                else {
-                    $table->addRow(array('No Merge Requests have been opened yet.'));
-                }
             }
-            else {
+            if (empty($mrs) || !count($issue['journals'])) {
                 $table->addRow(array('No Merge Requests have been opened yet.'));
             }
             $table->render();
@@ -213,5 +221,11 @@ class RedmineShowCommand extends RedmineCommand
         }
         $output->writeln('<info>URL: </info>'. $redmine_issue_url);
         $output->writeln('');
+
+        // Prompt help message.
+        if (!$show_me_everything) {
+            $output->writeln('Use [-c|--complete] to show full list of details and MR.');
+            $output->writeln('');
+        }
     }
 }
