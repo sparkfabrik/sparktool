@@ -15,6 +15,7 @@ use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
 use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
 use Sparkfabrik\Tools\Spark\RedmineApi\Version as RedmineApiVersion;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,9 +31,10 @@ class RedmineSearchCommand extends RedmineCommand
     protected function configure()
     {
         $this
-          ->setName('redmine:search')
-          ->setDescription('Search redmine issues')
-          ->setHelp(<<<EOF
+            ->setName('redmine:search')
+            ->setDescription('Search redmine issues')
+            ->setHelp(
+                <<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
@@ -43,8 +45,7 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-          )
-        ;
+            );
         // Add options.
         $this->addOption(
             'report',
@@ -137,6 +138,18 @@ EOF
             InputOption::VALUE_OPTIONAL,
             'Filter by tracker.'
         );
+        $this->addOption(
+            'preset',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Load arguments from a saved preset.'
+        );
+        $this->addOption(
+            'save-preset',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Save current search with a preset name.'
+        );
     }
 
     /**
@@ -145,6 +158,16 @@ EOF
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            if ($preset_name = $input->getOption('preset')) {
+                $preset = $this->getSearchPreset($preset_name);
+                if ($preset) {
+                    $preset_options = unserialize($preset['query']);
+                    foreach ($preset_options as $opt_name => $opt_value) {
+                        $input->setOption($opt_name, $opt_value);
+                    }
+                }
+            }
+
             $client = $this->getService()->getClient();
             $api_options = array();
             $api_options['limit'] = $input->getOption('limit');
@@ -165,7 +188,8 @@ EOF
 
             // JSON Syntax error or just false result.
             if ((isset($res[0]) && ($res[0] === 'Syntax error'))
-            || $res === false) {
+                || $res === false
+            ) {
                 throw new \Exception('Failed to parse response.');
             }
 
@@ -177,9 +201,10 @@ EOF
 
             // This is how redmine library return empty results.
             if (!count($res)
-            || (count($res) == 1 && ($res[0] === 1))
-            || (isset($res['total_count']) && $res['total_count'] === 0)
-            || (empty($res))) {
+                || (count($res) == 1 && ($res[0] === 1))
+                || (isset($res['total_count']) && $res['total_count'] === 0)
+                || (empty($res))
+            ) {
                 return $output->writeln('<info>No issues found.</info>');
             }
 
@@ -195,7 +220,7 @@ EOF
                 }
             }
 
-          // Reduce results, filter by subject content.
+            // Reduce results, filter by subject content.
             if ($input->getOption('subject')) {
                 $subject = $input->getOption('subject');
                 foreach ($res['issues'] as $key => $issue) {
@@ -228,6 +253,19 @@ EOF
                 unset($fields['project']);
             }
 
+            if ($preset = $input->getOption('save-preset')) {
+                $can_save = false;
+                $this->handleArgumentPresetName($input, $output, $preset, $can_save);
+                $options = $input->getOptions();
+                unset($options['preset']);
+                unset($options['save-preset']);
+
+                if ($can_save) {
+                    $query = $options;
+                    $this->saveSearchPreset($preset, $query);
+                }
+            }
+
             // Render issue table.
             $this->tableRedmineOutput($output, $fields, $res, 'issues');
             if ($input->getOption('report')) {
@@ -235,6 +273,92 @@ EOF
             }
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
+        }
+    }
+
+    /**
+     * Handles preset name allowing users to overwrite change or abort the save.
+     *
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
+     * @param  null            $preset
+     * @param  bool            $can_save
+     * @throws \Exception
+     */
+    private function handleArgumentPresetName(InputInterface $input, OutputInterface $output, &$preset = null, &$can_save = false)
+    {
+        $helper = $this->getHelperSet();
+        $dialog = $helper->get('dialog');
+
+        if (empty($preset)) {
+            $preset = $input->getOption('save-preset');
+        }
+
+        if ($this->getSearchPreset($preset)) {
+            $actions = array('overwrite', 'change', 'abort');
+            $question = sprintf('Preset %s already exists. Tell me how to proceed [%s]:', $preset, implode('/', $actions));
+            $preset_action = $dialog->ask($output, $question, 'change', $actions);
+
+            if (!in_array($preset_action, $actions)) {
+                throw new \Exception('You have selected an invalid option.');
+            }
+
+            switch ($preset_action) {
+            case 'overwrite':
+                $can_save = true;
+                break;
+
+            case 'change':
+                $preset = $dialog->ask($output, 'Preset name:');
+                $this->handleArgumentPresetName($input, $output, $preset, $can_save);
+                break;
+
+            case 'abort':
+                $can_save = false;
+            }
+        }
+        else {
+            $can_save = true;
+        }
+    }
+
+    /**
+     * Get a saved search preset.
+     *
+     * @param  string $preset
+     * @return mixed
+     */
+    public function getSearchPreset($preset)
+    {
+        return \FileDB::select('redmine_search_presets', 'rsp')
+        ->fields('rsp')
+        ->condition('rsp.preset', $preset)
+        ->execute()
+        ->fetch();
+    }
+
+    /**
+     * Save a search preset.
+     *
+     * @param string $preset
+     * @param string $query
+     */
+    private function saveSearchPreset($preset, $query)
+    {
+        $orig = $this->getSearchPreset($preset);
+        $fields = array(
+        'preset' => $preset,
+        'query' => serialize(array_filter($query)),
+        );
+
+        if (!empty($orig)) {
+            \FileDB::update('redmine_search_presets')
+            ->fields($fields)
+            ->condition('preset', $orig['preset'])
+            ->execute();
+        }
+        else {
+            \FileDB::insert('redmine_search_presets', $fields);
         }
     }
 
@@ -326,9 +450,11 @@ EOF
         } else {
             $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
             // Set a very high limit.
-            $fixed_version_id = $redmineVersionClient->getIdByName($project_id, $sprint, array(
-            'limit' => 500
-            ));
+            $fixed_version_id = $redmineVersionClient->getIdByName(
+                $project_id, $sprint, array(
+                'limit' => 500
+                )
+            );
             if ($fixed_version_id === false) {
                 throw new \Exception('No sprint version found.');
             }

@@ -17,9 +17,13 @@ else{
         require_once 'phar://spark.phar/vendor/autoload.php';
     }
 }
+if (file_exists(__DIR__.'/vendor/adrianocori/filedb/filedb.inc')) {
+  require_once __DIR__.'/vendor/adrianocori/filedb/filedb.inc';
+}
 use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchPresetsCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Robo\Task\Development\SemVer;
@@ -35,6 +39,7 @@ try {
 
   // Load commands.
   $application->add(new RedmineSearchCommand);
+  $application->add(new RedmineSearchPresetsCommand);
   $application->add(new RedmineShowCommand);
   $application->add(new RedmineGitBranchCommand);
   $application->run();

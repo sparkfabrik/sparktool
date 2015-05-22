@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "25b88c80321336134b1a38864505b6eb",
+    "hash": "f8bdd7d4c6b5b671418b997e268dd2b2",
     "packages": [
         {
             "name": "kbsali/redmine-api",
@@ -465,6 +465,37 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "adrianocori/filedb",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Fatal-Error/filedb.git",
+                "reference": "3ce03a53c7b7c4d43a10da637fdd07be58264879"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Fatal-Error/filedb/zipball/3ce03a53c7b7c4d43a10da637fdd07be58264879",
+                "reference": "3ce03a53c7b7c4d43a10da637fdd07be58264879",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adriano Cori",
+                    "email": "cori.adriano@gmail.com"
+                }
+            ],
+            "description": "Php Object Persister. A Database on files.",
+            "time": "2015-05-22 13:57:38"
+        },
         {
             "name": "codeclimate/php-test-reporter",
             "version": "dev-master",
@@ -1931,7 +1962,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/console": 10,
-        "codeclimate/php-test-reporter": 20
+        "codeclimate/php-test-reporter": 20,
+        "adrianocori/filedb": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
