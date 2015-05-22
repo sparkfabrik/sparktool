@@ -26,7 +26,7 @@ use Redmine\Client;
  */
 class RedmineCommand extends SparkCommand
 {
-  /**
+    /**
    * Constructor.
    *
    * @param string|null $name The name of the command; passing null means it must be set in configure()
@@ -64,8 +64,8 @@ class RedmineCommand extends SparkCommand
         }
         // Pretty print created/updated.
         $dates_fields = array(
-        'created_on' => array('format' => 'd-m-Y'),
-        'updated_on' => array('format' => 'd-m-Y H:m:s')
+            'created_on' => array('format' => 'd-m-Y'),
+            'updated_on' => array('format' => 'd-m-Y H:i:s')
         );
         foreach ($res[$key] as $val) {
             $row = array();
@@ -73,7 +73,8 @@ class RedmineCommand extends SparkCommand
                 if (isset($val[$field])) {
                     if (array_key_exists($field, $dates_fields)) {
                         $format = $dates_fields[$field]['format'];
-                        $field_val = date($format, strtotime($val[$field]));
+                        $date = new \DateTime($val[$field]);
+                        $field_val = $date->format($format);
                     } elseif (isset($val[$field]['name'])) {
                         $field_val = $val[$field]['name'];
                     } else {
