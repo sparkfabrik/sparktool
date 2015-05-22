@@ -36,9 +36,9 @@ class WelcomeCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $sparkLogo = file_get_contents('.banner.txt');
-        $sparkLogo = strtr($sparkLogo, ['\033' => "\033"]);
-        $output->writeln($sparkLogo);
+        $splash = file_get_contents('.banner.txt');
+        $splash = strtr($splash, ['\033' => "\033"]);
+        $output->writeln($splash);
 
         $listCommand = $this->getApplication()->find('list');
 
