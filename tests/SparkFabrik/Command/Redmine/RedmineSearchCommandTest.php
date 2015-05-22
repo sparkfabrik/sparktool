@@ -237,7 +237,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 +------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
 EOF
         ;
-        $this->assertEquals($expect, $res);
+        $this->assertEquals(trim($expect), trim($res));
     }
 
    /**
