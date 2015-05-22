@@ -110,7 +110,6 @@ class RedmineShowCommand extends RedmineCommand
 
         $params = array('include' => 'journals');
         $res = $client->api('issue')->show($issue_id, $params);
-        $extra_output = array();
 
         // Handle errors.
         if (isset($res['errors'])) {
@@ -131,9 +130,10 @@ class RedmineShowCommand extends RedmineCommand
         }
         $output->writeln('');
 
-        // Issue details
+        // Issue details.
         $table = new Table($output);
         $table ->setRows(array(
+            array('<info>Type (Tracker): </info>', $issue['tracker']['name']),
             array('<info>Assigned to: </info>', $issue['assigned_to']['name']),
             array('<info>Status: </info>', $issue['status']['name']),
             array('<info>Priority: </info>', $issue['priority']['name']),
@@ -171,36 +171,38 @@ class RedmineShowCommand extends RedmineCommand
         // Finally render the table.
         $table->render();
         $output->writeln('');
-        foreach ($extra_output as $name => $elements) {
-            $output->writeln('<info>' . strtoupper($name) . ':</info>');
-            foreach ($elements as $element) {
-                $output->writeln($element);
-            }
-        }
 
         // Extract merge requests.
-        if (($show_mr || $show_me_everything) && count($issue['journals'])) {
-            $mrs = $this->extractMergeRequests($issue['journals']);
-            if (!empty($mrs)) {
-                $table = new Table($output);
-                $table->setHeaders(array('Merge requests URL', 'Posted on'));
-                foreach ($mrs as $date => $mr) {
-                    $table->addRow(array($mr, $date));
-                    $mrs_urls[] = $mr;
-                }
-                $table->render();
-                if ($open) {
-                    // This is needed just to open the browser.
-                    $command = $open_command . ' -Wn http://example.com';
-                    $process = new Process($command);
-                    $process->run();
+        if ($show_mr || $show_me_everything) {
+            $table = new Table($output);
+            if (count($issue['journals'])) {
+                $mrs = $this->extractMergeRequests($issue['journals']);
+                if (!empty($mrs)) {
+                    $table->setHeaders(array('Merge requests URL', 'Posted on'));
+                    foreach ($mrs as $date => $mr) {
+                        $table->addRow(array($mr, $date));
+                        $mrs_urls[] = $mr;
+                    }
+                    if ($open) {
+                        // This is needed just to open the browser.
+                        $command = $open_command . ' -Wn http://example.com';
+                        $process = new Process($command);
+                        $process->run();
 
-                    // Open merge requests.
-                    $command = $open_command . ' ' . implode(' ', $mrs_urls);
-                    $process = new Process($command);
-                    $process->run();
+                        // Open merge requests.
+                        $command = $open_command . ' ' . implode(' ', $mrs_urls);
+                        $process = new Process($command);
+                        $process->run();
+                    }
+                }
+                else {
+                    $table->addRow(array('No Merge Requests have been opened yet.'));
                 }
             }
+            else {
+                $table->addRow(array('No Merge Requests have been opened yet.'));
+            }
+            $table->render();
             $output->writeln('');
         }
 
