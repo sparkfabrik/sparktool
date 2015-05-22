@@ -9,7 +9,8 @@
         "symfony/filesystem": "~2.6",
         "symfony/yaml": "~2.6",
         "m4tthumphrey/php-gitlab-api": "7.8.0",
-        "kbsali/redmine-api": "dev-master"
+        "kbsali/redmine-api": "dev-master",
+        "knplabs/github-api": "~1.4"
     },
     "license": "GPL3",
     "authors": [
