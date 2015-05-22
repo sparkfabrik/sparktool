@@ -105,36 +105,91 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $this->command->setService($this->service);
     }
 
-    public function testCreateGitBranch()
+    /**
+     * Test git branch creation with --dry-run
+     */
+    public function testCreateGitBranchDryRun()
     {
         $command = $this->createCommand('redmine:git:branch');
         $this->createMocks();
 
-        // Execute with project_id
         $input = array(
-        'command' => $this->command->getName(),
-        'issue' => '1234',
-        '--dry-run' => true,
+            'command' => $this->command->getName(),
+            'issue' => '1234',
+            'origin-branch' => 'develop',
+            '--dry-run' => true,
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
-        $this->assertEquals('SP-000_1234_testing_branch_name', $res);
+        $res = explode(PHP_EOL, $res);
+        $this->assertEquals('I will execute: git checkout develop', $res[0]);
+        $this->assertEquals('I will execute: git checkout -b feature/SP-000_1234_testing_branch_name', $res[1]);
+        $this->assertEquals('I will execute: git push --set-upstream origin feature/SP-000_1234_testing_branch_name', $res[2]);
     }
 
+    /**
+     * Test git branch creation with wrong issue name fomat.
+     */
     public function testCreateGitBranchWithAwrongIssueFormat()
     {
         $command = $this->createCommand('redmine:git:branch');
         $options = array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject_wrong)));
         $this->createMocks($options);
 
-        // Execute with project_id
         $input = array(
-        'command' => $this->command->getName(),
-        'issue' => '1234',
-        '--dry-run' => true,
+            'command' => $this->command->getName(),
+            'issue' => '1234',
+            '--dry-run' => true,
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
         $this->assertContains('Rename your issue please.', $res);
+    }
+
+  /**
+   * Test error response.
+   *
+   * @expectedException  Exception
+   * @expectedExceptionMessage API show error
+   *
+   */
+    public function testCreateGitBranchShowError()
+    {
+        $command = $this->createCommand('redmine:git:branch');
+        $options = array(
+            'redmineApiIssueShow' => array(
+                  'issue' => array(
+                      'subject' => $this->issue_subject
+                  ),
+                  'errors' => array('API show error'),
+            )
+        );
+        $this->createMocks($options);
+
+        $input = array(
+            'command' => $this->command->getName(),
+            'issue' => '1234',
+            '--dry-run' => true,
+        );
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+    }
+
+    /**
+     * Test missing issue.
+     */
+    public function testCreateGitBranchMissingIssue()
+    {
+        $command = $this->createCommand('redmine:git:branch');
+        $options = array('redmineApiIssueShow' => 1);
+        $this->createMocks($options);
+        $input = array(
+            'command' => $this->command->getName(),
+            'issue' => '1234',
+            '--dry-run' => true,
+        );
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('No issues found.', $res);
     }
 }
