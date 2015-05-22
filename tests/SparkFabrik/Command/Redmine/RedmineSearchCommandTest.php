@@ -30,6 +30,13 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private $redmineClient;
     private $redmineApiIssue;
 
+    private static $fixturesPath;
+
+    public static function setUpBeforeClass()
+    {
+        self::$fixturesPath = __DIR__.'/../../Fixtures/';
+    }
+
     protected function setUp()
     {
         $this->application = new Application();
@@ -221,9 +228,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testSearchByStatus()
     {
-        $path = getcwd();
-        $path = $path . '/tests/SparkFabrik/Fixtures/';
-        $response_mock = file_get_contents($path . 'response_one_issue_new.serialized');
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_new.serialized');
         // file_put_contents($path . 'response_one_issue_new.serialized', serialize($this->response_new_issue));die;
         $command = $this->createCommand('redmine:search');
         $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
@@ -244,9 +249,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testSearchByMoreThanOneStatus()
     {
-        $path = getcwd();
-        $path = $path . '/tests/SparkFabrik/Fixtures/';
-        $response_mock = file_get_contents($path . 'response_two_issue_new_and_in_progress.serialized');
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_two_issue_new_and_in_progress.serialized');
 
         $command = $this->createCommand('redmine:search');
         $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
