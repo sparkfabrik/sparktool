@@ -21,6 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 
 class RedmineShowCommand extends RedmineCommand
 {
@@ -39,21 +40,33 @@ class RedmineShowCommand extends RedmineCommand
         );
         $this->addOption(
             'mr',
-            false,
+            'm',
             InputOption::VALUE_NONE,
             'Extract and print the merge requests links.'
         );
         $this->addOption(
             'open',
-            false,
+            'o',
             InputOption::VALUE_NONE,
             'Open issue or merge requests.'
         );
         $this->addOption(
             'description',
-            false,
+            'd',
             InputOption::VALUE_NONE,
             'Show the issue description.'
+        );
+        $this->addOption(
+            'info',
+            'i',
+            InputOption::VALUE_NONE,
+            'Show the issue\'s not essential fields. Such as author and creation date.'
+        );
+        $this->addOption(
+            'complete',
+            'c',
+            InputOption::VALUE_NONE,
+            'Show all the issue\'s details.'
         );
     }
 
@@ -67,9 +80,10 @@ class RedmineShowCommand extends RedmineCommand
         foreach ($comments as $comment) {
             if (isset($comment['notes']) && (!empty($comment['notes']))) {
                 $note = trim($comment['notes']);
+                $created = date('d-m-Y', strtotime($comment['created_on']));
                 if (preg_match_all($regex, $comment['notes'], $matches)) {
                     foreach ($matches[0] as $match) {
-                        $output[] = $match;
+                        $output[$created] = $match;
                     }
                 }
             }
@@ -88,6 +102,8 @@ class RedmineShowCommand extends RedmineCommand
         $issue_id = $input->getArgument('issue');
         $redmine_url = $this->service->getConfig()['redmine_url'];
         $show_mr = $input->getOption('mr');
+        $show_info = $input->getOption('info');
+        $show_me_everything = $input->getOption('complete');
         $open = $input->getOption('open');
         $open_command = (PHP_OS === 'Darwin' ? 'open' : 'xdg-open');
         $description = $input->getOption('description');
@@ -105,15 +121,56 @@ class RedmineShowCommand extends RedmineCommand
             return $output->writeln('<info>No issues found.</info>');
         }
 
-        // Issue element.
+        // Issue essentials.
         $issue = $res['issue'];
         $redmine_issue_url = $redmine_url . '/issues/' . $issue_id;
-        $output->writeln('<info>Subject: </info>'. $issue['subject']);
-        $output->writeln('<info>URL: </info>'. $redmine_issue_url);
-        if ($description) {
-            $output->writeln('<info>Description: </info>');
-            $output->writeln(trim($issue['description']));
+        $output->writeln('');
+        $output->writeln($issue['subject']);
+        if ($description || $show_me_everything) {
+            $output->writeln('<comment>' . trim($issue['description']) . '</comment>');
         }
+        $output->writeln('');
+
+        // Issue details
+        $table = new Table($output);
+        $table ->setRows(array(
+            array('<info>Assigned to: </info>', $issue['assigned_to']['name']),
+            array('<info>Status: </info>', $issue['status']['name']),
+            array('<info>Priority: </info>', $issue['priority']['name']),
+        ));
+
+        // Separate custom fields form the above.
+        if (!empty($issue['custom_fields'])) {
+            $additional_rows = array();
+            foreach ($issue['custom_fields'] as $key => $field) {
+                if (!empty($field['value'])) {
+                    $value = (string) $field['value'];
+                    $name = (string) $field['name'];
+                    $additional_rows[] = array('<info>' . $name . ':</info>', $value);
+                }
+            }
+            if (!empty($additional_rows)) {
+                $table->addRow(new TableSeparator());
+                $table->addRows($additional_rows);
+            }
+        }
+
+        // Only verbose display should include the following.
+        if ($show_info || $show_me_everything) {
+            $issue['start_date'] = date('d-m-Y', strtotime($issue['start_date']));
+            $table->addRows(array(
+                new TableSeparator(),
+                array('<info>Author: </info>', $issue['author']['name']),
+                array('<info>ID: </info>', $issue['id']),
+                array('<info>Creation date: </info>', $issue['start_date']),
+                array('<info>Done ratio: </info>', $issue['done_ratio'] . '%'),
+                array('<info>Spent hours: </info>', $issue['spent_hours']),
+            ));
+        }
+
+        // Finally render the table.
+        $table->render();
+        $output->writeln('');
         foreach ($extra_output as $name => $elements) {
             $output->writeln('<info>' . strtoupper($name) . ':</info>');
             foreach ($elements as $element) {
@@ -122,13 +179,14 @@ class RedmineShowCommand extends RedmineCommand
         }
 
         // Extract merge requests.
-        if ($show_mr && count($issue['journals'])) {
+        if (($show_mr || $show_me_everything) && count($issue['journals'])) {
             $mrs = $this->extractMergeRequests($issue['journals']);
             if (!empty($mrs)) {
                 $table = new Table($output);
-                $table->setHeaders(array('Merge requests'));
-                foreach ($mrs as $mr) {
-                    $table->addRow(array($mr));
+                $table->setHeaders(array('Merge requests URL', 'Posted on'));
+                foreach ($mrs as $date => $mr) {
+                    $table->addRow(array($mr, $date));
+                    $mrs_urls[] = $mr;
                 }
                 $table->render();
                 if ($open) {
@@ -138,11 +196,12 @@ class RedmineShowCommand extends RedmineCommand
                     $process->run();
 
                     // Open merge requests.
-                    $command = $open_command . ' ' . implode(' ', $mrs);
+                    $command = $open_command . ' ' . implode(' ', $mrs_urls);
                     $process = new Process($command);
                     $process->run();
                 }
             }
+            $output->writeln('');
         }
 
         if ($open && !$show_mr) {
@@ -150,6 +209,7 @@ class RedmineShowCommand extends RedmineCommand
             $process = new Process($command);
             $process->run();
         }
-        $output->writeln("");
+        $output->writeln('<info>URL: </info>'. $redmine_issue_url);
+        $output->writeln('');
     }
 }
