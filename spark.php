@@ -21,6 +21,7 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
+use Sparkfabrik\Tools\Spark\Command\Welcome\WelcomeCommand;
 use Robo\Task\Development\SemVer;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
@@ -38,7 +39,11 @@ try {
     $application->add(new RedmineSearchCommand);
     $application->add(new RedmineShowCommand);
     $application->add(new RedmineGitBranchCommand);
+    $application->add(new WelcomeCommand);
+
+    $application->setDefaultCommand('spark:welcome');
     $application->run();
+
 } catch (InvalidConfigurationException $e) {
     exit(1);
 } catch (Exception $e) {
