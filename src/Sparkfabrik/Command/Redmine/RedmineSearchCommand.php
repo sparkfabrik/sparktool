@@ -283,17 +283,29 @@ EOF
 
         // Handle status (ex: Open, Closed, Feedback ecc..).
         $status = strtolower($status);
-        $default_statues = array('*', 'open', 'close');
-        if (in_array($status, $default_statues)) {
-            return $status;
+        if (strpos($status, ',') !== false) {
+            $statuses = explode(',', $status);
         } else {
-            $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
-            foreach ($custom_statuses as $custom_status) {
-                if (strtolower($custom_status['name']) === $status) {
-                    $status_id = $custom_status['id'];
-                    return $status_id;
+            $statuses = array($status);
+        }
+        $default_statues = array('*', 'open', 'close');
+        $status_params = array();
+        foreach ($statuses as &$requested_status) {
+            $requested_status = trim($requested_status);
+            if (in_array($requested_status, $default_statues)) {
+                array_push($status_params, $requested_status);
+            } else {
+                $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
+                foreach ($custom_statuses as $custom_status) {
+                    if (strtolower($custom_status['name']) === $requested_status) {
+                        array_push($status_params, $custom_status['id']);
+                    }
                 }
             }
+        }
+        $status_params = implode('|', $status_params);
+        if (strlen($status_params) != 0) {
+            return $status_params;
         }
         throw new \Exception('Status not found.');
     }
