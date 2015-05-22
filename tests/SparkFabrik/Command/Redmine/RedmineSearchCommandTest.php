@@ -42,7 +42,6 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->application->add(new RedmineSearchCommand());
         $command = $this->application->find('redmine:search');
         $this->tester = new CommandTester($command);
-
     }
 
     private function getMockedService()
@@ -174,7 +173,11 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+<<<<<<< HEAD
+    * Test verbosity.
+=======
      * Test verbosity.
+>>>>>>> origin/develop
     */
     public function testSearchWithDebugVerbosity()
     {
@@ -204,8 +207,47 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException  Exception
-     * @expectedExceptionMessage errors
+    * Test not estimated issues.
+    */
+    public function testSearchNotEstimated()
+    {
+        $command = $this->createCommand('redmine:search');
+
+        // Issues to mock.
+        $issues = unserialize(file_get_contents(self::$fixturesPath . "redmine-search-not-estimated.serialized"));
+        // Create mocks.
+        $this->createMocks(array('redmineApiIssueAll' => $issues));
+
+        // Execute with project_id
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--not-estimated' => true
+        );
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
++------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
+| ID   | Created    | Updated             | Tracker | Version | Author          | Assigned | Status      | Estimated | Subject                                            |
++------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
+| 8924 | 21-05-2015 | 22-05-2015 09:42:22 | Feature |         | Paolo Pustorino |          | In Progress |           | XMP-009 - Feed the troll                           |
+| 8925 | 21-05-2015 | 22-05-2015 09:42:00 | Feature |         | Paolo Pustorino |          | On hold     |           | XMP-010 - Congratulate with the ne who wrote this  |
+| 8918 | 21-05-2015 | 22-05-2015 08:14:49 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-003 - Take a look at "The Purge" without pukin |
+| 8916 | 21-05-2015 | 22-05-2015 08:14:48 | Epic    |         | Paolo Pustorino |          | New         |           | XMP-001 - Find who killed Laura Palmer             |
+| 8923 | 21-05-2015 | 21-05-2015 22:43:45 | Feature |         | Paolo Pustorino |          | New         |           | XMP-008 - Walk like an egyptian                    |
+| 8922 | 21-05-2015 | 21-05-2015 22:42:22 | Feature |         | Paolo Pustorino |          | New         |           | XMP-007 - Tamarrow never dies!                     |
+| 8919 | 21-05-2015 | 21-05-2015 22:34:08 | Feature |         | Paolo Pustorino |          | New         |           | XMP-004 - Deliver a message to Vasco Rossi         |
+| 8917 | 21-05-2015 | 21-05-2015 22:30:56 | Bug     |         | Paolo Pustorino |          | New         |           | XMP-002 - Paolo Mainardi's dog is thirsty          |
+| 8915 | 21-05-2015 | 21-05-2015 22:29:21 | Feature |         | Paolo Pustorino |          | New         |           | XMP-000 - Check if the moon is made of cheese      |
++------+------------+---------------------+---------+---------+-----------------+----------+-------------+-----------+----------------------------------------------------+
+EOF
+        ;
+        $this->assertEquals($expected, $res);
+    }
+
+   /**
+    * @expectedException  Exception
+    * @expectedExceptionMessage errors
     */
     public function testIssueErrorResponse()
     {
