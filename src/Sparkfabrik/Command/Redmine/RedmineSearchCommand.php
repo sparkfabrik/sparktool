@@ -32,7 +32,7 @@ class RedmineSearchCommand extends RedmineCommand
         $this
             ->setName('redmine:search')
             ->setDescription('Search redmine issues')
-            ->setHelp('The <info>%command.name%</info> command searches isseus on redmine.');
+            ->setHelp('The <info>%command.name%</info> command searches issues on redmine.');
         // Add options.
         $this->addOption(
             'report',
@@ -66,6 +66,12 @@ class RedmineSearchCommand extends RedmineCommand
             InputOption::VALUE_OPTIONAL,
             'Filter by project status name or id. Possible values: open, closed, *',
             'open'
+        );
+        $this->addOption(
+            'category',
+            'c',
+            InputOption::VALUE_OPTIONAL,
+            'Filter by Category ID, available values depend on data on redmine (examples: Hotfix, QA, ...)'
         );
         // @codingStandardsIgnoreStart
         $this->addOption(
@@ -130,7 +136,7 @@ EOF
             false,
             InputOption::VALUE_OPTIONAL,
             <<<EOF
-Filter by field. Available fields are:
+Select which fields to output. Available fields are:
 - id
 - project
 - created_on
@@ -140,6 +146,7 @@ Filter by field. Available fields are:
 - author
 - assigned_to
 - status
+- category
 - estimated_hours
 - subject
 EOF
@@ -219,17 +226,18 @@ EOF
 
             // Fields to print.
             $fields = array(
-            'id' => 'ID',
-            'project' => 'Project',
-            'created_on' => 'Created',
-            'updated_on' => 'Updated',
-            'tracker' => 'Tracker',
-            'fixed_version' => 'Version',
-            'author' => 'Author',
-            'assigned_to' => 'Assigned',
-            'status' => 'Status',
-            'estimated_hours' => 'Estimated',
-            'subject' => 'Subject',
+                'id'              => 'ID',
+                'project'         => 'Project',
+                'created_on'      => 'Created',
+                'updated_on'      => 'Updated',
+                'tracker'         => 'Tracker',
+                'fixed_version'   => 'Version',
+                'author'          => 'Author',
+                'assigned_to'     => 'Assigned',
+                'status'          => 'Status',
+                'category'        => 'Category',
+                'estimated_hours' => 'Estimated',
+                'subject'         => 'Subject',
             );
 
             if ($input->getOption('fields')) {
@@ -254,6 +262,37 @@ EOF
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
         }
+    }
+
+    /**
+     * Read Category argument and translate to a redmine category_id.
+     *
+     * @param string|integer $category
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentCategoryId($category, $project_id = null)
+    {
+        if (!$project_id) {
+            throw new \Exception('Project must be specified when filtering by category.');
+        }
+        $categories = $this->getService()->getClient()->api('issue_category')->all($project_id);
+        if (!isset($categories['issue_categories'])) {
+            throw new \Exception('No categories have been found for this project.');
+        }
+        $category_names = [];
+        foreach ($categories['issue_categories'] as $category_from_redmine) {
+            $category_names[] = $category_from_redmine['name'];
+            if (is_numeric($category) && $category == $category_from_redmine['id']) {
+                return $category_from_redmine['id'];
+            } elseif (!is_numeric($category) && strtolower($category) == $category_from_redmine['name']) {
+                return $category_from_redmine['id'];
+            }
+        }
+        $text  = 'Specified category "%s" has not been found in this project.'.PHP_EOL;
+        $text .= 'Valid Categories are "%s"';
+        $string = sprintf($text, $category, implode(',', $category_names));
+        throw new \Exception($string);
     }
 
     /**
@@ -490,23 +529,28 @@ EOF
                 );
             }
         }
-        if ($input->getOption('status')) {
-            $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
+        $category = $input->getOption('category');
+        if ($category) {
+            $api_options['category_id'] = $this->handleArgumentCategoryId($category, $project_id);
         }
-        if ($input->getOption('assigned')) {
-            $assignment = ($input->getOption('assigned') ? $input->getOption('assigned') : 'me');
-            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
+        $status = $input->getOption('status');
+        if ($status) {
+            $api_options['status_id'] = $this->handleArgumentStatusId($status);
         }
-        if ($input->getOption('created')) {
-            $created_args = $input->getOption('created');
+        $assigned = $input->getOption('assigned');
+        if ($assigned) {
+            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($assigned);
+        }
+        $created_args = $input->getOption('created');
+        if ($created_args) {
             $api_options['created_on'] = $this->handleArgumentDate($created_args);
         }
-        if ($input->getOption('updated')) {
-            $updated_args = $input->getOption('updated');
+        $updated_args = $input->getOption('updated');
+        if ($updated_args) {
             $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
         }
-        if ($input->getOption('tracker')) {
-            $tracker_args = $input->getOption('tracker');
+        $tracker_args = $input->getOption('tracker');
+        if ($tracker_args) {
             $api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
         }
     }
