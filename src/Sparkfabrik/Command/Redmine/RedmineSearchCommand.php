@@ -431,7 +431,9 @@ EOF
                 }
             }
         }
+
         $status_params = implode('|', $status_params);
+
         if (strlen($status_params) != 0) {
             return $status_params;
         }
