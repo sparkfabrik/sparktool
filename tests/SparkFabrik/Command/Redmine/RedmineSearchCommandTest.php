@@ -29,7 +29,6 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private $service;
     private $redmineClient;
     private $redmineApiIssue;
-
     private static $fixturesPath;
 
     public static function setUpBeforeClass()
@@ -221,6 +220,50 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             '--project_id' => 'test_project_id',
             )
         );
+    }
+
+  /**
+   * Test incorrect fields arguments.
+   *
+   * @group incorrectFields
+   */
+    public function testIncorrectFields()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'incorrect_field');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
+    }
+
+    /**
+   * Test incorrect fields arguments.
+   *
+   * @group fieldsSingleFilter
+   */
+    public function testFieldsSingleFilter()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'id');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals("+------+\n| ID   |\n+------+", substr($res, 0, 26));
     }
 
     /**
