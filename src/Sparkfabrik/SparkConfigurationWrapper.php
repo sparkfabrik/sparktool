@@ -22,14 +22,18 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
 {
     private $processedConfiguration;
     private $fs;
     private $options = array();
+    private $output;
 
-    public function __construct($options = array())
+    public function __construct($options = array(), OutputInterface $output = null)
     {
         $this->options = array_replace(
             array(
@@ -40,6 +44,10 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
             $options
         );
         $this->initConfig();
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+        $this->output = $output;
     }
 
     public function initConfig()
@@ -111,9 +119,6 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
                 $configs[] = $yaml['spark'];
             }
         }
-        if (!$configs) {
-            throw new \Exception('Configuration file empty');
-        }
         try {
             $processor = new Processor();
             $sparkConfiguration = new SparkConfiguration();
@@ -121,8 +126,19 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
                 $sparkConfiguration,
                 $configs
             );
-        } catch (\Exception $e) {
-            die($e->getMessage() . PHP_EOL);
+        } catch (InvalidConfigurationException $e) {
+            $stderr = $this->output->getErrorOutput();
+            $stderr->writeln('<error>ERROR</error> while loading configuration:');
+            $message = sprintf(
+                'The path "<bg=red>%s</bg=red>" cannot contain an empty value.',
+                $e->getPath()
+            );
+
+            $stderr->writeln($message);
+            $stderr->writeln('Configuration files are searched in:');
+            $stderr->writeln($this->options['sparkHome'].DIRECTORY_SEPARATOR.$this->options['sparkConfigFile']);
+            $stderr->writeln($this->options['currentDir'].DIRECTORY_SEPARATOR.$this->options['sparkConfigFile']);
+            throw $e;
         }
     }
 
