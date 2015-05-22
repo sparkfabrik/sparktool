@@ -39,6 +39,12 @@ EOF
             InputArgument::REQUIRED,
             'Issue id'
         );
+        $this->addArgument(
+            'origin-branch',
+            InputArgument::OPTIONAL,
+            'Branch to start from.',
+            'develop'
+        );
         $this->addOption(
             'dry-run',
             false,
@@ -55,6 +61,7 @@ EOF
         $branch = $this->getService()->getConfig()['git_pattern'];
         $client = $this->getService()->getClient();
         $issue = $input->getArgument('issue');
+        $origin_branch = $input->getArgument('origin-branch');
         $dry_run = $input->getOption('dry-run');
         $res = $client->api('issue')->show($issue);
 
@@ -96,12 +103,12 @@ EOF
         $branch = str_replace('%(issue_id)', (string) $issue, $branch);
         $branch = str_replace('%(story_name)', $story_name, $branch);
 
-        // Execute git flow.
+        // Create branch using standard git commands.
         if (!$dry_run) {
             try {
-                // Git flow.
-                $git_flow_process = new Process('git flow feature start ' . $branch);
-                $git_flow_process->mustRun();
+                $git_process = new Process('git checkout ' . $origin_branch);
+                $git_process = new Process('git checkout -b feature/' . $branch);
+                $git_process->mustRun();
                 $output->writeln("<info>Branch: \"{$branch}\" created </info>");
 
                 // Auto track of branch.
@@ -109,10 +116,12 @@ EOF
                 $git_track_branch->mustRun();
                 $output->writeln("<info>Branch: \"{$branch}\" tracked </info>");
             } catch (ProcessFailedException $e) {
-                return $output->writeln("<comment>Error: " . $git_flow_process->getErrorOutput() . "</comment>");
+                return $output->writeln("<comment>Error: " . $git_process->getErrorOutput() . "</comment>");
             }
         } else {
-            $output->writeln($branch);
+            $output->writeln('I will execute: <info>git checkout ' . $origin_branch . '</info>');
+            $output->writeln('I will execute: <info>git checkout -b feature/' . $branch . '</info>');
+            $output->writeln('I will execute: <info>git push --set-upstream origin feature/' . $branch . '</info>');
         }
     }
 }

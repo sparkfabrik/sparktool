@@ -114,11 +114,15 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $input = array(
         'command' => $this->command->getName(),
         'issue' => '1234',
+        'origin-branch' => 'develop',
         '--dry-run' => true,
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
-        $this->assertEquals('SP-000_1234_testing_branch_name', $res);
+        $res = explode(PHP_EOL, $res);
+        $this->assertEquals('I will execute: git checkout develop', $res[0]);
+        $this->assertEquals('I will execute: git checkout -b feature/SP-000_1234_testing_branch_name', $res[1]);
+        $this->assertEquals('I will execute: git push --set-upstream origin feature/SP-000_1234_testing_branch_name', $res[2]);
     }
 
     public function testCreateGitBranchWithAwrongIssueFormat()
