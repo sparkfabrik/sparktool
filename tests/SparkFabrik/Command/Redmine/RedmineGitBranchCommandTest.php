@@ -30,7 +30,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
     private $redmineClient;
     private $redmineApiIssue;
 
-    private $issue_subject = 'SP-000 - Testing branch name';
+    private $issue_subject = 'SP-000 - Testing branch name with “quoted”-utf8 and àccènted wörds';
     private $issue_subject_wrong = 'BUG: testing_branch_name';
 
     protected function setUp()
@@ -118,7 +118,11 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
-        $this->assertEquals('SP-000_1234_testing_branch_name', $res);
+        $this->assertContains('SP-000_1234_testing_branch_name', $res);
+        // Elimination of utf-8 punctuation.
+        $this->assertContains('quoted_utf8', $res);
+        // Transliteration of utf-8 accented characters.
+        $this->assertContains('accented_words', $res);
     }
 
     public function testCreateGitBranchWithAwrongIssueFormat()
