@@ -32,7 +32,8 @@ class RedmineSearchCommand extends RedmineCommand
         $this
           ->setName('redmine:search')
           ->setDescription('Search redmine issues')
-          ->setHelp(<<<EOF
+          ->setHelp(
+<<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
@@ -253,10 +254,9 @@ EOF
 
         // Handle status (ex: Open, Closed, Feedback ecc..).
         $status = strtolower($status);
-        if (strpos($status, ',') !== FALSE) {
+        if (strpos($status, ',') !== false) {
             $statuses = explode(',', $status);
-        }
-        else {
+        } else {
             $statuses = array($status);
         }
         $default_statues = array('*', 'open', 'close');
