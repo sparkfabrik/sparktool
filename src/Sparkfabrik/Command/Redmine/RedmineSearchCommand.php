@@ -12,8 +12,6 @@
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
-use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
-use Sparkfabrik\Tools\Spark\RedmineApi\Version as RedmineApiVersion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +21,8 @@ use Redmine\Api\Tracker;
 
 class RedmineSearchCommand extends RedmineCommand
 {
+    // Include helper trait.
+    use \Sparkfabrik\Tools\Spark\Helpers\Traits\Command\Redmine\RedmineSearchTrait;
 
     /**
      * {@inheritdoc}
@@ -30,9 +30,10 @@ class RedmineSearchCommand extends RedmineCommand
     protected function configure()
     {
         $this
-          ->setName('redmine:search')
-          ->setDescription('Search redmine issues')
-          ->setHelp(<<<EOF
+            ->setName('redmine:search')
+            ->setDescription('Search redmine issues')
+            ->setHelp(
+                <<<EOF
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
@@ -43,8 +44,7 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-          )
-        ;
+            );
         // Add options.
         $this->addOption(
             'report',
@@ -184,7 +184,8 @@ EOF
 
             // JSON Syntax error or just false result.
             if ((isset($res[0]) && ($res[0] === 'Syntax error'))
-            || $res === false) {
+                || $res === false
+            ) {
                 throw new \Exception('Failed to parse response.');
             }
 
@@ -196,9 +197,10 @@ EOF
 
             // This is how redmine library return empty results.
             if (!count($res)
-            || (count($res) == 1 && ($res[0] === 1))
-            || (isset($res['total_count']) && $res['total_count'] === 0)
-            || (empty($res))) {
+                || (count($res) == 1 && ($res[0] === 1))
+                || (isset($res['total_count']) && $res['total_count'] === 0)
+                || (empty($res))
+            ) {
                 return $output->writeln('<info>No issues found.</info>');
             }
 
@@ -214,7 +216,7 @@ EOF
                 }
             }
 
-          // Reduce results, filter by subject content.
+            // Reduce results, filter by subject content.
             if ($input->getOption('subject')) {
                 $subject = $input->getOption('subject');
                 foreach ($res['issues'] as $key => $issue) {
@@ -321,25 +323,24 @@ EOF
 
         // @link http://www.redmine.org/issues/8918#note-3
         $magic_tokens = array(
-        'me' => 'me',
-        'not me' => '!me',
-        'anyone' => '*',
-        'none' => '!*',
-        'all' => '',
+            'me' => 'me',
+            'not me' => '!me',
+            'anyone' => '*',
+            'none' => '!*',
+            'all' => '',
         );
         if (array_key_exists($assigned, $magic_tokens)) {
             return $magic_tokens[$assigned];
         }
 
-        // Instantiate proxy redmine user class, we need more power.
-        $redmineUserClient = new RedmineApiUser($this->getService()->getClient());
-
-        // Translate string to id.
-        $user_id = $redmineUserClient->getIdByFirstLastName($assigned);
-        if ($user_id === false) {
+        // Translate object to first+last name.
+        $name = strtolower($assigned);
+        $users = $this->getService()->getClient()->api('user')->all(array('limit' => 200));
+        $usernames = $this->redmineUsersObjectToFirstLastname($users);
+        if (!isset($name, $usernames)) {
             throw new \Exception('No user found.');
         }
-        return $user_id;
+        return $usernames[$name];
     }
 
     /**
@@ -352,11 +353,9 @@ EOF
         if (is_numeric($sprint)) {
             return $sprint;
         } else {
-            $redmineVersionClient = new RedmineApiVersion($this->getService()->getClient());
             // Set a very high limit.
-            $fixed_version_id = $redmineVersionClient->getIdByName($project_id, $sprint, array(
-            'limit' => 500
-            ));
+            $version_client = $this->getService()->getClient()->api('version');
+            $fixed_version_id = $version_client->getIdByName($project_id, $sprint, array('limit' => 500));
             if ($fixed_version_id === false) {
                 throw new \Exception('No sprint version found.');
             }
