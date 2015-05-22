@@ -137,6 +137,25 @@ EOF
             InputOption::VALUE_OPTIONAL,
             'Filter by tracker.'
         );
+        $this->addOption(
+            'fields',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            <<<EOF
+Filter by field. Available fields are:
+- id
+- project
+- created_on
+- updated_on
+- tracker
+- fixed_version
+- author
+- assigned_to
+- status
+- estimated_hours
+- subject
+EOF
+        );
     }
 
     /**
@@ -225,6 +244,15 @@ EOF
             'subject' => 'Subject',
             );
 
+            if ($input->getOption('fields')) {
+                $filters = explode(',', strtolower($input->getOption('fields')));
+                $fields = array_intersect_key($fields, array_flip($filters));
+                $incorrect_filters = implode(', ', array_keys(array_diff_key(array_flip($filters), $fields)));
+                if (!empty($incorrect_filters)) {
+                    $output->writeln('<error>Incorrect filters inserted: ' . $incorrect_filters . '</error>');
+                }
+            }
+
             // Hide project if it is already configured.
             if (isset($api_options['project_id'])) {
                 unset($fields['project']);
@@ -255,17 +283,29 @@ EOF
 
         // Handle status (ex: Open, Closed, Feedback ecc..).
         $status = strtolower($status);
-        $default_statues = array('*', 'open', 'close');
-        if (in_array($status, $default_statues)) {
-            return $status;
+        if (strpos($status, ',') !== false) {
+            $statuses = explode(',', $status);
         } else {
-            $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
-            foreach ($custom_statuses as $custom_status) {
-                if (strtolower($custom_status['name']) === $status) {
-                    $status_id = $custom_status['id'];
-                    return $status_id;
+            $statuses = array($status);
+        }
+        $default_statues = array('*', 'open', 'close');
+        $status_params = array();
+        foreach ($statuses as &$requested_status) {
+            $requested_status = trim($requested_status);
+            if (in_array($requested_status, $default_statues)) {
+                array_push($status_params, $requested_status);
+            } else {
+                $custom_statuses = $this->getService()->getClient()->api('issue_status')->all()['issue_statuses'];
+                foreach ($custom_statuses as $custom_status) {
+                    if (strtolower($custom_status['name']) === $requested_status) {
+                        array_push($status_params, $custom_status['id']);
+                    }
                 }
             }
+        }
+        $status_params = implode('|', $status_params);
+        if (strlen($status_params) != 0) {
+            return $status_params;
         }
         throw new \Exception('Status not found.');
     }

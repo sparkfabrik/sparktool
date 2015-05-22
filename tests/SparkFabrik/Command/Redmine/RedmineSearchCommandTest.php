@@ -73,8 +73,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-   * Create mocks.
-   */
+     * Create mocks.
+    */
     private function createMocks($options = array())
     {
         $this->service = $this->getMockedService();
@@ -107,8 +107,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-   * Test no issues found.
-   */
+     * Test no issues found.
+    */
     public function testNoIssuesFound()
     {
         $command = $this->createCommand('redmine:search');
@@ -131,11 +131,12 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-   * Test syntax error.
-   *
-   * @expectedException        Exception
-   * @expectedExceptionMessage Failed to parse response
-   */
+     * Test syntax error.
+     *
+     * @expectedException  Exception
+     * @expectedExceptionMessage Failed to parse response
+     *
+    */
     public function testSyntaxError()
     {
         $command = $this->createCommand('redmine:search');
@@ -151,11 +152,12 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-   * Test false return result set.
-   *
-   * @expectedException        Exception
-   * @expectedExceptionMessage Failed to parse response
-   */
+     * Test false return result set.
+     *
+     * @expectedException  Exception
+     * @expectedExceptionMessage Failed to parse response
+     *
+    */
     public function testFalseResult()
     {
         $command = $this->createCommand('redmine:search');
@@ -171,7 +173,11 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+<<<<<<< HEAD
     * Test verbosity.
+=======
+     * Test verbosity.
+>>>>>>> origin/develop
     */
     public function testSearchWithDebugVerbosity()
     {
@@ -256,5 +262,92 @@ EOF
             '--project_id' => 'test_project_id',
             )
         );
+    }
+
+  /**
+   * Test incorrect fields arguments.
+   *
+   * @group incorrectFields
+   */
+    public function testIncorrectFields()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'incorrect_field');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
+    }
+
+    /**
+   * Test incorrect fields arguments.
+   *
+   * @group fieldsSingleFilter
+   */
+    public function testFieldsSingleFilter()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'id');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals("+------+\n| ID   |\n+------+", substr($res, 0, 26));
+    }
+
+    /**
+     * Test search by status.
+     */
+    public function testSearchByStatus()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_new.serialized');
+        // file_put_contents($path . 'response_one_issue_new.serialized', serialize($this->response_new_issue));die;
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
+
+        $options = array('--status' => 'new');
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+    }
+
+    /**
+     * Test search by more than one status.
+     */
+    public function testSearchByMoreThanOneStatus()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_two_issue_new_and_in_progress.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
+
+        $options = array('--status' => 'new, in progress');
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+        $this->assertContains('In Progress', $res);
     }
 }

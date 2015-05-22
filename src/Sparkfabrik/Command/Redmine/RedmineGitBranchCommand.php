@@ -32,7 +32,7 @@ class RedmineGitBranchCommand extends RedmineCommand
             ->setName('redmine:git:branch')
             ->setDescription(
                 <<<EOF
-Generate branch using git-flow, the branch name is generated starting from issue subject
+            Generate branch using git-flow, the branch name is generated starting from issue subject
 EOF
             );
         $this->addArgument(

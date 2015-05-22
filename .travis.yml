@@ -6,8 +6,11 @@ php:
   - hhvm
   - nightly
 
-install: composer install
-script: bin/phpunit
-after_script:
-  - bin/test-reporter --coverage-report=build/logs/clover.xml
+install:
+ - composer install
+script:
+  - bin/phpunit
   - bin/phpcs --standard=PSR2 --error-severity=1 --warning-severity=8 src tests
+after_success:
+  - bin/test-reporter --coverage-report=build/logs/clover.xml
+
