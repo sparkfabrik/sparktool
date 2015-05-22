@@ -29,6 +29,12 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private $service;
     private $redmineClient;
     private $redmineApiIssue;
+    private static $fixturesPath;
+
+    public static function setUpBeforeClass()
+    {
+        self::$fixturesPath = __DIR__.'/../../Fixtures/';
+    }
 
     protected function setUp()
     {
@@ -222,7 +228,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     public function testIncorrectFields()
     {
         $command = $this->createCommand('redmine:search');
-        $data = file_get_contents(getcwd() . '/tests/SparkFabrik/Fixtures/RedmineSearchResult');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
         $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
 
         // Execute with project_id
@@ -244,7 +250,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     public function testFieldsSingleFilter()
     {
         $command = $this->createCommand('redmine:search');
-        $data = file_get_contents(getcwd() . '/tests/SparkFabrik/Fixtures/RedmineSearchResult');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
         $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
 
         // Execute with project_id
