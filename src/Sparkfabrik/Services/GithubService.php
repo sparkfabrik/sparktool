@@ -40,7 +40,7 @@ class GithubService extends AbstractService
         if (empty($this->client)) {
             $this->client = new \Github\Client();
             if (empty($this->client)) {
-                throw new \Exception('Cannot connect to redmine client, check your configurations.');
+                throw new \Exception('Cannot connect to github client, check your configurations.');
             }
         }
     }

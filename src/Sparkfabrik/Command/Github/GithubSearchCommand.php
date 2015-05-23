@@ -51,8 +51,19 @@ EOF
     {
         try {
             $client = $this->getService()->getClient();
-            $res = $client->api('issue')->all($this->getService()->getConfig()['github_user'], $this->getService()->getConfig()['github_repo'], array('state' => 'open'));
-            
+            $res = $client
+                ->api('issue')
+                ->all(
+                    $this->getService()->getConfig()['github_user'],
+                    $this->getService()->getConfig()['github_repo'],
+                    array('state' => 'open')
+                );
+
+            // Github API returns empty array if it finds no issues.
+            if (!count($res) || (empty($res))) {
+                return $output->writeln('<info>No issues found.</info>');
+            }
+
             // Fields to print.
             $fields = array(
             'number' => 'ID',
