@@ -181,19 +181,6 @@ EOF
 
             // Fields to print.
             $fields = array(
-<<<<<<< HEAD
-                'id' => 'ID',
-                'project' => 'Project',
-                'created_on' => 'Created',
-                'updated_on' => 'Updated',
-                'tracker' => 'Tracker',
-                'fixed_version' => 'Version',
-                'author' => 'Author',
-                'assigned_to' => 'Assigned',
-                'status' => 'Status',
-                'estimated_hours' => 'Estimated',
-                'subject' => 'Subject',
-=======
                 'id'              => 'ID',
                 'project'         => 'Project',
                 'created_on'      => 'Created',
@@ -206,7 +193,6 @@ EOF
                 'category'        => 'Category',
                 'estimated_hours' => 'Estimated',
                 'subject'         => 'Subject',
->>>>>>> develop
             );
 
             if ($input->getOption('fields')) {
@@ -234,18 +220,6 @@ EOF
     }
 
     /**
-<<<<<<< HEAD
-     * Perform custom search filtering on subjects.
-     *
-     * @param string $subject
-     * @param array $api_options
-     */
-    private function filterBySubject($subject, $api_options) {
-        $subjects = split(",", $subject);
-        $redmineIssueClient = new RedmineApiIssue($this->getService()->getClient());
-        $res = $redmineIssueClient->getByMultipleSubjects($subjects, $api_options);
-        return $res;
-=======
      * Read Category argument and translate to a redmine category_id.
      *
      * @param string|integer $category
@@ -274,7 +248,6 @@ EOF
         $text .= 'Valid Categories are "%s"';
         $string = sprintf($text, $category, implode(',', $category_names));
         throw new \Exception($string);
->>>>>>> develop
     }
 
     /**
