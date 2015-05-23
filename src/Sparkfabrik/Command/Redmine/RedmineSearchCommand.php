@@ -22,7 +22,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Redmine\Api\Tracker;
 
-
 class RedmineSearchCommand extends RedmineCommand
 {
     // Include helper trait.
@@ -31,26 +30,45 @@ class RedmineSearchCommand extends RedmineCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure() {
+    protected function configure()
+    {
         $this
             ->setName('redmine:search')
             ->setDescription('Search redmine issues')
             ->setHelp('The <info>%command.name%</info> command searches issues on redmine.');
         // Add options.
         $this->addOption(
-            'report', null, InputOption::VALUE_NONE, 'Print a summary report'
+            'report',
+            null,
+            InputOption::VALUE_NONE,
+            'Print a summary report'
         );
         $this->addOption(
-            'limit', 'l', InputOption::VALUE_OPTIONAL, 'How many issues should be printed ?', 50
+            'limit',
+            'l',
+            InputOption::VALUE_OPTIONAL,
+            'How many issues should be printed ?',
+            50
         );
         $this->addOption(
-            'sort', 's', InputOption::VALUE_OPTIONAL, 'Issues sorting', 'updated_on:desc'
+            'sort',
+            's',
+            InputOption::VALUE_OPTIONAL,
+            'Issues sorting',
+            'updated_on:desc'
         );
         $this->addOption(
-            'project_id', 'p', InputOption::VALUE_OPTIONAL, 'Filter by project machine name'
+            'project_id',
+            'p',
+            InputOption::VALUE_OPTIONAL,
+            'Filter by project machine name'
         );
         $this->addOption(
-            'status', false, InputOption::VALUE_OPTIONAL, 'Filter by project status name or id. Possible values: open, closed, *', 'open'
+            'status',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Filter by project status name or id. Possible values: open, closed, *',
+            'open'
         );
         $this->addOption(
             'category',
@@ -73,26 +91,44 @@ EOF
         );
         // @codingStandardsIgnoreEnd
         $this->addOption(
-            'sprint', false, InputOption::VALUE_OPTIONAL, 'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
+            'sprint',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Filter by version (sprint name). You can specify name (ex: SPRINT-XX) or numeric-id.'
         );
         $this->addOption(
-            'created', false, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, <<<EOF
+            'created',
+            false,
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            <<<EOF
 Single date format: "<=|=> [date]"
 Multiple date range format: "[date]"
 Where [date] can be any expression supported by strtotime.
 EOF
         );
         $this->addOption(
-            'updated', false, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Filter by updated date. Supported format: (<=|=>) [any english textual datetime]'
+            'updated',
+            false,
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            'Filter by updated date. Supported format: (<=|=>) [any english textual datetime]'
         );
         $this->addOption(
-            'not-estimated', false, InputOption::VALUE_NONE, 'Filter by not estimated issues.'
+            'not-estimated',
+            false,
+            InputOption::VALUE_NONE,
+            'Filter by not estimated issues.'
         );
         $this->addOption(
-            'subject', false, InputOption::VALUE_OPTIONAL, 'Filter by subject, it filters contained text in the subject.'
+            'subject',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Filter by subject, it filters contained text in the subject.'
         );
         $this->addOption(
-            'tracker', false, InputOption::VALUE_OPTIONAL, 'Filter by tracker.'
+            'tracker',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Filter by tracker.'
         );
         $this->addOption(
             'fields',
@@ -119,7 +155,8 @@ EOF
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         try {
             $client = $this->getService()->getClient();
             $api_options = array();
@@ -138,12 +175,21 @@ EOF
 
             $res = array();
             if ($input->getOption('subject')) {
-                $subject = $input->getOption('subject');
-                $res = $this->filterBySubject($subject, $api_options);
+                $filter = $input->getOption('subject');
+                $subjects = split(",", $filter);
+                $api_options['f[]'] = 'subject';
+                $api_options['op[subject]'] = '~';
+                foreach ($subjects as $subject) {
+                    $api_options['v[subject][]'] = $subject;
+                    $newRes = $client->api('issue')->all($api_options);
+                    $res = array_merge_recursive($res, $newRes);
+                }
             } else {
                 // Run query.
                 $res = $client->api('issue')->all($api_options);
             }
+
+            $res = $this->normalizeIndicators($res);
 
             // JSON Syntax error or just false result.
             if ((isset($res[0]) && ($res[0] === 'Syntax error'))
@@ -257,7 +303,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentStatusId($status) {
+    private function handleArgumentStatusId($status)
+    {
         if (is_numeric($status)) {
             return $status;
         }
@@ -301,7 +348,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleAgumentProjectId($project_id = null) {
+    private function handleAgumentProjectId($project_id = null)
+    {
         return ($project_id ? $project_id : $this->getService()->getConfig()['project_id']);
     }
 
@@ -310,7 +358,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentAssignedToId($assigned) {
+    private function handleArgumentAssignedToId($assigned)
+    {
         if (is_numeric($assigned)) {
             return $assigned;
         }
@@ -342,7 +391,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentFixedVersionId($sprint, $project_id) {
+    private function handleArgumentFixedVersionId($sprint, $project_id)
+    {
         if (is_numeric($sprint)) {
             return $sprint;
         } else {
@@ -363,7 +413,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDateSingle($date, $use_operators = true) {
+    private function handleArgumentDateSingle($date, $use_operators = true)
+    {
         $date = strtolower($date);
         if ($use_operators) {
             $op = false;
@@ -394,7 +445,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDateRange($args) {
+    private function handleArgumentDateRange($args)
+    {
         $range = array();
         foreach ($args as $date) {
             $range[] = $this->handleArgumentDateSingle($date, false);
@@ -410,7 +462,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentDate($args) {
+    private function handleArgumentDate($args)
+    {
         if (count($args) > 2) {
             throw new Exception('Date handler: Too much dates dude!');
         }
@@ -431,7 +484,8 @@ EOF
      *
      * @return integer
      */
-    private function handleArgumentTracker($tracker) {
+    private function handleArgumentTracker($tracker)
+    {
         $trackerId = 0;
 
         $trackers = $this->getService()->getClient()->api('tracker')->listing();
@@ -463,7 +517,8 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options) {
+    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options)
+    {
         $project_id = $this->handleAgumentProjectId($input->getOption('project_id'));
         if ($project_id) {
             $api_options['project_id'] = $project_id;
@@ -471,7 +526,8 @@ EOF
             // Versions depends on project_id.
             if ($input->getOption('sprint')) {
                 $api_options['fixed_version_id'] = $this->handleArgumentFixedVersionId(
-                    $input->getOption('sprint'), $project_id
+                    $input->getOption('sprint'),
+                    $project_id
                 );
             }
         }
@@ -501,4 +557,28 @@ EOF
         }
     }
 
+    /**
+     * Normalize resultset indicators.
+     *
+     * @param array $results
+     * @return array
+     */
+    private function normalizeIndicators($results)
+    {
+        if (is_array($results['total_count'])) {
+            $total = 0;
+            foreach ($results['total_count'] as $value) {
+                $total += $value;
+            }
+            $results['total_count'] = $total;
+        }
+        if (is_array($results['limit'])) {
+            $results['limit'] = $results['limit'][0];
+        }
+        if (is_array($results['offset'])) {
+            $results['offset'] = $results['offset'][0];
+        }
+
+        return $results;
+    }
 }
