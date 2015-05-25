@@ -30,8 +30,8 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
     private $redmineClient;
     private $redmineApiIssue;
 
-    private $issue_subject = 'SP-000 - Testing branch name with “quoted”-utf8 and àccènted wörds';
-    private $issue_subject_wrong = 'BUG: testing_branch_name';
+    private $issue_subject_with_story_name = 'SP-000 - Testing branch name with “quoted”-utf8 and àccènted wörds';
+    private $issue_subject_without_story_name = 'BUG: Test branch name';
 
     protected function setUp()
     {
@@ -49,7 +49,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $service
             ->expects($this->once())
             ->method('getConfig')
-            ->will($this->returnValue(array('git_pattern' => '%(story_prefix)-%(story_code)_%(issue_id)_%(story_name)')));
+            ->will($this->returnValue(array('git_pattern' => '%(story)_%(issue_id)_%(story_name)')));
         return $service;
     }
 
@@ -82,7 +82,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Default returns for mock objects.
         $default_options = array_replace(
-            array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject))),
+            array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject_with_story_name))),
             $options
         );
 
@@ -106,12 +106,26 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test git branch creation with --dry-run
+     * Test git branch creation  --dry-run with custom field "Jira story name".
      */
-    public function testCreateGitBranchDryRun()
+    public function testCreateGitBranchDryRunWithStoryName()
     {
         $command = $this->createCommand('redmine:git:branch');
-        $this->createMocks();
+        $options = array(
+            'redmineApiIssueShow' => array(
+                  'issue' => array(
+                      'subject' => $this->issue_subject_with_story_name,
+                      'custom_fields' => array(
+                          array(
+                              'id' => 19,
+                              'name' => 'Jira Story Code',
+                              'value' => 'SP-000',
+                          )
+                      ),
+                  ),
+            )
+        );
+        $this->createMocks($options);
 
         $input = array(
             'command' => $this->command->getName(),
@@ -132,22 +146,39 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test git branch creation with wrong issue name fomat.
+     * Test git branch creation  --dry-run without custom field "Jira story name".
      */
-    public function testCreateGitBranchWithAwrongIssueFormat()
+    public function testCreateGitBranchDryRunWithoutStoryName()
     {
         $command = $this->createCommand('redmine:git:branch');
-        $options = array('redmineApiIssueShow' => array('issue' => array('subject' => $this->issue_subject_wrong)));
+        $options = array(
+            'redmineApiIssueShow' => array(
+                  'issue' => array(
+                      'subject' => $this->issue_subject_without_story_name,
+                      'custom_fields' => array(
+                          array(
+                              'id' => 19,
+                              'name' => 'Another field',
+                              'value' => 'test',
+                          )
+                      ),
+                  ),
+            )
+        );
         $this->createMocks($options);
 
         $input = array(
             'command' => $this->command->getName(),
             'issue' => '1234',
+            'origin-branch' => 'develop',
             '--dry-run' => true,
         );
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
-        $this->assertContains('Rename your issue please.', $res);
+        $res = explode(PHP_EOL, $res);
+        $this->assertEquals('I will execute: git checkout develop', $res[0]);
+        $this->assertContains('I will execute: git checkout -b feature/1234_bug_test_branch_name', $res[1]);
+        $this->assertContains('I will execute: git push --set-upstream origin feature/1234_bug_test_branch_name', $res[2]);
     }
 
   /**
@@ -163,7 +194,7 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
         $options = array(
             'redmineApiIssueShow' => array(
                   'issue' => array(
-                      'subject' => $this->issue_subject
+                      'subject' => $this->issue_subject_with_story_name
                   ),
                   'errors' => array('API show error'),
             )

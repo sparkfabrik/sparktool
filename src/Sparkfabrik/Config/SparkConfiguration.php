@@ -49,7 +49,7 @@ class SparkConfiguration implements ConfigurationInterface
                         ->scalarNode('branch_pattern')
                         ->cannotBeEmpty()
                         ->info('Please fill in the value with a valid branch pattern')
-                        ->defaultValue('%(story_prefix)-%(story_code)_%(issue_id)_%(story_name)')
+                        ->defaultValue('%(story)_%(issue_id)_%(story_name)')
                         ->end()
                     ->end()
                 ->end()
