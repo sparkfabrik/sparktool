@@ -75,6 +75,21 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         return $redmineApiIssue;
     }
 
+    private function getMockedRedmineApiUser()
+    {
+        $redmineApiUser = $this->getMockBuilder('\Redmine\Api\User')
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $redmineApiUser;
+    }
+
+    private function getMockedRedmineApiMembership()
+    {
+        $redmineApiMembership = $this->getMockBuilder('\Redmine\Api\Membership')
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $redmineApiMembership;
+    }
 
     private function createCommand($name)
     {
@@ -90,11 +105,17 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->redmineClient = $this->getMockedRedmineClient();
         $this->redmineApiIssue = $this->getMockedRedmineApiIssue();
         $this->redmineApiIssueStatus = $this->getMockedRedmineApiIssueStatus();
+        $this->redmineApiUser = $this->getMockedRedmineApiUser();
+        $this->redmineApiMembership = $this->getMockedRedmineApiMembership();
 
         // Default returns for mock objects.
         $default_options = array_replace(
             array('redmineApiIssueAll' => array()),
             array('redmineApiIssueStatusAll' => array('issue_statuses' => array())),
+            array('redmineApiUserGetCurrentUser' => array()),
+            array('redmineApiUserAll' => array()),
+            array('redmineApiMembershipAll' => array()),
+            array('redmineApiUserShow' => array()),
             $options
         );
 
@@ -107,13 +128,31 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             ->method('all')
             ->will($this->returnValue($default_options['redmineApiIssueStatusAll']));
 
+        $this->redmineApiUser->expects($this->any())
+            ->method('getCurrentUser')
+            ->will($this->returnValue($default_options['redmineApiUserGetCurrentUser']));
+
+        $this->redmineApiUser->expects($this->any())
+            ->method('all')
+            ->will($this->returnValue($default_options['redmineApiUserAll']));
+
+        $this->redmineApiUser->expects($this->any())
+            ->method('show')
+            ->will($this->returnValue($default_options['redmineApiUserShow']));
+
+        $this->redmineApiMembership->expects($this->any())
+            ->method('all')
+            ->will($this->returnValue($default_options['redmineApiMembershipAll']));
+
         // Mock method api of redmine client.
         $this->redmineClient->expects($this->any())
             ->method('api')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('issue'),
-                    $this->equalTo('issue_status')
+                    $this->equalTo('issue_status'),
+                    $this->equalTo('user'),
+                    $this->equalTo('membership')
                 )
             )
             ->will(
@@ -126,6 +165,14 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
                             case 'issue_status':
                                 return $this->redmineApiIssueStatus;
+                                    break;
+
+                            case 'user':
+                                return $this->redmineApiUser;
+                                    break;
+
+                            case 'membership':
+                                return $this->redmineApiMembership;
                                     break;
                         }
                     }
@@ -141,7 +188,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->command->setService($this->service);
     }
 
-    /**
+   /**
      * Test no issues found.
     */
     public function testNoIssuesFound()
@@ -421,4 +468,144 @@ EOF
             $this->assertContains('New', $res);
             $this->assertContains('In Progress', $res);
         }
+
+    /**
+     * Test search by assigned from not admin user.
+     */
+    public function testSearchByAssignedFromNotAdminUser()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
+        $user_show_mock = file_get_contents(self::$fixturesPath . 'response_user_show_user_not_admin.serialized');
+        $membership_all = file_get_contents(self::$fixturesPath . 'response_membership_all_user_not_admin.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserShow' => unserialize($user_show_mock),
+                'redmineApiMembershipAll' => unserialize($membership_all),
+            )
+        );
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'Paolo Pustorino'
+        );
+
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+EOF
+        ;
+        $this->assertContains($expected, $res);
+    }
+
+    /**
+     * Test search by assigned from admin user.
+     */
+    public function testSearchByAssignedFromAdminUser()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
+        $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserAll' => unserialize($users_mock),
+            )
+        );
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'Paolo Pustorino'
+        );
+
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+EOF
+        ;
+        $this->assertContains($expected, $res);
+    }
+
+    /**
+     * Test search by assigned with user id.
+     */
+    public function testSearchByAssignedWithUserId()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiIssueAll' => unserialize($response_mock),
+            )
+        );
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 1
+        );
+
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
++------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
+EOF
+        ;
+        $this->assertContains($expected, $res);
+    }
+
+    /**
+     * Test search by assigned from not admin user.
+     */
+    public function testSearchByAssignedUserNotFound()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
+        $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserAll' => unserialize($users_mock),
+            )
+        );
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'WRONG NAME'
+        );
+
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = "No user found.";
+        $this->assertContains($expected, $res);
+    }
+
 }

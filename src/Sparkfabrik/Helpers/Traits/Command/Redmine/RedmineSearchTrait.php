@@ -56,7 +56,7 @@ trait RedmineSearchTrait
             $memberships = $client->api('membership')->all($projectId, $params);
             if (is_array($memberships) && isset($memberships['memberships'])) {
                 foreach ($memberships['memberships'] as $member) {
-                    $user = $client->get('/users/'.urlencode($member['user']['id']).'.json');
+                    $user = $client->api('user')->show($member['user']['id']);
                     if (is_array($user) && isset($user['user'])) {
                         $users['users'][$member['user']['id']] = $user['user'];
                     }
