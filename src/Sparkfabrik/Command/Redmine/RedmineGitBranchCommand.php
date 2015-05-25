@@ -75,7 +75,7 @@ EOF
         }
 
         // Use Custom field to determine the story name.
-        $story = NULL;
+        $story = null;
         $story_name = $res['issue']['subject'];
         foreach ($res['issue']['custom_fields'] as $field) {
             if ($field['name'] === 'Jira Story Code') {
