@@ -74,25 +74,17 @@ EOF
             return $output->writeln('<info>No issues found.</info>');
         }
 
-        // Login taken from: https://github.com/mavimo/git-redmine-utilities/blob/develop/git-redmine
-        // Extract items from issue info.
-        $subject = $res['issue']['subject'];
-        $subject_items = explode('-', $subject, 3);
-
-        // Punish not well named issues.
-        if (count($subject_items) != 3) {
-            return $output->writeln(
-                PHP_EOL . '<error>Rename your issue please.</error>' .
-                PHP_EOL . '<info>Well named issues are: STORY_PREFIX-STORY_CODE_ISSUE_ID'.
-                ' - STORY_NAME (es: SP-000 - Citrix friendly site)</info>' . PHP_EOL .
-                'Your issue instead is: "' . $subject . '"' . PHP_EOL
-            );
+        // Use Custom field to determine the story name.
+        $story = null;
+        $story_name = $res['issue']['subject'];
+        foreach ($res['issue']['custom_fields'] as $field) {
+            if ($field['name'] === 'Jira Story Code') {
+                $story = $field['value'];
+                $story_name = str_replace($field['value'], '', $story_name);
+            }
         }
-        $story_prefix = trim($subject_items[0]);
-        $story_code = trim($subject_items[1]);
-        $story_name = trim($subject_items[2]);
 
-        // Clean story name.
+        // Clean up story name.
         if (mb_detect_encoding($story_name) === 'UTF-8') {
             $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
             if ($story_name_converted) {
@@ -105,11 +97,13 @@ EOF
         $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
         $story_name = implode((array_filter(explode(' ', str_replace('_', ' ', $story_name)))), '_');
 
-        // Replace patterns in branch name.
-        $branch = str_replace('%(story_prefix)', $story_prefix, $branch);
-        $branch = str_replace('%(story_code)', $story_code, $branch);
+        // Replace patterns from branch structure.
+        $branch = str_replace('%(story)', $story, $branch);
         $branch = str_replace('%(issue_id)', (string) $issue, $branch);
         $branch = str_replace('%(story_name)', $story_name, $branch);
+
+        // Cleanup branch name from leading undescores.
+        $branch = trim($branch, '_');
 
         // Create branch using standard git commands.
         if (!$dry_run) {
