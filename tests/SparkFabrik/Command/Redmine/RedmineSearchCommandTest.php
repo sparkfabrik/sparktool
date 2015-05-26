@@ -492,17 +492,18 @@ EOF
         $input = array(
             'command' => $this->command->getName(),
             '--project_id' => 'test_project_id',
-            '--assigned' => 'Paolo Pustorino'
+            '--assigned' => 'Paolo Pustorino',
+            '--fields' => 'id'
         );
 
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
         $expected = <<<EOF
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
++------+
+| ID   |
++------+
+| 8921 |
++------+
 EOF
         ;
         $this->assertContains($expected, $res);
@@ -529,17 +530,18 @@ EOF
         $input = array(
             'command' => $this->command->getName(),
             '--project_id' => 'test_project_id',
-            '--assigned' => 'Paolo Pustorino'
+            '--assigned' => 'Paolo Pustorino',
+            '--fields' => 'id'
         );
 
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
         $expected = <<<EOF
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
++------+
+| ID   |
++------+
+| 8921 |
++------+
 EOF
         ;
         $this->assertContains($expected, $res);
@@ -562,24 +564,25 @@ EOF
         $input = array(
             'command' => $this->command->getName(),
             '--project_id' => 'test_project_id',
-            '--assigned' => 1
+            '--assigned' => 1,
+            '--fields' => 'id'
         );
 
         $this->tester->execute($input);
         $res = trim($this->tester->getDisplay());
         $expected = <<<EOF
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| ID   | Created    | Updated             | Tracker       | Version | Author          | Assigned        | Status      | Estimated | Subject                                           |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
-| 8921 | 21-05-2015 | 22-05-2015 12:05:09 | Side activity |         | Paolo Pustorino | Paolo Pustorino | In Progress | 24        | XMP-006 - Find the droids they were looking for è |
-+------+------------+---------------------+---------------+---------+-----------------+-----------------+-------------+-----------+---------------------------------------------------+
++------+
+| ID   |
++------+
+| 8921 |
++------+
 EOF
         ;
         $this->assertContains($expected, $res);
     }
 
     /**
-     * Test search by assigned from not admin user.
+     * Test search by wrong assigned user.
      */
     public function testSearchByAssignedUserNotFound()
     {
@@ -607,5 +610,32 @@ EOF
         $expected = "No user found.";
         $this->assertContains($expected, $res);
     }
+
+    /**
+     * Test search by assigned user from not admin user without specify project.
+     */
+    public function testSearchByAssignedUserFromNotAdminUserWithoutProjectId()
+    {
+        $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
+
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
+            )
+        );
+
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => '',
+            '--assigned' => 'Paolo Pustorino'
+        );
+
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = "To perform search by assigned user specify the project id.";
+        $this->assertContains($expected, $res);
+    }
+
 
 }

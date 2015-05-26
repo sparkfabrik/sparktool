@@ -53,6 +53,9 @@ trait RedmineSearchTrait
         if ($this->currentUserIsAdmin($client)) {
             $users = $client->api('user')->all($params);
         } else {
+            if (!$projectId) {
+              throw new \Exception('To perform search by assigned user specify the project id.');
+            }
             $memberships = $client->api('membership')->all($projectId, $params);
             if (is_array($memberships) && isset($memberships['memberships'])) {
                 foreach ($memberships['memberships'] as $member) {
