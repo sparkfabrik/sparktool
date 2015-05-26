@@ -34,6 +34,7 @@ class RedmineService extends AbstractService
         $this->config = $config->getValueFromConfig('services', 'redmine_credentials');
         $this->config['project_id'] = $config->getValueFromConfig('projects', 'redmine_project_id');
         $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
+        $this->config['redmine_display_fields'] = $config->getValueFromConfig('configuration', 'redmine_output_fields');
     }
 
     protected function initClient()

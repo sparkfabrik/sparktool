@@ -53,7 +53,12 @@ class SparkConfiguration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end();
+                ->arrayNode('configuration')
+                    ->children()
+                        ->scalarNode('redmine_output_fields')
+                        ->defaultValue('id|ID,project|Project,created_on|Created,updated_on|Updated,tracker|Traker,fixed_version|Version,author|Author,assigned_to|Assigned,status|Status,category|Category,estimated_hours|Estimated,subject|Subject')
+                    ->end()
+                ->end();
         return $treeBuilder;
     }
 }

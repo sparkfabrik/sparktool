@@ -44,4 +44,29 @@ abstract class SparkCommand extends Command
     {
         $this->service = $service;
     }
+
+    /**
+     * Insert a custom field in the default array of Fields in the desired place.
+     *
+     * @param  mixed[]        $fields   Originary field array
+     * @param  string[]       $newField The new field with the format 'field_name|Label'
+     * @param  boolean|string $position FALSE puts the field at the end. Otherwise use
+     *                                  field_name to insert new field after the specified field.
+     * @return mixed[] New field structure.
+     */
+    public function insertCustomFieldInOutput($fields, $newField, $position = false)
+    {
+        $fieldData = explode('|', $newField);
+        if ($position === false) {
+            array_push($fields, $fieldData);
+        } else {
+            $position = array_search($position, array_keys($fields));
+            $fieldDataLabel[$fieldData[0]] = $fieldData[1];
+            $fields = array_slice($fields, 0, $position + 1, true) +
+                $fieldDataLabel +
+                array_slice($fields, $position, count($fields) - $position, true);
+        }
+
+        return $fields;
+    }
 }
