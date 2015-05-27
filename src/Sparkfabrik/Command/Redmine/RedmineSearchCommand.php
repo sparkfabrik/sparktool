@@ -376,7 +376,7 @@ EOF
 
         // Translate object to first+last name.
         $name = strtolower($assigned);
-        $users = $this->redmineUsersGetAll($this->getService()->getClient(), $project_id, array('limit' => 200));
+        $users = $this->redmineUsersGetAll($project_id, array('limit' => 200));
         $usernames = $this->redmineUsersObjectToFirstLastname($users);
 
         if (!isset($name, $usernames, $usernames[$name])) {

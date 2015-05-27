@@ -36,8 +36,6 @@ trait RedmineSearchTrait
    *
    * @link http://www.redmine.org/projects/redmine/wiki/Rest_Users#GET
    *
-   * @param object $client Redmine client
-   *
    * @param array $projectId Redmine projectid used to get users
    * from membership if current user is not admin
    *
@@ -45,21 +43,21 @@ trait RedmineSearchTrait
    *
    * @return array list of users found
    */
-    public function redmineUsersGetAll($client, $projectId, array $params = array())
+    public function redmineUsersGetAll($projectId, array $params = array())
     {
         $users = array(
           'users' => array(),
         );
-        if ($this->currentUserIsAdmin($client)) {
-            $users = $client->api('user')->all($params);
+        if ($this->currentUserIsAdmin()) {
+            $users = $this->getService()->getClient()->api('user')->all($params);
         } else {
             if (!$projectId) {
                 throw new \Exception('To perform search by assigned user specify the project id.');
             }
-            $memberships = $client->api('membership')->all($projectId, $params);
+            $memberships = $this->getService()->getClient()->api('membership')->all($projectId, $params);
             if (is_array($memberships) && isset($memberships['memberships'])) {
                 foreach ($memberships['memberships'] as $member) {
-                    $user = $client->api('user')->show($member['user']['id']);
+                    $user = $this->getService()->getClient()->api('user')->show($member['user']['id']);
                     if (is_array($user) && isset($user['user'])) {
                         $users['users'][$member['user']['id']] = $user['user'];
                     }
@@ -72,13 +70,11 @@ trait RedmineSearchTrait
     /**
      * Return admin status of the current user.
      *
-     * @param object $client Redmine client
-     *
      * @return bool
      */
-    public function currentUserIsAdmin($client)
+    public function currentUserIsAdmin()
     {
-        $current = $client->api('user')->getCurrentUser();
+        $current = $this->getService()->getClient()->api('user')->getCurrentUser();
 
         if (is_array($current) && isset($current['user']) && isset($current['user']['status'])) {
             return true;
