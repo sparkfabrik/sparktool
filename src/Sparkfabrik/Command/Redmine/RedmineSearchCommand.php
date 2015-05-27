@@ -258,7 +258,7 @@ EOF
 
                 // Sort other issues on priority Id.
                 uasort($res['issues'], function ($a, $b) use ($queryPriorityParams) {
-                    return $a['priority']['id'] - $b['priority']['id'];
+                    return $a['priority']['id'] < $b['priority']['id'];
                 });
 
                 $res['issues'] = $prepend + $res['issues'];
