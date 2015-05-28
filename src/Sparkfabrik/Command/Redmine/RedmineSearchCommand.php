@@ -356,7 +356,7 @@ EOF
      *
      * @return integer|boolean
      */
-    private function handleArgumentAssignedToId($assigned)
+    private function handleArgumentAssignedToId($assigned, $project_id)
     {
         if (is_numeric($assigned)) {
             return $assigned;
@@ -376,9 +376,10 @@ EOF
 
         // Translate object to first+last name.
         $name = strtolower($assigned);
-        $users = $this->getService()->getClient()->api('user')->all(array('limit' => 200));
+        $users = $this->redmineUsersGetAll($project_id, array('limit' => 200));
         $usernames = $this->redmineUsersObjectToFirstLastname($users);
-        if (!isset($name, $usernames)) {
+
+        if (!isset($name, $usernames, $usernames[$name])) {
             throw new \Exception('No user found.');
         }
         return $usernames[$name];
@@ -539,7 +540,7 @@ EOF
         }
         $assigned = $input->getOption('assigned');
         if ($assigned) {
-            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($assigned);
+            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($assigned, $project_id);
         }
         $created_args = $input->getOption('created');
         if ($created_args) {
