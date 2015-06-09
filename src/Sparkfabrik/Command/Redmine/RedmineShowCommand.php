@@ -108,7 +108,7 @@ class RedmineShowCommand extends RedmineCommand
         $open_command = (PHP_OS === 'Darwin' ? 'open' : 'xdg-open');
         $description = $input->getOption('description');
 
-        $params = array('include' => 'journals');
+        $params = array('include' => array('journals'));
         $res = $client->api('issue')->show($issue_id, $params);
 
         // Handle errors.
