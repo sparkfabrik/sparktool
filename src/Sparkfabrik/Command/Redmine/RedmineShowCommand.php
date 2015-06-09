@@ -168,12 +168,13 @@ class RedmineShowCommand extends RedmineCommand
 
         // Include the following details only when requested.
         if ($show_info || $show_me_everything) {
-            $issue['start_date'] = date('d-m-Y', strtotime($issue['start_date']));
+            $date = new \DateTime($issue['created_on']);
+            $created_at = $date->format('d-m-Y');
             $table->addRows(array(
                 new TableSeparator(),
                 array('<info>Author: </info>', $issue['author']['name']),
                 array('<info>ID: </info>', $issue['id']),
-                array('<info>Creation date: </info>', $issue['start_date']),
+                array('<info>Creation date: </info>', $created_at),
                 array('<info>Done ratio: </info>', $issue['done_ratio'] . '%'),
                 array('<info>Spent hours: </info>', $issue['spent_hours']),
             ));
