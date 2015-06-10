@@ -32,9 +32,18 @@ class Robofile extends \Robo\Tasks
       if (!empty($status)) {
         throw new Exception('Seems that you have some file not yet commited, check your git status.');
       }
-      $this->buildSemver();
+      //$this->buildSemver();
+      $this->buildGithub();
       $this->buildPhar();
       $this->buildPublish();
+    }
+
+    public function buildGithub() {
+      $version = (string) new Semver('.semver');
+      $this->taskGitHubRelease($version)
+                 ->uri('sparkfabrik/sparktool')
+                 ->askDescription()
+                 ->run();
     }
 
    /**
