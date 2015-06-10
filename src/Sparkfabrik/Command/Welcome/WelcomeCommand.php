@@ -33,10 +33,14 @@ class WelcomeCommand extends Command
         $this->setName('spark:welcome')
             ->setDescription('Prints the welcome splash');
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $splash = file_get_contents('.banner.txt');
+        $welcome_file = '.banner.txt';
+        if (!file_exists($welcome_file)) {
+            $welcome_file = 'phar://spark.phar/' . $welcome_file;
+        }
+        $splash = file_get_contents($welcome_file);
         $splash = strtr($splash, ['\033' => "\033"]);
         $output->writeln($splash);
 

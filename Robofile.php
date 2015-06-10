@@ -80,7 +80,6 @@ class Robofile extends \Robo\Tasks
       $files = Finder::create()->ignoreVCS(true)
             ->files()
             ->name('*.php')
-            ->name('.banner.txt')
             ->path('src')
             ->path('vendor')
             ->notPath('patched-libraries')
@@ -88,6 +87,7 @@ class Robofile extends \Robo\Tasks
       foreach ($files as $file) {
         $packer->addFile($file->getRelativePathname(), $file->getRealPath());
       }
+      $packer->addFile('.banner.txt', '.banner.txt');
 
       // Executable.
       $packer->addFile('.semver', '.semver');
