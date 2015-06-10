@@ -80,6 +80,7 @@ class Robofile extends \Robo\Tasks
       $files = Finder::create()->ignoreVCS(true)
             ->files()
             ->name('*.php')
+            ->name('.banner.txt')
             ->path('src')
             ->path('vendor')
             ->notPath('patched-libraries')
