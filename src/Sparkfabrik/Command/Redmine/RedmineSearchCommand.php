@@ -12,6 +12,9 @@
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
+use Sparkfabrik\Tools\Spark\RedmineApi\User as RedmineApiUser;
+use Sparkfabrik\Tools\Spark\RedmineApi\Version as RedmineApiVersion;
+use Sparkfabrik\Tools\Spark\RedmineApi\Issue as RedmineApiIssue;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -75,10 +78,7 @@ class RedmineSearchCommand extends RedmineCommand
         );
         // @codingStandardsIgnoreStart
         $this->addOption(
-            'assigned',
-            false,
-            InputOption::VALUE_OPTIONAL,
-            <<<EOF
+            'assigned', false, InputOption::VALUE_OPTIONAL, <<<EOF
 Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
 Where:
  - "me" issues assigned to the calling user
@@ -87,8 +87,7 @@ Where:
  - "anyone" issues assigned
  - "none" issues not assigned
 EOF
-            ,
-            'all'
+            , 'all'
         );
         // @codingStandardsIgnoreEnd
         $this->addOption(
@@ -174,8 +173,23 @@ EOF
                 $output->writeln('<info>' . var_export($api_options, true) . '</info>');
             }
 
-            // Run query.
-            $res = $client->api('issue')->all($api_options);
+            $res = array();
+            if ($input->getOption('subject')) {
+                $filter = $input->getOption('subject');
+                $subjects = split(",", $filter);
+                $api_options['f[]'] = 'subject';
+                $api_options['op[subject]'] = '~';
+                foreach ($subjects as $subject) {
+                    $api_options['v[subject][]'] = $subject;
+                    $newRes = $client->api('issue')->all($api_options);
+                    $res = array_merge_recursive($res, $newRes);
+                }
+            } else {
+                // Run query.
+                $res = $client->api('issue')->all($api_options);
+            }
+
+            $res = $this->normalizeIndicators($res);
 
             // JSON Syntax error or just false result.
             if ((isset($res[0]) && ($res[0] === 'Syntax error'))
@@ -203,19 +217,6 @@ EOF
             if ($input->getOption('not-estimated')) {
                 foreach ($res['issues'] as $key => $issue) {
                     if (isset($issue['estimated_hours'])) {
-                        unset($res['issues'][$key]);
-                        if (!is_array($res['total_count'])) {
-                            --$res['total_count'];
-                        }
-                    }
-                }
-            }
-
-            // Reduce results, filter by subject content.
-            if ($input->getOption('subject')) {
-                $subject = $input->getOption('subject');
-                foreach ($res['issues'] as $key => $issue) {
-                    if (stripos($issue['subject'], $subject) === false) {
                         unset($res['issues'][$key]);
                         if (!is_array($res['total_count'])) {
                             --$res['total_count'];
@@ -260,7 +261,7 @@ EOF
                 $this->tableRedmineReportOutput($output, $res, 'issues');
             }
         } catch (Exception $e) {
-            return $output->writeln('<error>'. $e->getMessage() . '</error>');
+            return $output->writeln('<error>' . $e->getMessage() . '</error>');
         }
     }
 
@@ -315,6 +316,7 @@ EOF
         } else {
             $statuses = array($status);
         }
+
         $default_statues = array('*', 'open', 'close');
         $status_params = array();
         foreach ($statuses as &$requested_status) {
@@ -432,7 +434,7 @@ EOF
         }
         $date_option = date('Y-m-d', $timestamp);
         if (isset($op) && $op !== false) {
-            $date_option = $op.$date_option;
+            $date_option = $op . $date_option;
         }
         return $date_option;
     }
@@ -554,5 +556,30 @@ EOF
         if ($tracker_args) {
             $api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
         }
+    }
+
+    /**
+     * Normalize resultset indicators.
+     *
+     * @param array $results
+     * @return array
+     */
+    private function normalizeIndicators($results)
+    {
+        if (is_array($results['total_count'])) {
+            $total = 0;
+            foreach ($results['total_count'] as $value) {
+                $total += $value;
+            }
+            $results['total_count'] = $total;
+        }
+        if (is_array($results['limit'])) {
+            $results['limit'] = $results['limit'][0];
+        }
+        if (is_array($results['offset'])) {
+            $results['offset'] = $results['offset'][0];
+        }
+
+        return $results;
     }
 }
