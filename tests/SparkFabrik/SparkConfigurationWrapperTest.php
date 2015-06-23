@@ -34,8 +34,12 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $this->umask = umask(0);
         $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().rand(0, 1000);
         $this->workspace_project = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().rand(0, 1000);
-        mkdir($this->workspace, 0777, true);
-        mkdir($this->workspace_project, 0777, true);
+        if (!file_exists($this->workspace)) {
+            mkdir($this->workspace, 0777, true);
+        }
+        if (!file_exists($this->workspace_project)) {
+            mkdir($this->workspace_project, 0777, true);
+        }
         $this->workspace = realpath($this->workspace);
         $this->workspace_project = realpath($this->workspace_project);
         $this->fullPathWorkspace = $this->workspace . DIRECTORY_SEPARATOR . $this->sparkFileName;

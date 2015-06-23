@@ -108,7 +108,7 @@ class RedmineShowCommand extends RedmineCommand
         $open_command = (PHP_OS === 'Darwin' ? 'open' : 'xdg-open');
         $description = $input->getOption('description');
 
-        $params = array('include' => 'journals');
+        $params = array('include' => array('journals'));
         $res = $client->api('issue')->show($issue_id, $params);
 
         // Handle errors.
@@ -168,12 +168,13 @@ class RedmineShowCommand extends RedmineCommand
 
         // Include the following details only when requested.
         if ($show_info || $show_me_everything) {
-            $issue['start_date'] = date('d-m-Y', strtotime($issue['start_date']));
+            $date = new \DateTime($issue['created_on']);
+            $created_at = $date->format('d-m-Y');
             $table->addRows(array(
                 new TableSeparator(),
                 array('<info>Author: </info>', $issue['author']['name']),
                 array('<info>ID: </info>', $issue['id']),
-                array('<info>Creation date: </info>', $issue['start_date']),
+                array('<info>Creation date: </info>', $created_at),
                 array('<info>Done ratio: </info>', $issue['done_ratio'] . '%'),
                 array('<info>Spent hours: </info>', $issue['spent_hours']),
             ));
