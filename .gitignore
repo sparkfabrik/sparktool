@@ -8,3 +8,4 @@ reports
 /bin
 /tags
 /local.vimrc
+*.sublime-workspace

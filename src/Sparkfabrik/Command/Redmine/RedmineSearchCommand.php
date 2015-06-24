@@ -77,10 +77,10 @@ class RedmineSearchCommand extends RedmineCommand
             'priority-order',
             false,
             InputOption::VALUE_OPTIONAL,
-            "Order by issue priority. Format: comparison operator | priority index. Eg.: =|Normal
+            "Order by issue priority. Format: Priority Name. Eg.: Normal
 Possible values:
-    Operators: < > <= >= =
-    Priorities: Normal, High, Urgent, Immediate"
+    Priorities: Normal, High, Urgent, Immediate
+    The remaining issues will be sorted by to the priority id"
         );
         // @codingStandardsIgnoreStart
         $this->addOption(
@@ -230,7 +230,7 @@ EOF
             }
 
             // Manage fields to print.
-            $fieldsToPrint = $this->getService()->getConfig()['redmine_display_fields'];
+            $fieldsToPrint = $this->getService()->getConfig()['redmine_output_fields'];
             $fieldsToPrint = explode(',', $fieldsToPrint);
             $fields = array();
             foreach ($fieldsToPrint as $fieldValue) {
@@ -240,26 +240,29 @@ EOF
 
             // Order by Priority.
             if ($input->getOption('priority-order')) {
-                $queryPriorityParams = explode('|', $input->getOption('priority-order'));
+                $queryPriorityParam = $input->getOption('priority-order');
 
                 $redminePriorities = $this->getService()->getClient()->api('issue_priority')->all()['issue_priorities'];
 
-                if (!$this->arrayFindDeep($redminePriorities, $queryPriorityParams[1])) {
+                if (!$this->arrayFindDeep($redminePriorities, $queryPriorityParam)) {
                     throw new \Exception('Priority not found.');
                 }
 
                 $prepend = array();
                 foreach ($res['issues'] as $key => &$value) {
-                    if ($value['priority']['name'] == $queryPriorityParams[1]) {
+                    if ($value['priority']['name'] == $queryPriorityParam) {
                         array_unshift($prepend, $value);
                         unset($res['issues'][$key]);
                     }
                 }
 
                 // Sort other issues on priority Id.
-                uasort($res['issues'], function ($a, $b) use ($queryPriorityParams) {
-                    return $a['priority']['id'] < $b['priority']['id'];
-                });
+                uasort(
+                    $res['issues'],
+                    function ($a, $b) use ($queryPriorityParam) {
+                        return $a['priority']['id'] < $b['priority']['id'];
+                    }
+                );
 
                 $res['issues'] = $prepend + $res['issues'];
 
@@ -370,7 +373,7 @@ EOF
     /**
      * Read project_id argument and translate to a redmine project_id.
      *
-     * @param string|integer $project_id
+     * @param string|integer $project_id The project id
      *
      * @return integer|boolean
      */
@@ -381,6 +384,9 @@ EOF
 
     /**
      * Read assigned argument and translate to a redmine assigned_to_id.
+     *
+     * @param string|integer $assigned   Id or a magic token
+     * @param string|integer $project_id The project id
      *
      * @return integer|boolean
      */

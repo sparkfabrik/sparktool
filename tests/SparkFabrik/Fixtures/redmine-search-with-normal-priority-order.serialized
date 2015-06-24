@@ -1,0 +1,574 @@
+a:4:{s:6:"issues";a:50:{i:0;a:17:{s:2:"id";i:9074;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:88;s:4:"name";s:14:"Marcello Gorla";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:6:"parent";a:1:{s:2:"id";i:9073;}s:7:"subject";s:38:"EE-709 - Broker viewing company agenda";s:11:"description";s:452:"Ref. https://projects.agavee.com/dmsf/files/1243/view
+
+Scenarios: 1,2
+
+This features includes:
+- changing logic for agenda switch as follows
+-- user and company admin should be able to switch between user and company agenda
+-- meeting coordinator should be able to switch between multiple company agendas, so a combo box should be available for them
+- visual fix for the agenda switch
+- verify the ACL on the company agenda
+
+Write tests.
+
+";s:10:"start_date";s:10:"2015-06-15";s:10:"done_ratio";i:50;s:15:"estimated_hours";d:24;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EE-709";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-15T08:06:59Z";s:10:"updated_on";s:20:"2015-06-23T15:09:50Z";}i:1;a:18:{s:2:"id";i:9118;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:7;s:4:"name";s:11:"Improvement";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:85;s:4:"name";s:14:"Marcello Testi";}s:8:"category";a:2:{s:2:"id";i:74;s:4:"name";s:6:"Hotfix";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:52:"EE-720 - Remove "Register" link from homepage header";s:11:"description";s:209:"sites/all/modules/features/elite_base/elite_base.module 
+riga 657 
+
+sostituisci 
+$register_link = l(t('Register'), 'elite-request-access', $options); 
+
+con 
+$register_link = FALSE;
+ 
+Type: Improvement";s:10:"start_date";s:10:"2015-06-23";s:10:"done_ratio";i:0;s:15:"estimated_hours";d:1;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:7:"EE_-720";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:6:"v1.1.7";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-23T09:48:07Z";s:10:"updated_on";s:20:"2015-06-23T15:01:41Z";s:9:"closed_on";s:20:"2015-06-23T09:48:07Z";}i:2;a:14:{s:2:"id";i:9126;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:7;s:4:"name";s:11:"Improvement";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:13:"fixed_version";a:2:{s:2:"id";i:97;s:4:"name";s:7:"Backlog";}s:7:"subject";s:49:"EE-721 - Remove reference to deleted page section";s:11:"description";s:212:"When removing a page section, a message containing all the pages in which is referenced should be shown. 
+The user can accept to proceed deleting and then all the reference will be removed.
+ 
+Type: Improvement";s:10:"start_date";s:10:"2015-06-23";s:10:"done_ratio";i:0;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EE-721";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-23T14:59:44Z";s:10:"updated_on";s:20:"2015-06-23T14:59:44Z";}i:3;a:15:{s:2:"id";i:9056;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:11;s:4:"name";s:6:"Merged";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:108;s:4:"name";s:12:"Adriano Cori";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:84:"EG-454 - Update Scheduler information when a user is imported from Growth to Connect";s:11:"description";s:1270:"<pre>
+Feature: Every time an Investor or an user is imported/updated from Growth to Connect I want the Scheduler to be notified about the changes that have been performed.
+
+Scenario 1: Importing an Investor from Growth to Connect
+Given: I am a PA of Elite Connect
+When: I import an Investor from Growth to Connect
+Then: All the company import hooks dealing with the Scheduler have to be invoked.
+
+Scenario 2: Importing a CA user from Growth to Connect
+Given: I am a PA of Elite Connect
+When: I import an CA user from Growth to Connect
+Then: All the CA user hooks dealing with the Scheduler have to be invoked.
+
+Scenario 3: Assigning CA role to a Growth user already imported into Connect.
+Given: I am on Growth domain
+  And: I want to assign the CA role to an user already imported into Connect
+When: I assign the CA role to the user
+Then: On Connect domain, the Scheduler will be notified of the current change to the user. 
+
+Scenario 4: Removing CA role to a Growth user already imported into Connect.
+Given: I am on Growth domain
+  And: I want to remove the CA role to an user already imported into Connect
+When: I remove the CA role to the user
+Then: On Connect domain, the Scheduler will be notified of the current change to the user.
+</pre>";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:12;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:6:"Growth";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:34:"ELITE Growth (201504 - 201507 TBD)";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EG-454";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-10T11:09:57Z";s:10:"updated_on";s:20:"2015-06-23T14:21:41Z";}i:4;a:16:{s:2:"id";i:9087;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:7;s:4:"name";s:7:"On hold";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:108;s:4:"name";s:12:"Adriano Cori";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:37:"EG-457 - Manage banner for Cookie Law";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-17";s:10:"done_ratio";i:0;s:15:"estimated_hours";d:8;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:6:"Growth";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:34:"ELITE Growth (201504 - 201507 TBD)";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EG-457";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-17T10:32:07Z";s:10:"updated_on";s:20:"2015-06-23T11:08:22Z";}i:5;a:13:{s:2:"id";i:9116;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:10;s:4:"name";s:9:"Validated";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:44:"Update nodi con indirizzo non geolocalizzato";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-22";s:10:"done_ratio";i:100;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-22T13:02:12Z";s:10:"updated_on";s:20:"2015-06-23T10:07:19Z";}i:6;a:16:{s:2:"id";i:9064;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:10;s:4:"name";s:9:"Validated";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:8822;}s:7:"subject";s:71:"Compilazione obbligatoria anche per salvataggio in bozza del modulo LFA";s:11:"description";s:1229:"_SCENARIO_
+Un utente abilitato inizia a compilare il modulo per aggiornamento iscrizione elenco LFA.
+Decide che concluderà la compilazione e procederà con l'invio solo in un secondo momento.
+Lascia diversi campi obbligatori vuoti tra cui i seguenti:
+_CAP di residenza * 
+Presidente * 
+Consiglieri (entrambi i campi visualizzati di default)
+Tutti i campi della sezione 'Informazioni sui soci'
+_
+Visualizza i seguenti messaggi:
+_- Il campo è obbligatorio
+- Consiglieri: E' necessario inserire almeno 2 Consiglieri._
++(Vedi allegato)+
+
+
++RICHIESTA+ 
+In linea generale non ci devono essere campi obbligatori che risultino bloccanti per il salvataggio in bozza.
+Nel dettaglio:
+Un utente abilitato inizia a compilare il modulo per aggiornamento iscrizione elenco LFA.
+Decide che concluderà la compilazione e procederà con l'invio solo in un secondo momento.
+Lascia diversi campi obbligatori vuoti tra cui i seguenti:
+_CAP di residenza * 
+Presidente * 
+Consiglieri (entrambi i campi visualizzati di default)
+Tutti i campi della sezione 'Informazioni sui soci'
+_
+Non visualizza alcun messaggio e il modulo viene salvato come 'bozza' e successivamente l'utente può tornare a compilarlo e quindi a inviarlo.";s:10:"start_date";s:10:"2015-06-12";s:10:"done_ratio";i:100;s:15:"estimated_hours";d:4;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-12T04:53:04Z";s:10:"updated_on";s:20:"2015-06-23T08:49:45Z";}i:7;a:15:{s:2:"id";i:9114;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:63:"Notifiche per Community Manager: proposta / commento a proposta";s:11:"description";s:1151:"All'interno di una consultazione un utente inserisce
+a) una proposta all'interno di consultazione
+b) un commento a una proposta già pubblicata all'interno di consultazione
+
+Ognuna delle suddette azioni genera una notifica visualizzata +dai community manager+.
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
++a) una *proposta* all'interno di consultazione+
+TITOLO
+Nuova proposta su consultazione NOME DEL GRUPPO DI CONSULTAZIONI
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha pubblicato la proposta NOME DELLA PROPOSTA nella consultazione NOME DEL GRUPPO DI CONSULTAZIONI
+
++b) un *commento a una proposta* già pubblicata all'interno di consultazione+
+TITOLO
+Nuovo commento alla proposta NOME DELLA PROPOSTA
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato la proposta NOME DELLA PROPOSTA nella consultazione NOME DEL GRUPPO DI CONSULTAZIONI";s:10:"start_date";s:10:"2015-06-20";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-20T04:01:33Z";s:10:"updated_on";s:20:"2015-06-23T08:48:32Z";}i:8;a:16:{s:2:"id";i:9063;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:8822;}s:7:"subject";s:52:"Arricchimento tabella con informazioni da modulo LFA";s:11:"description";s:860:"+SCENARIO+
+L'utente LFA accede al proprio profilo personale
+Clicca su 'Consulta i dati di aggiornamento elenco LFA (approvati)' (url http://comunita-test.iperbole.bologna.it/admin/organizzazioni/lfa)
+In fondo alla pagina  asx vede il bottone csv, clicca sullo stesso e scarica un file csv con i dati inviati tramite il modulo
+I dati presenti nella tabella non comprendono data e orario di invio da parte dell utente
+
++RICHIESTA+
+L'utente LFA accede al proprio profilo personale
+Clicca su 'Consulta i dati di aggiornamento elenco LFA (approvati)' (url http://comunita-test.iperbole.bologna.it/admin/organizzazioni/lfa)
+In fondo alla pagina  asx vede il bottone csv, clicca sullo stesso e scarica un file csv con i dati inviati tramite il modulo
+*I dati presenti nella tabella comprendono data e orario di invio da parte dell utente* (Allego proposta).";s:10:"start_date";s:10:"2015-06-12";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:2;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-12T04:32:52Z";s:10:"updated_on";s:20:"2015-06-23T07:17:21Z";}i:9;a:15:{s:2:"id";i:9054;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:11;s:4:"name";s:6:"Merged";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:108;s:4:"name";s:12:"Adriano Cori";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:56:"EG-456 - Notifications when an imported user his profile";s:11:"description";s:1150:"<pre>
+Feature: Every interaction with users and companies existing on both Connect and Growth domains must be notified into the activity stream of both domains, according to the field visibility of these entities.
+
+Scenario 1: Adding/updating the value of a user profile field visible on both domains
+Given: I am a <domain> user
+  And: My account has been imported also into the other domain
+  And: I wanto to make an update to a field of my profile
+  And: The given field is visible for both domains
+When: I perform the insert/update of the value for the field 
+Then: A notify of the given insert/update can be visible into the activity stream of both domains
+
+Scenario 2: Adding/updating the value of a user profile field not visible on both domains
+Given: I am a <domain> user
+  And: My account has been imported also into the other domain
+  And: I wanto to make an update to a field of my profile
+  And: The given field is visible only for current domain
+When: I perform the insert/update of the value for the field 
+Then: A notify of the given insert/update can be visible only into the activity stream of current domain
+</pre>";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:16;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:6:"Growth";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:34:"ELITE Growth (201504 - 201507 TBD)";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EG-456";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-10T11:08:05Z";s:10:"updated_on";s:20:"2015-06-22T22:38:44Z";}i:10;a:14:{s:2:"id";i:9103;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:29:"Contenuto Notifiche Comunità";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T07:04:42Z";s:10:"updated_on";s:20:"2015-06-22T15:39:42Z";}i:11;a:14:{s:2:"id";i:9044;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:1;s:4:"name";s:3:"Bug";}s:6:"status";a:2:{s:2:"id";i:10;s:4:"name";s:9:"Validated";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:33:"Alimentazione mappa (regressione)";s:11:"description";s:1486:"C'è una regressione nelle funzioni di alimentazione dei punti della mappa sul sito in produzione, come verificabile nei contenuti elencati in fondo al testo della issue.
+I progetti, profili organizzazione e schede dei beni comuni creati successivamente da circa 24 maggio in avanti (non riesco a dare data precisa) non vengono collocati sulla mappa.
+
+L'ho verificato assistendo un utente nella compilazione di un profilo organizzazione: l'indirizzo era riportato nella forma corretta ma l'organizzazione non risultava sulla mappa.
+Ho riscontrato che il problema è presente su nuovi progetti e nuovi profili organizzazioni creati nel periodo dal 24 maggio a oggi. 
+La finestra che riporta la posizione del progetto è infatti assente nel progetto riportato di seguito.
+Ho anche creato nuovi profili organizzazioni e nuovi progetti, e nemmeno questi risultavano collocati su mappa pur avendo inserito l'indirizzo in formato corretto nei campi specifici. 
+Ho anche creato la scheda di un bene comune, e nemmeno questo risultava collocato su mappa pur avendo inserito un indirizzo in formato corretto nel campo specifico.
+Ho cancellato i contenuti da me creati per verificare questo problema.
+
+PROGETTI
+http://www.comune.bologna.it/comunita/re-cycle-bici-libere-bologna
+
+PROFILI ORGANIZZAZIONE:
+http://www.comune.bologna.it/comunita/centro-sociale-il-parco
+http://www.comune.bologna.it/comunita/auser-volontariato-bologna
+http://www.comune.bologna.it/comunita/case-zanardi";s:10:"start_date";s:10:"2015-06-08";s:10:"done_ratio";i:100;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-08T11:33:59Z";s:10:"updated_on";s:20:"2015-06-22T15:37:21Z";}i:12;a:15:{s:2:"id";i:9115;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:107:"Notifiche per Community Manager: proposte di collaborazione per Beni Comuni (generica e vandalismo grafico)";s:11:"description";s:1336:"Un utente inserisce tramite uno dei form disponibili (la segnalazione deve essere attivata anche per i form che saranno creati successivamente):
+a) una proposta di collaborazione generica per beni comuni (su http://www.comune.bologna.it/comunita/cura-beni-comuni)
+b) una proposta di collaborazione per rimozione vandalismo grafico (su http://www.comune.bologna.it/comunita/vandalismo-grafico)
+
+Ognuna delle suddette azioni genera una notifica visualizzata dai community manager.
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
++a) una proposta di collaborazione *generica* per beni comuni+
+TITOLO
+Nuova proposta di collaborazione NOME DELLA PROPOSTA
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha pubblicato la proposta di collaborazione NOME DELLA PROPOSTA
+
++b) una proposta di collaborazione per *rimozione vandalismo grafico*+
+TITOLO
+Nuova proposta di collaborazione NOME DELLA PROPOSTA
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha pubblicato la proposta di collaborazione per rimozione del vandalismo grafico NOME DELLA PROPOSTA
+";s:10:"start_date";s:10:"2015-06-20";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-20T04:10:09Z";s:10:"updated_on";s:20:"2015-06-22T15:17:39Z";}i:13;a:15:{s:2:"id";i:9113;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:104:"Notifiche per segnalazione (contenuto / profilo personale / profilo organizzazione / progetto / proposta";s:11:"description";s:2108:"Un utente compie con proprio profilo personale o profilo organizzazione una segnalazione su uno dei seguenti nodi:
+a) contenuto (post di blog)
+b) profilo personale
+c) profilo organizzazione
+d) progetto 
+e) proposta su consultazione
+
+Ognuna delle suddette azioni genera una +notifica visualizzata sia da 1) community manager 2) autore del contenuto+
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
+*SPECIFICHE*
+
++a) notifica per segnalazione di *contenuto* (post di blog)+
+TITOLO
+Il post NOME DEL CONTENUTO è stato segnalato 
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha segnalato che NOME DEL CONTENUTO non rispetta la Carta di Comunità
+
+
++b) notifica per segnalazione di *profilo personale*+
+TITOLO
+Il profilo NOME DEL PROFILO PERSONALE è stato segnalato
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha segnalato che il profilo NOME DEL PROFILO non rispetta la Carta di Comunità
+
+
++c) notifica per segnalazione di *profilo organizzazione*+
+TITOLO
+Il profilo NOME DEL PROFILO ORGANIZZAZIONE è stato segnalato
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha segnalato che il profilo NOME DEL PROFILO ORGANIZZAZIONE non rispetta la Carta di Comunità
+
+ 
++d) notifica per segnalazione di *progetto*+
+TITOLO
+Il progetto NOME DEL PROGETTO è stato segnalato
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha segnalato che il progetto NOME DEL PROGETTO non rispetta la Carta di Comunità
+
+
++e) notifica per segnalazione di *proposta*+
+TITOLO
+La proposta NOME DELLA PROPOSTA è stata segnalata
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha segnalato che la proposta NOME DELLA PROPOSTA non rispetta la Carta di Comunità";s:10:"start_date";s:10:"2015-06-20";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-20T03:51:14Z";s:10:"updated_on";s:20:"2015-06-22T15:17:37Z";}i:14;a:15:{s:2:"id";i:9111;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:46:"Notifica per abilitazione all'invio modulo LFA";s:11:"description";s:938:"1 Un utente con credenziali FedERa ad alta affidabilità, admin di un'organizzazione eleggibile per LFA, che abbia eseguito l'autocertificazione come legale rappresentante della stessa, ha fatto la richiesta per essere abilitato a inviare la dichiarazione per aggiornamento elenco Libere forme associativa. 
+
+2 La richiesta viene approvata dagli utenti dell'ufficio LFA (l'azione è descritta in produzione come 'Proposta di convertire Organizzazione in Libera forma associativa accettata)
+
+3 L'utente visualizza la seguente notifica
+
+TITOLO
+Sei abilitato all'invio della dichiarazione LFA
+TESTO
+La tua organizzazione è abilitata all'invio delle informazioni per l'aggiornamento dell'elenco LFA
+
+
+Nota:
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+";s:10:"start_date";s:10:"2015-06-20";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-20T03:24:58Z";s:10:"updated_on";s:20:"2015-06-22T15:17:36Z";}i:15;a:15:{s:2:"id";i:9112;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:61:"Notifica per approvazione informazioni inviate con modulo LFA";s:11:"description";s:863:"1 Un utente che abbia ricevuto l'approvazione all'invio delle informazioni per aggiornamento elenco LFA (come da #9111) ha inviato le informazioni tramite il modulo specifico.
+
+2 Le informazioni sono approvate dagli utenti dell'ufficio LFA (l'azione è descritta in produzione come 'Proposta di aggiornamento dati Libera Forma Associativa (precedentemente accettata la richiesta di conversione) accettata')
+
+3 L'utente visualizza la seguente notifica
+
+TITOLO
+L'iscrizione all'elenco LFA è stata confermata
+TESTO
+La tua richiesta di aggiornamento delle informazioni ai fini dell'iscrizione all'elenco LFA è stata confermata
+
+Nota:
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.";s:10:"start_date";s:10:"2015-06-20";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-20T03:32:25Z";s:10:"updated_on";s:20:"2015-06-22T15:17:36Z";}i:16;a:15:{s:2:"id";i:9108;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:56:"L'organizzazione è aggiunta come partner di un progetto";s:11:"description";s:835:"Nella compilazione dei campi di un progetto (sia che questo sia il progetto di un utente che il progetto di un'organizzazione) un utente può indicare come soggetti partner una o più organizzazioni già presenti su Comunità.
+Se inserisce una organizzazione tra i partner, tutti gli utenti che sono admin di quella organizzazione devono visualizzare la seguente notifica.
+
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
+TITOLO
+La tua organizzazione è partner del progetto + NOME DEL PROGETTO
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ti ha aggiunto come partner del progetto + NOME DEL PROGETTO";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T09:03:31Z";s:10:"updated_on";s:20:"2015-06-22T15:17:35Z";}i:17;a:15:{s:2:"id";i:9107;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:61:"Un utente è aggiunto come admin di un profilo organizzazione";s:11:"description";s:425:"Nel caso in cui l'admin di un profilo organizzazione aggiunga un secondo utente (B) come *admin dell'organizzazione*, l'utente (B) deve visualizzare la seguente notifica:
+
+TITOLO
+Sei amministratore di NOME DELL'ORGANIZZAZIONE
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ti ha aggiunto come amministratore del profilo organizzazione + NOME DEL PROFILO ORGANIZZAZIONE";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T08:53:50Z";s:10:"updated_on";s:20:"2015-06-22T15:17:34Z";}i:18;a:15:{s:2:"id";i:9105;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:49:"Nuovo commento per contenuto seguito / commentato";s:11:"description";s:1345:"Un utente, con il proprio profilo personale o con il profilo organizzazione di cui è admin, ha precedentemente commentato / scelto di seguire i seguenti elementi:
+a) un contenuto (post del blog),
+b) un progetto
+c) una proposta all'interno di consultazione
+
+(L'equivalenza tra commento e funzione 'segui' era già stata formulata con successo dal caro Edoardo nella #8658#note-2)
+
+Ogni commento da parte di altri utenti genera una notifica.
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
+
+
++a) Commenti a *post* su cui l'utente è già intervenuto / che l'utente segue+
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato il post + TITOLO DEL POST
+
++b) Commenti a progetto su cui l'utente è già intervenuto / che l'utente segue+
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato il progetto + TITOLO DEL PROGETTO
+
++c) Commenti a proposta su cui l'utente è già intervenuto / che l'utente segue+
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato la proposta + TITOLO DELLA PROPOSTA";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T08:31:21Z";s:10:"updated_on";s:20:"2015-06-22T15:17:33Z";}i:19;a:15:{s:2:"id";i:9106;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:73:"Notifica per segui su profilo persona / profilo organizzazione / progetto";s:11:"description";s:1068:"L'azione 'Segui' su profilo personale, profilo organizzazione e progetto genera notifica sull'utente titolare / admin dei contenuti oggetto di azione
+
+Tutto il testo della notifica consiste di un link al nodo cui si riferisce.
+In questo modo se l'utente clicca sul testo della notifica, in qualsiasi punto esso clicchi, viene indirizzato al nodo oggetto della notifica.
+
++a) Segui su *profilo personale*+
+TITOLO
+Un nuovo utente ti segue
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha iniziato a seguirti
+
+
++b) Segui su *profilo organizzazione*+
+TITOLO
+Un nuovo utente segue NOME DELL'ORGANIZZAZIONE
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha iniziato a seguire l'organizzazione + NOME DELL'ORGANIZZAZIONE
+
++c) Segui su *progetto*+
+TITOLO
+Un nuovo utente segue NOME DEL PROGETTO
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha iniziato a seguire il progetto + TITOLO DEL PROGETTO";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T08:44:16Z";s:10:"updated_on";s:20:"2015-06-22T15:17:33Z";}i:20;a:15:{s:2:"id";i:9104;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:9103;}s:7:"subject";s:58:"Nuovo commento per proprio contenuto / progetto / proposta";s:11:"description";s:1227:"Un utente crea con il proprio profilo personale o con il profilo organizzazione di cui è admin i seguenti elementi:
+a) un contenuto (post del blog), 
+b) un progetto
+c) una proposta all'interno di consultazione
+
+Ogni commento da parte di altri utenti genera una notifica.
+
++a) Commento su *post* nel profilo personale / Commento su post nel profilo organizzazione di cui l'utente è admin+
+TITOLO
+Nuovo commento sul tuo post
+TESTO
+L'utente (sostituire 'L'utente' con NOME UTENTE oppure NOME PROFILO ORGANIZZAZIONE) ha commentato il tuo post.
+
+
++b) Commento su *progetto* curato dall'utente nel proprio profilo personale / Commento su progetto del profilo organizzazione di cui l'utente è admin+
+TITOLO
+Nuovo commento sul tuo progetto
+TESTO
+L'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato il progetto da te curato.
+
+
++c) Commento su *proposta* presentata dall'utente / Commento su proposta presentata dal profilo organizzazione di cui l'utente è admin+
+TITOLO
+Nuovo commento sulla tua proposta
+TESTO'Ciao,
+l'utente (sostituire 'L'utente' con NOME PROFILO PERSONA oppure NOME PROFILO ORGANIZZAZIONE) ha commentato la proposta da te presentata.";s:10:"start_date";s:10:"2015-06-19";s:10:"done_ratio";i:80;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-19T08:08:36Z";s:10:"updated_on";s:20:"2015-06-22T15:17:32Z";}i:21;a:15:{s:2:"id";i:8905;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:10;s:4:"name";s:9:"Validated";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:115;s:4:"name";s:12:"Olivia Pinto";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:6:"parent";a:1:{s:2:"id";i:8750;}s:7:"subject";s:40:"Eliminare link ridondanti pagine interne";s:11:"description";s:231:"Laddove siano presenti liste di oggetti con titolo e immagine (benicomuni, benicomuni/elenco, partecipa) va fatto lo stesso lavoro già fatto per i progetti in home e per la pagina progetti: un unico link per immagine e titolo.
+
+";s:10:"start_date";s:10:"2015-05-20";s:10:"done_ratio";i:100;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-20T02:02:26Z";s:10:"updated_on";s:20:"2015-06-22T12:37:53Z";}i:22;a:16:{s:2:"id";i:9042;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:11;s:4:"name";s:6:"Merged";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:95;s:4:"name";s:14:"Paolo Mainardi";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:65:"EE-695 - Allow meeting forward to invite other members of company";s:11:"description";s:2788:"Visual: https://projects.agavee.com/dmsf/files/1235/view
+
+Hoplo updated specs for *POST /MEETINGS/<MEETING_ID>/ADD/ATTENDEES*
+see updated specs on DMSF Folder: https://projects.agavee.com/projects/borsaitaliana-elite/dmsf?folder_id=111
+
+
+<pre>
+Feature: EE-695 - Forward meeting invitation to other members of my company
+  In order to let non-invited members of my company attend a meeting
+  As a Company Administrator
+  I want to be able to invite non-invited members of my company to a meeting.
+
+Background:
+  Given I am on the Connect website
+  And Company Company1 exists
+  And USER_A is CA and member of Company1
+  And USER_B is member of Company1
+  And USER_C is member of Company1
+  And USER_D is a platform member
+  And I am logged in as USER_A
+
+Scenario 1: The CA is not invited but is company is one of the invited companyAttendees and he sees the link
+  Given USER_D creates MEETING_A inviting Company1 and not USER_A
+  And the MEETING_A start date is more that 30 mins from now (i.e. CP_A is in pre_pre status)
+  When I visit MEETING_A page
+  Then I should see the Edit Company Members link
+
+Scenario 2: The CA is invited but his company is NOT and he does not see the link
+  Given USER_D creates MEETING_A inviting USER_A and not Company1
+  And the MEETING_A start date is more that 30 mins from now (i.e. CP_A is in pre_pre status)
+  When I visit MEETING_A page
+  Then I should not see the Edit Company Members link
+
+Scenario 3: click on the Edit Company Members link
+  Given USER_D creates MEETING_A inviting Company1, USER_B and not USER_A
+  And the MEETING_A start date is more that 30 mins from now (i.e. CP_A is in pre_pre status)
+  When I visit MEETING_A page
+  And I click on the Edit Company Members link
+  Then I see a popup with all the members of Company1
+  And USER_A has a unchecked and enabled checkbox
+  And USER_B has a checked and disabled checkbox
+  And USER_C has a unchecked and enabled checkbox
+  And USER_D has a unchecked and enabled checkbox
+  And I see a save button
+
+Scenario 4: Check a member and save
+  Given the steps in Scenario 3
+  When I check the checkbox for USER_C
+  And I click on the save button
+  Then the page reloads and I see a confirmation message
+
+Scenario 5: Reopen the Edit Company Members link after having added one or more attendees.
+  Given the steps in Scenario 4
+  When I click on the Edit Company Members link
+  Then I see a popup with all the members of Company1
+  And USER_A has a unchecked and enabled checkbox
+  And USER_B has a checked and disabled checkbox
+  And USER_C has a checked and disabled checkbox
+  And USER_D has a unchecked and enabled checkbox
+  And I see a save button
+
+Also, consider the scenarios duplicated for the pre_meeting case.
+</pre>";s:10:"start_date";s:10:"2015-06-08";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:24;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EE-695";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:72:"tests/phpunit/Unit/custom/elite_meeting/EliteAddCompanyAttendeesTest.php";}}s:10:"created_on";s:20:"2015-06-08T06:15:21Z";s:10:"updated_on";s:20:"2015-06-22T01:39:07Z";}i:23;a:17:{s:2:"id";i:9069;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:3;s:4:"name";s:8:"Resolved";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:88;s:4:"name";s:14:"Marcello Gorla";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:6:"parent";a:1:{s:2:"id";i:9068;}s:7:"subject";s:45:"EE-705 - Viewing the user profile of a Broker";s:11:"description";s:429:"Company administrator viewing Broker's user profile. 
+Scenarios: 1,2,3,4
+
+- new friendship type creation
+- fixtures of two states: active relationship and pending
+- helper function to detect the status of the relationship between the broker and the CA (or CAs) of the company
+- private message flag to identify the messages sent upon connection requests
+- styling and placing of the status buttons (only for the brokers)
+";s:10:"start_date";s:10:"2015-06-15";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:40;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:14:"Member Profile";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EE-705";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-15T07:56:49Z";s:10:"updated_on";s:20:"2015-06-21T14:12:15Z";}i:24;a:14:{s:2:"id";i:9099;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9096;}s:7:"subject";s:51:"install Git, drush, composer (drushistrano deploys)";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:46:51Z";s:10:"updated_on";s:20:"2015-06-19T10:27:46Z";}i:25;a:15:{s:2:"id";i:9092;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:4;s:4:"name";s:15:"Paolo Pustorino";}s:6:"parent";a:1:{s:2:"id";i:9090;}s:7:"subject";s:118:"Other services' installation: memcached, mongo, node, SOLR+tomcat, git (to deploy with capistrano), drush and composer";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:50;s:10:"created_on";s:20:"2015-06-18T05:39:12Z";s:10:"updated_on";s:20:"2015-06-19T08:28:33Z";}i:26;a:14:{s:2:"id";i:8942;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:1;s:4:"name";s:3:"Bug";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:4;s:4:"name";s:15:"Paolo Pustorino";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:7:"subject";s:43:"Taxonomy lineage displayed in the cart page";s:11:"description";s:149:"As a logged in user which has product in the cart
+When I visit the cart page
+I see all taxonomy lineage in the product line-item.
+
+See screenshot";s:10:"start_date";s:10:"2015-05-25";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-25T08:31:57Z";s:10:"updated_on";s:20:"2015-06-19T03:42:34Z";}i:27;a:16:{s:2:"id";i:8624;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:3;s:4:"name";s:3:"Low";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:55:"Condivisione sui social media (Facebook in particolare)";s:11:"description";s:404:"In merito alla condivisione sui social gli utenti segnalano che non fuziona correttamente la condivisione dell'url di un contentuo di comunità all'interno di facebook ('Salve, ho postato il vostro URL su Facebook ma il link, pur funzionando fa apparire la dicitura '403 forbidden' al posto del titolo. Forse è opportuno modificare qualcosa?' cfr. http://www.comune.bologna.it/comunita/entityform/22).
+";s:10:"start_date";s:10:"2015-02-19";s:8:"due_date";s:10:"2015-03-13";s:10:"done_ratio";i:50;s:15:"estimated_hours";d:8;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-01-04T11:41:14Z";s:10:"updated_on";s:20:"2015-06-19T03:26:23Z";}i:28;a:16:{s:2:"id";i:8667;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:3;s:4:"name";s:3:"Low";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:28:"Notifiche via e-mail (testo)";s:11:"description";s:1283:"
+Nel testo delle notifiche (commenti, segnalazioni, etc), se queste sono riferite ad azioni realizzate da un profilo organizzazione, compare visibile il nome del profilo persona collegato, e questo rendere trasparente il profilo persona impiegato. Questo può confondere l'utente su chi (persona o organizzazione) abbia interagito con il suo contenuto e aumenta le possibilità di confronti aggressivi e comunque off topic.
+
+Il testo della notifica riferita ad azione di profilo organizzazione, deve riportare solo il nome dell'organizzazione e non quello del  profilo persona che ha operato.
+
+----------------------
+
+Ti riporto un testo di esempio.
+
+Rete civica Iperbole
+
+Ciao,
+l'utente +Redazione Social Media Iperbole+ ha commentato una proposta.
+Clicca sul link di seguito per visualizzare il commento. http://www.comune.bologna.it/comunita/modifica-del-menu
+
+Testo del commento:
+
+Grazie per l'intervento, però la tua proposta è relativa al menù di pasti e merende, e la puoi quindi riportare nel punto specifico (Qualità nutrizionale (menu).
+In ogni caso sarà cura del gestore del servizio, anche grazie alle linee di indirizzo e alle attività di controllo del Comune e degli altri soggetti coinvolti, garantire qualità, varietà e quantità del cibo.
+";s:10:"start_date";s:10:"2015-03-02";s:8:"due_date";s:10:"2015-03-13";s:10:"done_ratio";i:80;s:15:"estimated_hours";d:8;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-02-07T10:44:51Z";s:10:"updated_on";s:20:"2015-06-19T03:19:17Z";}i:29;a:14:{s:2:"id";i:9029;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:1;s:4:"name";s:3:"Bug";}s:6:"status";a:2:{s:2:"id";i:10;s:4:"name";s:9:"Validated";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:48:"Gestione flusso delle segnalazioni (regressione)";s:11:"description";s:437:"Segnalo una regressione relativa al flusso delle segnalazioni sul sito in produzione (#8568).
+
++SCENARIO+ 
+Un utente segnala un contenuto (post o progetto) o un profilo persona.
+L'account gestionecomunita@cobo non riceve alcuna email riportante la segnalazione.
+
++RICHIESTA+
+Un utente segnala un contenuto (post o progetto) o un profilo persona.
+L'account gestionecomunita@cobo riceve un'email riportante la singola segnalazione.";s:10:"start_date";s:10:"2015-06-04";s:10:"done_ratio";i:100;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-04T04:34:43Z";s:10:"updated_on";s:20:"2015-06-19T02:28:24Z";}i:30;a:14:{s:2:"id";i:8932;s:7:"project";a:2:{s:2:"id";i:192;s:4:"name";s:24:"Iperbole Comunità - EXT";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:7;s:4:"name";s:7:"On hold";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:117;s:4:"name";s:17:"Michele Restuccia";}s:11:"assigned_to";a:2:{s:2:"id";i:72;s:4:"name";s:19:"Vincenzo Di Biaggio";}s:7:"subject";s:43:"Funzionamento Tile 'In evidenza' (HOMEPAGE)";s:11:"description";s:603:"+Scenario+
+L'ordinamento dei post nella tile 'In evidenza in homepage' è definito in basa alla data di creazione, per cui i post sono elencati dall'alto in basso partendo dal più recente sino al meno recente, fermo restando il numero massimo di post visualizzabili.
+
++Richiesta+ 
+L'ordinamento dei post nella tile 'In evidenza in homepage' *è definito in base alla data di modifica*, per cui i post sono elencati dall'alto in basso partendo da quello con la data di modifica più recente sino a quello con la data di modifica meno recente, fermo restando il numero massimo di post visualizzabili.";s:10:"start_date";s:10:"2015-05-25";s:10:"done_ratio";i:0;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:4;s:4:"name";s:7:"Browser";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-25T02:36:06Z";s:10:"updated_on";s:20:"2015-06-19T02:28:01Z";}i:31;a:15:{s:2:"id";i:9091;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:4;s:4:"name";s:8:"Feedback";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:4;s:4:"name";s:15:"Paolo Pustorino";}s:6:"parent";a:1:{s:2:"id";i:9090;}s:7:"subject";s:37:"LAMP stack installation with php-fpm ";s:11:"description";s:49:"Consider installing more than one php version. 
+";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:80;s:10:"created_on";s:20:"2015-06-18T05:37:02Z";s:10:"updated_on";s:20:"2015-06-18T10:50:12Z";}i:32;a:14:{s:2:"id";i:9096;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9089;}s:7:"subject";s:36:"Migrate ZOTAN (DEADLINE: 05/07/2015)";s:11:"description";s:262:"ZOTAN was a Twinbit server dedicated to following functions:
+* stage instance
+* Andrea Panisson's dev server
+* H-Art bastion host for deploys: *remember to send new host IP address to H-Art tech support that will enable it on its VPN* 
+
+DEADLINE: 05/07/2015";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:44:27Z";s:10:"updated_on";s:20:"2015-06-18T09:44:56Z";}i:33;a:14:{s:2:"id";i:9090;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9089;}s:7:"subject";s:37:"Migrate VATTAN (DEADLINE: 24/06/2015)";s:11:"description";s:71:"Vattan was a Twinbit's production LAMP server
+
+
+DEADLINE: 24/06/2015";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:36:35Z";s:10:"updated_on";s:20:"2015-06-18T09:44:41Z";}i:34;a:15:{s:2:"id";i:9102;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:19:"Update perofil logo";s:11:"description";s:27:"Both website and mailchimpo";s:10:"start_date";s:10:"2015-06-18";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-18T09:29:20Z";s:10:"updated_on";s:20:"2015-06-18T09:29:20Z";}i:35;a:15:{s:2:"id";i:8851;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:36:"Modifiche sezione "Scopri l'azienda"";s:11:"description";s:1040:"!scopri-lazienda-1.jpg!
+
+!scopri-lazienda-2.jpg!
+
+!perofil_storia_3.jpg!
+
+!perofil_storia_4.jpg!
+
+!perofil_azienda_persone.jpg!
+
+!perofil_azienda_storia.jpg!
+
+!Lanostrastoria_Perofil-1.jpg!
+
+!Lanostrastoria_Perofil-2.jpg!
+
+!perofil_azienda_luna_di_seta.jpg!
+
+!perofil_azienda_innovazione.jpg!
+
+!perofil_azienda_bikkembergs.jpg!
+
+----
+
+_Nuovi paragrafi da aggiungere:_
+
+LA SENSUALITA’ FEMMINILE DI LUNA DI SETA MILANO
+Nel 2014 abbiamo acquisito il brand Luna di Seta Milano, lingerie femminile di alto livello. Lo stile italiano non si smentisce trasformando la pura seta in autentici capolavori che solo nostro know-how, la perizia e la nostra tradizione rendono possibili.
+
+
+L’UNDERWEAR E BEACHWEAR CON DIRK BIKKEMBERGS
+Dal mese di gennaio 2015 produciamo e distribuiamo l’underwear e il beachwear di Dirk Bikkembergs, secondo un contratto di licenza. ll brand Bikkembergs si rivolge ad un uomo atletico e virile, consapevole della propria fisicità, attento al proprio benessere e, ovviamente, sexy.
+";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-15T10:12:38Z";s:10:"updated_on";s:20:"2015-06-18T08:58:41Z";}i:36;a:15:{s:2:"id";i:8855;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:31:"Modifiche sezione "Innovazione"";s:11:"description";s:110:"!Innovazione_Perofil-1.jpg!
+
+!perofil_innovazione_secondonoi.jpg!
+
+!perofil_azienda_innovazione_large.jpg!";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-15T10:47:59Z";s:10:"updated_on";s:20:"2015-06-18T07:18:36Z";}i:37;a:16:{s:2:"id";i:8853;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:26:"Modifiche sezione "Outlet"";s:11:"description";s:44:"!perofil_outlet.jpg!
+
+!Outlet_Perofil.jpg!";s:10:"start_date";s:10:"2015-05-15";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-15T10:43:08Z";s:10:"updated_on";s:20:"2015-06-18T06:24:34Z";}i:38;a:13:{s:2:"id";i:9100;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:3;s:4:"name";s:7:"Support";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9096;}s:7:"subject";s:50:"Verify Andrea Panisson new development environment";s:11:"description";s:36:"Evaluate a VM solution with Panisson";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:47:52Z";s:10:"updated_on";s:20:"2015-06-18T05:57:56Z";}i:39;a:14:{s:2:"id";i:9098;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9096;}s:7:"subject";s:50:"Send H-ART new IP Address to be enabled on its VPN";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:46:13Z";s:10:"updated_on";s:20:"2015-06-18T05:57:54Z";}i:40;a:14:{s:2:"id";i:9097;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:5;s:4:"name";s:4:"High";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9096;}s:7:"subject";s:36:"LAMP stack installation with mod_php";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:45:25Z";s:10:"updated_on";s:20:"2015-06-18T05:57:53Z";}i:41;a:14:{s:2:"id";i:9095;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9090;}s:7:"subject";s:24:"Create /var/www symlinks";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:41:10Z";s:10:"updated_on";s:20:"2015-06-18T05:57:36Z";}i:42;a:14:{s:2:"id";i:9094;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9090;}s:7:"subject";s:64:"Migrate directories: /var/lib/mongodb, /var/lib/mysql, /var/apps";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:40:37Z";s:10:"updated_on";s:20:"2015-06-18T05:57:32Z";}i:43;a:14:{s:2:"id";i:9093;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:5;s:4:"name";s:4:"Task";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:6:"parent";a:1:{s:2:"id";i:9090;}s:7:"subject";s:30:"Migrate service configurations";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-06-24";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T05:39:32Z";s:10:"updated_on";s:20:"2015-06-18T05:57:31Z";}i:44;a:13:{s:2:"id";i:9089;s:7:"project";a:2:{s:2:"id";i:2;s:4:"name";s:9:"Technical";}s:7:"tracker";a:2:{s:2:"id";i:9;s:4:"name";s:4:"Epic";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:6;s:4:"name";s:6:"Urgent";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:7:"subject";s:75:"Migrate old infrastructures (Twinbit, Agavee) to SparkFabrik infrastructure";s:11:"description";s:0:"";s:10:"start_date";s:10:"2015-06-18";s:8:"due_date";s:10:"2015-07-05";s:10:"done_ratio";i:0;s:10:"created_on";s:20:"2015-06-18T04:30:01Z";s:10:"updated_on";s:20:"2015-06-18T05:54:50Z";}i:45;a:16:{s:2:"id";i:9079;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:9;s:4:"name";s:4:"Epic";}s:6:"status";a:2:{s:2:"id";i:1;s:4:"name";s:3:"New";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:7:"subject";s:26:"EE-000 - Thron integration";s:11:"description";s:92:"Wiki page: https://projects.agavee.com/projects/borsaitaliana-elite/wiki/Thron_Video_Service";s:10:"start_date";s:10:"2015-06-15";s:8:"due_date";s:10:"2015-06-16";s:10:"done_ratio";i:0;s:15:"estimated_hours";d:118;s:13:"custom_fields";a:7:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:6;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-16T02:20:05Z";s:10:"updated_on";s:20:"2015-06-18T05:21:30Z";}i:46;a:17:{s:2:"id";i:9081;s:7:"project";a:2:{s:2:"id";i:154;s:4:"name";s:5:"Elite";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:85;s:4:"name";s:14:"Marcello Testi";}s:13:"fixed_version";a:2:{s:2:"id";i:170;s:4:"name";s:9:"SPRINT-35";}s:6:"parent";a:1:{s:2:"id";i:9079;}s:7:"subject";s:37:"EE-714 - Associate a video to a slide";s:11:"description";s:5141:"A CA/PA should be able to associate a video that has been uploaded on Thron to a slide.
+ 
+<pre>
+Feature: Use an uploaded video as content of a slide in company profile's header
+  In order to enrich my company's profile
+  As a company administrator
+  I want to be able to put an uploaded video into a slide visible in my company's profile
+
+  Background:
+    Given I am on program "Connect"
+    And company "Public Company 1 EE" exists
+    And I am the company administrator of "Public Company 1 EE"
+    And I am editing the company profile of "Public Company 1 EE"
+    And the video upload service "Thron" exists
+
+  Scenario: Add another item to the slideshow
+    When I ckick on the "ADD ANOTHER ITEM" button
+    Then I should see a new element for inserting a slide
+    And I should see the widget to insert an image
+    And I should see the widget to select an uploaded video
+    And I should see a "SELECT VIDEO" button
+    And I should see a "UPLOAD VIDEO" button
+
+  Scenario: Display list of uploaded videos (videos present)
+    Given that I have uploaded 2 videos
+    And the "Thron" service is responding
+    When I click the "SELECT VIDEO" button
+    Then I should see a modal window
+    And I should see the modal window title "UPLOADED VIDEOS"
+    And I should see the "X" close button of the modal window
+    And I should see the videos in the modal window content
+      | video    |
+      | VIDEO #1 |
+      | VIDEO #2 |
+    And I should see the "SELECT" button next to "VIDEO #1"
+    And I should see the "REMOVE" button next to "VIDEO #1"
+
+  Scenario: Display list of uploaded videos (service not responding)
+    Given that I have uploaded 2 videos
+    And the "Thron" service is not responding
+    When I click the "SELECT VIDEO" button
+    Then I should see a modal window
+    And I should see the modal window title "UPLOADED VIDEOS"
+    And I should see the "X" close button of the modal window
+    And I should see the message "Service not available, please retry later." in the modal window content
+
+  Scenario: Display list of uploaded videos (videos not present)
+    Given that I have uploaded 0 videos
+    And the "Thron" service is responding
+    When I click the "SELECT VIDEO" button
+    Then I should see a modal window
+    And I should see the modal window title "UPLOADED VIDEOS"
+    And I should see the "X" close button of the modal window
+    And I should see the message "No videos present." in the modal window content
+
+  Scenario: Select an existing uploaded video
+    Given that I have uploaded 2 videos
+    And the "Thron" service is responding
+    And I see the list of uploaded videos in the modal window
+    When I click the "SELECT" button next to "VIDEO #1"
+    Then the modal window is closed
+    And I should see the video's file name "VIDEO #1"
+    And I should see the "REMOVE" button next to "VIDEO #1"
+    And I should not see a "SELECT VIDEO" button
+    And I should not see a "UPLOAD VIDEO" button
+
+  Scenario: Select an existing uploaded video (service not responding)
+    Given that I have uploaded 2 videos
+    And the "Thron" service is not responding
+    And I see the list of uploaded videos in the modal window
+    When I click the "SELECT" button next to "VIDEO #1"
+    Then I should see the message "Service not available, please retry later." in the modal window content
+    And I should not see the list of uploaded videos in the modal window
+
+  Scenario: Delete and existing uploaded video
+    Given that I have uploaded 2 videos
+    And the "Thron" service is responding
+    And I see the list of uploaded videos in the modal window
+    When I click the "DELETE" button next to "VIDEO #1"
+    Then I should see the videos in the modal window content
+      | video    |
+      | VIDEO #2 |
+
+  Scenario: Delete an existing uploaded video (service not responding)
+    Given that I have uploaded 2 videos
+    And the "Thron" service is not responding
+    And I see the list of uploaded videos in the modal window
+    When I click the "DELETE" button next to "VIDEO #1"
+    Then I should see the message "Service not available, please retry later." in the modal window content
+    And I should not see the list of uploaded videos in the modal window
+
+  Scenario: Remove a selected video from a slide
+    Given that I have uploaded 2 videos
+    And I see the list of uploaded videos in the modal window
+    When I click the "DELETE" button next to "VIDEO #1"
+    Then I should see the message "Service not available, please retry later." in the modal window content
+    And I should not see the list of uploaded videos in the modal window
+
+  Scenario: Close the modal window without selecting a video
+    Given that I see the video's file name "VIDEO #1"
+    And I see the "REMOVE" button next to "VIDEO #1"
+    When I click the "REMOVE" button next to "VIDEO #1"
+    Then I should not see the video's file name "VIDEO #1"
+    And I should see the widget to select an uploaded video
+    And I should see a "SELECT VIDEO" button
+    And I should see a "UPLOAD VIDEO" button
+</pre>";s:10:"start_date";s:10:"2015-06-16";s:10:"done_ratio";i:50;s:15:"estimated_hours";d:24;s:13:"custom_fields";a:8:{i:0;a:3:{s:2:"id";i:12;s:4:"name";s:7:"Project";s:5:"value";s:8:"Exchange";}i:1;a:3:{s:2:"id";i:15;s:4:"name";s:16:"Contract (Borsa)";s:5:"value";s:31:"ELITE Connect [fourth contract]";}i:2;a:3:{s:2:"id";i:13;s:4:"name";s:15:"Package Version";s:5:"value";s:6:"v0.0.0";}i:3;a:3:{s:2:"id";i:16;s:4:"name";s:12:"Story points";s:5:"value";s:0:"";}i:4;a:3:{s:2:"id";i:18;s:4:"name";s:9:"Component";s:5:"value";s:0:"";}i:5;a:3:{s:2:"id";i:19;s:4:"name";s:15:"Jira Story Code";s:5:"value";s:6:"EE-714";}i:6;a:3:{s:2:"id";i:23;s:4:"name";s:15:"Release (Borsa)";s:5:"value";s:0:"";}i:7;a:3:{s:2:"id";i:24;s:4:"name";s:19:"Test file/functions";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-06-16T02:23:25Z";s:10:"updated_on";s:20:"2015-06-18T05:21:30Z";}i:47;a:15:{s:2:"id";i:8854;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:28:"Modifiche sezione "Qualità"";s:11:"description";s:58:"!Qualità_Perofil-1.jpg!
+
+!perofil_qualità_bisogni.jpg!";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-15T10:44:58Z";s:10:"updated_on";s:20:"2015-06-18T04:55:22Z";}i:48;a:15:{s:2:"id";i:8852;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:6:"parent";a:1:{s:2:"id";i:8738;}s:7:"subject";s:34:"Modifiche sezione "Sostenibilità"";s:11:"description";s:19:"!Sostenibilita.jpg!";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:0:"";}}s:10:"created_on";s:20:"2015-05-15T10:41:43Z";s:10:"updated_on";s:20:"2015-06-18T03:59:45Z";}i:49;a:15:{s:2:"id";i:8738;s:7:"project";a:2:{s:2:"id";i:59;s:4:"name";s:9:"Ecommerce";}s:7:"tracker";a:2:{s:2:"id";i:2;s:4:"name";s:7:"Feature";}s:6:"status";a:2:{s:2:"id";i:2;s:4:"name";s:11:"In Progress";}s:8:"priority";a:2:{s:2:"id";i:4;s:4:"name";s:6:"Normal";}s:6:"author";a:2:{s:2:"id";i:92;s:4:"name";s:14:"Marco Frattola";}s:11:"assigned_to";a:2:{s:2:"id";i:7;s:4:"name";s:14:"Alessio Piazza";}s:13:"fixed_version";a:2:{s:2:"id";i:127;s:4:"name";s:7:"Backlog";}s:7:"subject";s:32:"Update logos and static contents";s:11:"description";s:31:"(to enrich scope and estimate) ";s:10:"start_date";s:10:"2015-05-15";s:10:"done_ratio";i:50;s:13:"custom_fields";a:1:{i:0;a:3:{s:2:"id";i:17;s:4:"name";s:18:"Contract (Perofil)";s:5:"value";s:32:"Manutenzione (PMS	 - 2014040101)";}}s:10:"created_on";s:20:"2015-04-29T09:14:26Z";s:10:"updated_on";s:20:"2015-06-18T03:59:33Z";}}s:11:"total_count";i:1529;s:6:"offset";i:0;s:5:"limit";i:50;}
