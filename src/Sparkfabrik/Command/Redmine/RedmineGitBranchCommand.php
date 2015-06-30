@@ -74,25 +74,9 @@ EOF
             return $output->writeln('<info>No issues found.</info>');
         }
 
-        // Use Custom field to determine the story name.
-        $story = null;
-        $story_name = $res['issue']['subject'];
-        foreach ($res['issue']['custom_fields'] as $field) {
-            if ($field['name'] === 'Jira Story Code') {
-                $story = $field['value'];
-                $story_name = str_replace($field['value'], '', $story_name);
-            }
-        }
-
-        // Clean up story name.
-        if (mb_detect_encoding($story_name) === 'UTF-8') {
-            $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
-            if ($story_name_converted) {
-                $story_name = $story_name_converted;
-            } else {
-                $story_name = iconv('UTF-8', 'ASCII//IGNORE', $story_name);
-            }
-        }
+        // Get a clean story name.
+        $story = $this->getStoryCode($res['issue'], false);
+        $story_name = $this->getCleanStoryName($res['issue']['subject'], $story);
         $story_name = preg_replace("/[^a-z0-9 -]/i", '', $story_name);
         $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
         $story_name = implode((array_filter(explode(' ', str_replace('_', ' ', $story_name)))), '_');
