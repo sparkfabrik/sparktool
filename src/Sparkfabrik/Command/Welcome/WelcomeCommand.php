@@ -36,12 +36,8 @@ class WelcomeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $welcome_file = '.banner.txt';
-        if (!file_exists($welcome_file)) {
-            $welcome_file = 'phar://spark.phar/' . $welcome_file;
-        }
-        $splash = file_get_contents($welcome_file);
-        $splash = strtr($splash, ['\033' => "\033"]);
+        // Print german flag
+        $splash = $this->getSplashFile('.banner.txt');
         $output->writeln($splash);
 
         $listCommand = $this->getApplication()->find('list');
@@ -51,6 +47,30 @@ class WelcomeCommand extends Command
         );
 
         $input = new ArrayInput($arguments);
+
+        $sleep = 650000;
+
+        // Print italian flag
+        usleep($sleep);
+        $splash = $this->getSplashFile('.banner_italy.txt');
+        $output->writeln($splash);
+
+        // Print red logo
+        usleep($sleep);
+        $splash = $this->getSplashFile('.banner_red.txt');
+        $output->writeln($splash);
+
+        usleep($sleep);
         $returnCode = $listCommand->run($input, $output);
+
+    }
+
+    protected function getSplashFile($filename){
+        if (!file_exists($filename)) {
+            $welcome_file = 'phar://spark.phar/' . $filename;
+        }
+        $splash = file_get_contents($filename);
+        $splash = strtr($splash, ['\033' => "\033"]);
+        return $splash;
     }
 }

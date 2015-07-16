@@ -21,7 +21,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     private $application;
     private $tester;
     private $command;
-    
+
     // Mocks
     private $commandOutput;
 
@@ -40,7 +40,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $splashOutput = strtr($splashOutput, ['\033' => "\033"]);
         return trim($splashOutput);
     }
-    
+
     private function getMockedListCommandOutput()
     {
         // return a (hopefully) significative string
@@ -68,7 +68,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $res = trim($this->tester->getDisplay());
         $this->assertStringStartsWith($expected, $res);
     }
- 
+
      /**
      * Tests that the output of the welcome command spits the usage instructions
      */
