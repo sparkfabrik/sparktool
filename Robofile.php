@@ -1,7 +1,9 @@
 <?php
 
+require_once __DIR__.'/vendor/autoload.php';
+
 use Symfony\Component\Finder\Finder as Finder;
-use Symfony\Component\Yaml\Parser as Parser;
+use Symfony\Component\Yaml\Parser;
 use Robo\Task\Development\SemVer;
 
 /**
@@ -30,9 +32,19 @@ class Robofile extends \Robo\Tasks
       if (!empty($status)) {
         throw new Exception('Seems that you have some file not yet commited, check your git status.');
       }
-      $this->buildSemver();
+      //$this->buildSemver();
+      $this->buildGithub();
       $this->buildPhar();
       $this->buildPublish();
+    }
+
+    public function buildGithub() {
+      $version = (string) new Semver('.semver');
+      $this->taskGitHubRelease($version)
+                 ->uri('sparkfabrik/sparktool')
+                 ->askDescription()
+                 ->comittish('develop')
+                 ->run();
     }
 
    /**
@@ -72,11 +84,11 @@ class Robofile extends \Robo\Tasks
             ->path('src')
             ->path('vendor')
             ->notPath('patched-libraries')
-            ->notPath('vendor/codegyre')
             ->in(__DIR__);
       foreach ($files as $file) {
         $packer->addFile($file->getRelativePathname(), $file->getRealPath());
       }
+      $packer->addFile('.banner.txt', '.banner.txt');
 
       // Executable.
       $packer->addFile('.semver', '.semver');

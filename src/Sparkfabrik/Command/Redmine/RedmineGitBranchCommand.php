@@ -18,63 +18,112 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class RedmineGitBranchCommand extends RedmineCommand
 {
     /**
      * {@inheritdoc}
      */
-    protected function configure() {
-      $this->initConfig();
-      $this
-        ->setName('redmine:git:branch')
-        ->setDescription('WIP: Generate git branch name using issue subject')
-      ;
-      $this->addArgument(
-        'issue',
-        InputArgument::REQUIRED,
-        'Issue id'
-      );
+    protected function configure()
+    {
+        $this
+            ->setName('redmine:git:branch')
+            ->setDescription(<<<EOF
+Generate git branch. Name is generated starting from issue subject
+EOF
+            );
+        $this->addArgument(
+            'issue',
+            InputArgument::REQUIRED,
+            'Issue id'
+        );
+        $this->addArgument(
+            'origin-branch',
+            InputArgument::OPTIONAL,
+            'Branch to start from.',
+            'develop'
+        );
+        $this->addOption(
+            'dry-run',
+            false,
+            InputOption::VALUE_NONE,
+            'Just print the branch name, not execute git flow.'
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output) {
-      $client = $this->getRedmineClient();
-      $issue = $input->getArgument('issue');
-      $res = $client->api('issue')->show($issue);
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $branch = $this->getService()->getConfig()['git_pattern'];
+        $client = $this->getService()->getClient();
+        $issue = $input->getArgument('issue');
+        $origin_branch = $input->getArgument('origin-branch');
+        $dry_run = $input->getOption('dry-run');
+        $res = $client->api('issue')->show($issue);
 
-      // Handle errors.
-      if (isset($res['errors'])) {
-        $errors = implode("\n", $res['errors']);
-        throw new \Exception($errors);
-      }
-      if ($res === 1) {
-        return $output->writeln('<info>No issues found.</info>');
-      }
+        // Handle errors.
+        if (isset($res['errors'])) {
+            $errors = implode("\n", $res['errors']);
+            throw new \Exception($errors);
+        }
+        if ($res === 1) {
+            return $output->writeln('<info>No issues found.</info>');
+        }
 
-      // Login taken from: https://github.com/mavimo/git-redmine-utilities/blob/develop/git-redmine
-      // Extract items from issue info.
-      $subject = $res['issue']['subject'];
-      $subject_items = explode('-', $subject, 3);
-      // Punish not well named issues.
-      if (count($subject_items) != 3) {
-        return $output->writeln(PHP_EOL . '<error>Rename your issue please.</error>' .
-          PHP_EOL . '<info>Well named issues are: STORY_PREFIX-STORY_CODE_ISSUE-ID_STORY_NAME</info>' . PHP_EOL .
-          'Your issue instead is: "' . $subject . '"' . PHP_EOL);
-      }
-      $story_prefix = trim($subject_items[0]);
-      $story_code = trim($subject_items[1]);
-      $story_name = trim($subject_items[2]);
+        // Use Custom field to determine the story name.
+        $story = null;
+        $story_name = $res['issue']['subject'];
+        foreach ($res['issue']['custom_fields'] as $field) {
+            if ($field['name'] === 'Jira Story Code') {
+                $story = $field['value'];
+                $story_name = str_replace($field['value'], '', $story_name);
+            }
+        }
 
-      // Clean story name.
-      $story_name = str_replace(array('[', ']'), '', $story_name);
-      $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
-      $story_name = str_replace('__', '_', $story_name);
+        // Clean up story name.
+        if (mb_detect_encoding($story_name) === 'UTF-8') {
+            $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
+            if ($story_name_converted) {
+                $story_name = $story_name_converted;
+            } else {
+                $story_name = iconv('UTF-8', 'ASCII//IGNORE', $story_name);
+            }
+        }
+        $story_name = preg_replace("/[^a-z0-9 -]/i", '', $story_name);
+        $story_name = strtolower(preg_replace("/\W/", '_', $story_name));
+        $story_name = implode((array_filter(explode(' ', str_replace('_', ' ', $story_name)))), '_');
 
-      dump($story_prefix);
-      dump($story_code);
-      dump($story_name);
+        // Replace patterns from branch structure.
+        $branch = str_replace('%(story)', $story, $branch);
+        $branch = str_replace('%(issue_id)', (string) $issue, $branch);
+        $branch = str_replace('%(story_name)', $story_name, $branch);
+
+        // Cleanup branch name from leading undescores.
+        $branch = trim($branch, '_');
+
+        // Create branch using standard git commands.
+        if (!$dry_run) {
+            try {
+                $git_process = new Process('git checkout ' . $origin_branch);
+                $git_process = new Process('git checkout -b feature/' . $branch);
+                $git_process->mustRun();
+                $output->writeln("<info>Branch: \"{$branch}\" created</info>");
+
+                // Auto track of branch.
+                $git_process = new Process('git push --set-upstream origin feature/' . $branch);
+                $git_process->mustRun();
+                $output->writeln("<info>Branch: \"{$branch}\" tracked</info>");
+            } catch (ProcessFailedException $e) {
+                return $output->writeln("<comment>Error: " . $git_process->getErrorOutput() . "</comment>");
+            }
+        } else {
+            $output->writeln('I will execute: <info>git checkout ' . $origin_branch . '</info>');
+            $output->writeln('I will execute: <info>git checkout -b feature/' . $branch . '</info>');
+            $output->writeln('I will execute: <info>git push --set-upstream origin feature/' . $branch . '</info>');
+        }
     }
 }

@@ -1,5 +1,10 @@
-spark.phar
+/spark.phar
 patched-libraries
-composer.lock
-.spark.yml
-vendor
+/.spark.yml
+/vendor
+/log
+/build
+reports
+/bin
+/tags
+/local.vimrc

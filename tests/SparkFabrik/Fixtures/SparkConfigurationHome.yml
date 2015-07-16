@@ -1,0 +1,7 @@
+spark:
+  services:
+    redmine_credentials:
+      redmine_url: "https://example.com"
+      redmine_api_key: abc0123000000000000999999999999999999999
+  projects:
+    redmine_project_id: "test-configuration"
