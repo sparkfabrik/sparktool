@@ -48,6 +48,16 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
     {
         $service = $this->getMockBuilder('\Sparkfabrik\Tools\Spark\Services\RedmineService')
             ->getMock();
+        $service
+            ->method('getConfig')
+            ->will(
+                $this->returnValue(
+                    array(
+                        'redmine_output_fields' => 'id|ID,project|Project,created_on|Created,updated_on|Updated,tracker|Traker,fixed_version|Version,author|Author,assigned_to|Assigned,status|Status,estimated_hours|Estimated,subject|Subject',
+                        'project_id' => null,
+                    )
+                )
+            );
         return $service;
     }
 
@@ -91,6 +101,14 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         return $redmineApiMembership;
     }
 
+    private function getMockedRedmineApiIssuePriorities()
+    {
+        $redmineApiIssuePriorities = $this->getMockBuilder('\Redmine\Api\IssuePriority')
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $redmineApiIssuePriorities;
+    }
+
     private function createCommand($name)
     {
         $this->command = $this->application->find($name);
@@ -107,6 +125,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->redmineApiIssueStatus = $this->getMockedRedmineApiIssueStatus();
         $this->redmineApiUser = $this->getMockedRedmineApiUser();
         $this->redmineApiMembership = $this->getMockedRedmineApiMembership();
+        $this->redmineApiIssuePriorities = $this->getMockedRedmineApiIssuePriorities();
 
         // Default returns for mock objects.
         $default_options = array_replace(
@@ -116,6 +135,7 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             array('redmineApiUserAll' => array()),
             array('redmineApiMembershipAll' => array()),
             array('redmineApiUserShow' => array()),
+            array('redmineApiIssuePriorities' => array('issue_priorities' => array())),
             $options
         );
 
@@ -144,6 +164,10 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
             ->method('all')
             ->will($this->returnValue($default_options['redmineApiMembershipAll']));
 
+        $this->redmineApiIssuePriorities->expects($this->any())
+            ->method('all')
+            ->will($this->returnValue($default_options['redmineApiIssuePriorities']));
+
         // Mock method api of redmine client.
         $this->redmineClient->expects($this->any())
             ->method('api')
@@ -152,7 +176,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
                     $this->equalTo('issue'),
                     $this->equalTo('issue_status'),
                     $this->equalTo('user'),
-                    $this->equalTo('membership')
+                    $this->equalTo('membership'),
+                    $this->equalTo('issue_priority')
                 )
             )
             ->will(
@@ -173,6 +198,10 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
                             case 'membership':
                                 return $this->redmineApiMembership;
+                                    break;
+
+                            case 'issue_priority':
+                                return $this->redmineApiIssuePriorities;
                                     break;
                         }
                     }
@@ -198,8 +227,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Execute with project_id
         $options = array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
         );
         $this->tester->execute($options);
         $res = trim($this->tester->getDisplay());
@@ -226,8 +255,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Execute with project_id
         $options = array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
         );
         $this->tester->execute($options);
     }
@@ -246,8 +275,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Execute with project_id
         $options = array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
         );
         $this->tester->execute($options);
     }
@@ -262,8 +291,8 @@ class RedmineSearchCommandTest extends \PHPUnit_Framework_TestCase
 
         // Execute with project_id
         $input = array(
-        'command' => $this->command->getName(),
-        '--project_id' => 'test_project_id',
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
         );
         $options = array('verbosity' => OutputInterface::VERBOSITY_DEBUG);
         $this->tester->execute($input, $options);
@@ -377,11 +406,11 @@ EOF
             );
         }
 
-        /**
-   * Test incorrect fields arguments.
-   *
-   * @group incorrectFields
-   */
+    /**
+     * Test incorrect fields arguments.
+     *
+     * @group incorrectFields
+     */
         public function testIncorrectFields()
         {
             $command = $this->createCommand('redmine:search');
@@ -399,11 +428,11 @@ EOF
             $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
         }
 
-        /**
-   * Test incorrect fields arguments.
-   *
-   * @group fieldsSingleFilter
-   */
+    /**
+     * Test incorrect fields arguments.
+     *
+     * @group fieldsSingleFilter
+     */
         public function testFieldsSingleFilter()
         {
             $command = $this->createCommand('redmine:search');
@@ -412,8 +441,8 @@ EOF
 
             // Execute with project_id
             $input = array(
-            'command' => $this->command->getName(),
-            '--project_id' => 'test_project_id',
+                'command' => $this->command->getName(),
+                '--project_id' => 'test_project_id',
             );
             $options = array('--fields' => 'id');
             $this->tester->execute($options);
@@ -421,7 +450,7 @@ EOF
             $this->assertEquals("+------+\n| ID   |\n+------+", substr($res, 0, 26));
         }
 
-        /**
+    /**
      * Test search by status.
      */
         public function testSearchByStatus()
@@ -432,8 +461,8 @@ EOF
             $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
 
             $input = array(
-            'command' => $this->command->getName(),
-            '--project_id' => 'test_project_id',
+                'command' => $this->command->getName(),
+                '--project_id' => 'test_project_id',
             );
 
             $options = array('--status' => 'new');
@@ -442,7 +471,7 @@ EOF
             $this->assertContains('New', $res);
         }
 
-        /**
+    /**
      * Test search by more than one status.
      *
      * @group fail
@@ -459,9 +488,9 @@ EOF
                 )
             );
             $input = array(
-            'command' => $this->command->getName(),
-            '--project_id' => 'test_project_id',
-            '--status' => 'new, in progress'
+                'command' => $this->command->getName(),
+                '--project_id' => 'test_project_id',
+                '--status' => 'new, in progress'
             );
             $this->tester->execute($input);
             $res = trim($this->tester->getDisplay());
@@ -589,7 +618,6 @@ EOF
             $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
             $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
             $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
-
             $command = $this->createCommand('redmine:search');
             $this->createMocks(
                 array(
@@ -635,5 +663,44 @@ EOF
             $res = trim($this->tester->getDisplay());
             $expected = "To perform search by assigned user specify the project id.";
             $this->assertContains($expected, $res);
+        }
+
+    /**
+     * Test search with priority order.
+     */
+        public function testSearchWithPriorityOrder()
+        {
+            $testRes = file_get_contents(self::$fixturesPath . 'redmine-search-with-normal-priority-order.serialized');
+            $issuePriorities = file_get_contents(self::$fixturesPath . 'redmine-issue-priorities.serialized');
+
+            $command = $this->createCommand('redmine:search');
+            $this->createMocks(
+                array(
+                    'redmineApiIssuePriorities' => array('issue_priorities' => unserialize($issuePriorities)),
+                    'redmineApiIssueAll' => unserialize($testRes),
+                )
+            );
+
+            $input = array(
+                'command' => $this->command->getName(),
+                '--priority-order' => 'Normal',
+                '--limit' => '2',
+            );
+
+            $expected = <<<EOF
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
+| ID   | Priority | Project | Created    | Updated             | Traker      | Version   | Author         | Assigned      | Status | Estimated | Subject                                            |
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
+| 9228 | Normal   | Elite   | 14-07-2015 | 16-07-2015 08:47:49 | Improvement | SPRINT-37 | Marco Frattola | Giuseppe Rota | Merged |           | EE-754 - Do not show interest when empty (user pro |
+| 8953 | Normal   | Elite   | 26-05-2015 | 16-07-2015 08:24:14 | Improvement | SPRINT-37 | Marcello Testi |               | New    | 20        | EG-406 - New financials for ELITE stats            |
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
+
+Showing "2" of "1683" issues(you can adjust the limit using --limit argument)
+EOF
+            ;
+
+            $this->tester->execute($input);
+            $res = trim($this->tester->getDisplay());
+            $this->assertEquals($expected, $res);
         }
 }

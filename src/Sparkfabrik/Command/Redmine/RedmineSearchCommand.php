@@ -73,21 +73,27 @@ class RedmineSearchCommand extends RedmineCommand
             InputOption::VALUE_OPTIONAL,
             'Filter by Category ID, available values depend on data on redmine (examples: Hotfix, QA, ...)'
         );
+        $this->addOption(
+            'priority-order',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            "Order by issue priority. Format: Priority Name. Eg.: Normal
+Possible values:
+    Priorities: Normal, High, Urgent, Immediate
+    The remaining issues will be sorted by to the priority id"
+        );
         // @codingStandardsIgnoreStart
         $this->addOption(
             'assigned',
             false,
             InputOption::VALUE_OPTIONAL,
-            <<<EOF
-Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
+            'Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
 Where:
  - "me" issues assigned to the calling user
  - "not me" issues not assigned to the calling user
  - "all" issues assigned and not assigned
  - "anyone" issues assigned
- - "none" issues not assigned
-EOF
-            ,
+ - "none" issues not assigned',
             'all'
         );
         // @codingStandardsIgnoreEnd
@@ -101,11 +107,10 @@ EOF
             'created',
             false,
             InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            <<<EOF
-Single date format: "<=|=> [date]"
+            'Single date format: "<=|=> [date]"
 Multiple date range format: "[date]"
 Where [date] can be any expression supported by strtotime.
-EOF
+        '
         );
         $this->addOption(
             'updated',
@@ -224,21 +229,47 @@ EOF
                 }
             }
 
-            // Fields to print.
-            $fields = array(
-                'id'              => 'ID',
-                'project'         => 'Project',
-                'created_on'      => 'Created',
-                'updated_on'      => 'Updated',
-                'tracker'         => 'Tracker',
-                'fixed_version'   => 'Version',
-                'author'          => 'Author',
-                'assigned_to'     => 'Assigned',
-                'status'          => 'Status',
-                'category'        => 'Category',
-                'estimated_hours' => 'Estimated',
-                'subject'         => 'Subject',
-            );
+            // Manage fields to print.
+            $fieldsToPrint = $this->getService()->getConfig()['redmine_output_fields'];
+            $fieldsToPrint = explode(',', $fieldsToPrint);
+            $fields = array();
+            foreach ($fieldsToPrint as $fieldValue) {
+                $association = explode('|', $fieldValue);
+                $fields[$association[0]] = $association[1];
+            }
+
+            // Order by Priority.
+            if ($input->getOption('priority-order')) {
+                $queryPriorityParam = $input->getOption('priority-order');
+
+                $redminePriorities = $this->getService()->getClient()->api('issue_priority')->all()['issue_priorities'];
+
+                if (!$this->arrayFindDeep($redminePriorities, $queryPriorityParam)) {
+                    throw new \Exception('Priority not found.');
+                }
+
+                $prepend = array();
+                foreach ($res['issues'] as $key => &$value) {
+                    if ($value['priority']['name'] == $queryPriorityParam) {
+                        array_unshift($prepend, $value);
+                        unset($res['issues'][$key]);
+                    }
+                }
+
+                // Sort other issues on priority Id.
+                uasort(
+                    $res['issues'],
+                    function ($a, $b) use ($queryPriorityParam) {
+                        return $a['priority']['id'] < $b['priority']['id'];
+                    }
+                );
+
+                $res['issues'] = $prepend + $res['issues'];
+
+
+                $fields = $this->insertCustomFieldInOutput($fields, 'priority|Priority', 'id');
+
+            }
 
             if ($input->getOption('fields')) {
                 $filters = explode(',', strtolower($input->getOption('fields')));
@@ -253,7 +284,6 @@ EOF
             if (isset($api_options['project_id'])) {
                 unset($fields['project']);
             }
-
             // Render issue table.
             $this->tableRedmineOutput($output, $fields, $res, 'issues');
             if ($input->getOption('report')) {
@@ -342,7 +372,7 @@ EOF
     /**
      * Read project_id argument and translate to a redmine project_id.
      *
-     * @param string|integer $project_id
+     * @param string|integer $project_id The project id
      *
      * @return integer|boolean
      */
@@ -353,6 +383,9 @@ EOF
 
     /**
      * Read assigned argument and translate to a redmine assigned_to_id.
+     *
+     * @param string|integer $assigned   Id or a magic token
+     * @param string|integer $project_id The project id
      *
      * @return integer|boolean
      */
@@ -554,5 +587,22 @@ EOF
         if ($tracker_args) {
             $api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
         }
+    }
+
+    private function arrayFindDeep($array, $string)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $success = $this->arrayFindDeep($value, $string);
+                if ($success) {
+                    return true;
+                }
+            } else {
+                if (strcmp($string, $value) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
