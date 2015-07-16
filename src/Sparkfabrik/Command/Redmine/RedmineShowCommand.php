@@ -187,6 +187,7 @@ class RedmineShowCommand extends RedmineCommand
         // Extract merge requests.
         if ($show_mr || $show_me_everything) {
             $table = new Table($output);
+            $mrs_urls = array();
             if (count($issue['journals'])) {
                 $mrs = $this->extractMergeRequests($issue['journals']);
                 if (!empty($mrs)) {
@@ -194,7 +195,7 @@ class RedmineShowCommand extends RedmineCommand
                     foreach ($mrs as $date => $mr) {
                         foreach ($mr as $mr_single) {
                             $table->addRow(array($mr_single, $date));
-                            $mrs_urls[] = $mr;
+                            $mrs_urls[] = $mr_single;
                         }
                     }
                     if ($open) {
