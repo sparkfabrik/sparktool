@@ -25,25 +25,26 @@ use Symfony\Component\Console\Command\Command;
  */
 class GitlabCommand extends SparkCommand
 {
-  /**
-   * Constructor.
-   *
-   * @param string|null $name The name of the command; passing null means it must be set in configure()
-   *
-   * @throws \LogicException When the command name is empty
-   *
-   * @api
-   */
-  public function __construct($name = null) {
-    parent::__construct($name);
-  }
+    /**
+     * Constructor.
+     *
+     * @param string|null $name The name of the command; passing null means it must be set in configure()
+     *
+     * @throws \LogicException When the command name is empty
+     *
+     * @api
+     */
+    public function __construct($name = null)
+    {
+        parent::__construct($name);
+    }
 
-  /**
-  * Initialize configurations and client.
-  */
-  protected function initService()
-  {
-      $this->service = new GitlabService();
-      $this->service->run();
-  }
+    /**
+     * Initialize configurations and client.
+     */
+    protected function initService()
+    {
+        $this->service = new GitlabService();
+        $this->service->run();
+    }
 }

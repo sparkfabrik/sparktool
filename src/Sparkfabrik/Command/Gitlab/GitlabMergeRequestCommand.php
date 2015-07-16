@@ -24,25 +24,25 @@ class GitlabMergeRequestCommand extends GitlabCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure() {
-      $this->initConfig();
-      $this
-        ->setName('gitlab:mr:search')
-        ->setDescription('WIP: Merge request search')
-      ;
+    protected function configure()
+    {
+        $this->initConfig();
+        $this
+            ->setName('gitlab:mr:search')
+            ->setDescription('WIP: Merge request search');
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output) {
-      $client = $this->getGitlabClient();
-      $config = $this->getGitlabConfig();
-      $projects = $client->api('projects')->search('spark-tool');
-      dump($projects); die;
-      //$project = new \Gitlab\Model\Project($config['project_name'], $client);
-      $merge_requests = $client->api('mr')->all($config['project_id']);
-      dump($merge_requests);
-      die;
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        /*$client = $this->getGitlabClient();
+        $config = $this->getGitlabConfig();
+        $projects = $client->api('projects')->search('spark-tool');
+        dump($projects); die;
+        //$project = new \Gitlab\Model\Project($config['project_name'], $client);
+        $merge_requests = $client->api('mr')->all($config['project_id']);
+        dump($merge_requests);*/
     }
 }
