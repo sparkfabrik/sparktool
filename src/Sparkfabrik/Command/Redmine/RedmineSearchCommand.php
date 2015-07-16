@@ -284,7 +284,6 @@ EOF
             if (isset($api_options['project_id'])) {
                 unset($fields['project']);
             }
-
             // Render issue table.
             $this->tableRedmineOutput($output, $fields, $res, 'issues');
             if ($input->getOption('report')) {

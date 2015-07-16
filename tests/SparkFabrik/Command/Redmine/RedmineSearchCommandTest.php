@@ -681,61 +681,21 @@ EOF
                 )
             );
 
-            // var_dump(unserialize($testRes));die;
-
             $input = array(
                 'command' => $this->command->getName(),
                 '--priority-order' => 'Normal',
+                '--limit' => '2',
             );
 
             $expected = <<<EOF
-+------+----------+-------------------------+------------+---------------------+-------------+-----------+---------------------+---------------------+-------------+-----------+----------------------------------------------------+
-| ID   | Priority | Project                 | Created    | Updated             | Traker      | Version   | Author              | Assigned            | Status      | Estimated | Subject                                            |
-+------+----------+-------------------------+------------+---------------------+-------------+-----------+---------------------+---------------------+-------------+-----------+----------------------------------------------------+
-| 8738 | Normal   | Ecommerce               | 29-04-2015 | 18-06-2015 03:59:33 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Update logos and static contents                   |
-| 8852 | Normal   | Ecommerce               | 15-05-2015 | 18-06-2015 03:59:45 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Modifiche sezione "Sostenibilità"                  |
-| 8854 | Normal   | Ecommerce               | 15-05-2015 | 18-06-2015 04:55:22 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Modifiche sezione "Qualità"                        |
-| 9081 | Normal   | Elite                   | 16-06-2015 | 18-06-2015 05:21:30 | Feature     | SPRINT-35 | Marco Frattola      | Marcello Testi      | In Progress | 24        | EE-714 - Associate a video to a slide              |
-| 9079 | Normal   | Elite                   | 16-06-2015 | 18-06-2015 05:21:30 | Epic        | SPRINT-35 | Marco Frattola      |                     | New         | 118       | EE-000 - Thron integration                         |
-| 8853 | Normal   | Ecommerce               | 15-05-2015 | 18-06-2015 06:24:34 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Modifiche sezione "Outlet"                         |
-| 8855 | Normal   | Ecommerce               | 15-05-2015 | 18-06-2015 07:18:36 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Modifiche sezione "Innovazione"                    |
-| 8851 | Normal   | Ecommerce               | 15-05-2015 | 18-06-2015 08:58:41 | Feature     | Backlog   | Marco Frattola      | Alessio Piazza      | In Progress |           | Modifiche sezione "Scopri l'azienda"               |
-| 9102 | Normal   | Ecommerce               | 18-06-2015 | 18-06-2015 09:29:20 | Task        |           | Alessio Piazza      | Alessio Piazza      | In Progress |           | Update perofil logo                                |
-| 8942 | Normal   | Ecommerce               | 25-05-2015 | 19-06-2015 03:42:34 | Bug         |           | Paolo Pustorino     | Alessio Piazza      | In Progress |           | Taxonomy lineage displayed in the cart page        |
-| 9069 | Normal   | Elite                   | 15-06-2015 | 21-06-2015 14:12:15 | Feature     | SPRINT-35 | Marco Frattola      | Marcello Gorla      | Resolved    | 40        | EE-705 - Viewing the user profile of a Broker      |
-| 9042 | Normal   | Elite                   | 08-06-2015 | 22-06-2015 01:39:07 | Feature     | SPRINT-35 | Marco Frattola      | Paolo Mainardi      | Merged      | 24        | EE-695 - Allow meeting forward to invite other mem |
-| 8905 | Normal   | Iperbole Comunità - EXT | 20-05-2015 | 22-06-2015 12:37:53 | Feature     |           | Olivia Pinto        | Vincenzo Di Biaggio | Validated   |           | Eliminare link ridondanti pagine interne           |
-| 9104 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:17:32 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Nuovo commento per proprio contenuto / progetto /  |
-| 9106 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:17:33 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifica per segui su profilo persona / profilo or |
-| 9105 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:17:33 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Nuovo commento per contenuto seguito / commentato  |
-| 9107 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:17:34 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Un utente è aggiunto come admin di un profilo org  |
-| 9108 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:17:35 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | L'organizzazione è aggiunta come partner di un pr  |
-| 9112 | Normal   | Iperbole Comunità - EXT | 20-06-2015 | 22-06-2015 15:17:36 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifica per approvazione informazioni inviate con |
-| 9111 | Normal   | Iperbole Comunità - EXT | 20-06-2015 | 22-06-2015 15:17:36 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifica per abilitazione all'invio modulo LFA     |
-| 9113 | Normal   | Iperbole Comunità - EXT | 20-06-2015 | 22-06-2015 15:17:37 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifiche per segnalazione (contenuto / profilo pe |
-| 9115 | Normal   | Iperbole Comunità - EXT | 20-06-2015 | 22-06-2015 15:17:39 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifiche per Community Manager: proposte di colla |
-| 9103 | Normal   | Iperbole Comunità - EXT | 19-06-2015 | 22-06-2015 15:39:42 | Feature     |           | Vincenzo Di Biaggio | Vincenzo Di Biaggio | Feedback    |           | Contenuto Notifiche Comunità                       |
-| 9054 | Normal   | Elite                   | 10-06-2015 | 22-06-2015 22:38:44 | Feature     | SPRINT-35 | Marco Frattola      | Adriano Cori        | Merged      | 16        | EG-456 - Notifications when an imported user his p |
-| 9114 | Normal   | Iperbole Comunità - EXT | 20-06-2015 | 23-06-2015 08:48:32 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | Feedback    |           | Notifiche per Community Manager: proposta / commen |
-| 9116 | Normal   | Iperbole Comunità - EXT | 22-06-2015 | 23-06-2015 10:07:19 | Feature     |           | Vincenzo Di Biaggio |                     | Validated   |           | Update nodi con indirizzo non geolocalizzato       |
-| 9056 | Normal   | Elite                   | 10-06-2015 | 23-06-2015 14:21:41 | Feature     | SPRINT-35 | Marco Frattola      | Adriano Cori        | Merged      | 12        | EG-454 - Update Scheduler information when a user  |
-| 9126 | Normal   | Elite                   | 23-06-2015 | 23-06-2015 14:59:44 | Improvement | Backlog   | Marco Frattola      |                     | New         |           | EE-721 - Remove reference to deleted page section  |
-| 9118 | Normal   | Elite                   | 23-06-2015 | 23-06-2015 15:01:41 | Improvement | SPRINT-35 | Marco Frattola      | Marcello Testi      | New         | 1         | EE-720 - Remove "Register" link from homepage head |
-| 9074 | Normal   | Elite                   | 15-06-2015 | 23-06-2015 15:09:50 | Feature     | SPRINT-35 | Marco Frattola      | Marcello Gorla      | In Progress | 24        | EE-709 - Broker viewing company agenda             |
-| 9091 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 10:50:12 | Task        |           | Marco Frattola      | Paolo Pustorino     | Feedback    |           | LAMP stack installation with php-fpm               |
-| 9090 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 09:44:41 | Task        |           | Marco Frattola      |                     | New         |           | Migrate VATTAN (DEADLINE: 24/06/2015)              |
-| 9095 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 05:57:36 | Task        |           | Marco Frattola      |                     | New         |           | Create /var/www symlinks                           |
-| 9094 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 05:57:32 | Task        |           | Marco Frattola      |                     | New         |           | Migrate directories: /var/lib/mongodb, /var/lib/my |
-| 9089 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 05:54:50 | Epic        |           | Marco Frattola      |                     | New         |           | Migrate old infrastructures (Twinbit, Agavee) to S |
-| 9093 | Urgent   | Technical               | 18-06-2015 | 18-06-2015 05:57:31 | Task        |           | Marco Frattola      |                     | New         |           | Migrate service configurations                     |
-| 9098 | High     | Technical               | 18-06-2015 | 18-06-2015 05:57:54 | Task        |           | Marco Frattola      |                     | New         |           | Send H-ART new IP Address to be enabled on its VPN |
-| 9097 | High     | Technical               | 18-06-2015 | 18-06-2015 05:57:53 | Task        |           | Marco Frattola      |                     | New         |           | LAMP stack installation with mod_php               |
-| 8932 | High     | Iperbole Comunità - EXT | 25-05-2015 | 19-06-2015 02:28:01 | Feature     |           | Michele Restuccia   | Vincenzo Di Biaggio | On hold     |           | Funzionamento Tile 'In evidenza' (HOMEPAGE)        |
-| 9100 | High     | Technical               | 18-06-2015 | 18-06-2015 05:57:56 | Support     |           | Marco Frattola      |                     | New         |           | Verify Andrea Panisson new development environment |
-| 9096 | High     | Technical               | 18-06-2015 | 18-06-2015 09:44:56 | Task        |           | Marco Frattola      |                     | New         |           | Migrate ZOTAN (DEADLINE: 05/07/2015)               |
-+------+----------+-------------------------+------------+---------------------+-------------+-----------+---------------------+---------------------+-------------+-----------+----------------------------------------------------+
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
+| ID   | Priority | Project | Created    | Updated             | Traker      | Version   | Author         | Assigned      | Status | Estimated | Subject                                            |
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
+| 9228 | Normal   | Elite   | 14-07-2015 | 16-07-2015 08:47:49 | Improvement | SPRINT-37 | Marco Frattola | Giuseppe Rota | Merged |           | EE-754 - Do not show interest when empty (user pro |
+| 8953 | Normal   | Elite   | 26-05-2015 | 16-07-2015 08:24:14 | Improvement | SPRINT-37 | Marcello Testi |               | New    | 20        | EG-406 - New financials for ELITE stats            |
++------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
 
-Showing "50" of "1529" issues(you can adjust the limit using --limit argument)
+Showing "2" of "1683" issues(you can adjust the limit using --limit argument)
 EOF
             ;
 
