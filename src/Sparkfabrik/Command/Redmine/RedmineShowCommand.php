@@ -83,7 +83,7 @@ class RedmineShowCommand extends RedmineCommand
                 $created = date('d-m-Y', strtotime($comment['created_on']));
                 if (preg_match_all($regex, $comment['notes'], $matches)) {
                     foreach ($matches[0] as $match) {
-                        $output[$created] = $match;
+                        $output[$created][] = $match;
                     }
                 }
             }
@@ -192,8 +192,10 @@ class RedmineShowCommand extends RedmineCommand
                 if (!empty($mrs)) {
                     $table->setHeaders(array('Merge requests URL', 'Posted on'));
                     foreach ($mrs as $date => $mr) {
-                        $table->addRow(array($mr, $date));
-                        $mrs_urls[] = $mr;
+                        foreach ($mr as $mr_single) {
+                            $table->addRow(array($mr_single, $date));
+                            $mrs_urls[] = $mr;
+                        }
                     }
                     if ($open) {
                         // This is needed just to open the browser.

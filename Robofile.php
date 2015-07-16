@@ -43,6 +43,7 @@ class Robofile extends \Robo\Tasks
       $this->taskGitHubRelease($version)
                  ->uri('sparkfabrik/sparktool')
                  ->askDescription()
+                 ->comittish('develop')
                  ->run();
     }
 
