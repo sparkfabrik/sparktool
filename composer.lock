@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "692e05b20d45f4e2a37f1366af2d86d0",
+    "hash": "c1c66c68056457ed57b1b09d62a8d7be",
     "packages": [
         {
             "name": "codegyre/robo",
@@ -214,16 +214,16 @@
         },
         {
             "name": "m4tthumphrey/php-gitlab-api",
-            "version": "7.8.0",
+            "version": "7.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/m4tthumphrey/php-gitlab-api.git",
-                "reference": "fde7d55cf653298c9ba5a0610ec7c12e7cfc4fe1"
+                "reference": "390265823e28bd2026423bf49cb5ed996e9d8447"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/m4tthumphrey/php-gitlab-api/zipball/fde7d55cf653298c9ba5a0610ec7c12e7cfc4fe1",
-                "reference": "fde7d55cf653298c9ba5a0610ec7c12e7cfc4fe1",
+                "url": "https://api.github.com/repos/m4tthumphrey/php-gitlab-api/zipball/390265823e28bd2026423bf49cb5ed996e9d8447",
+                "reference": "390265823e28bd2026423bf49cb5ed996e9d8447",
                 "shasum": ""
             },
             "require": {
@@ -265,7 +265,7 @@
                 "api",
                 "gitlab"
             ],
-            "time": "2015-02-23 16:27:37"
+            "time": "2015-05-29 12:01:05"
         },
         {
             "name": "symfony/config",
