@@ -26,9 +26,7 @@ class GitlabMergeRequestCommand extends GitlabCommand
      */
     protected function configure()
     {
-        $this->initConfig();
-        $this
-            ->setName('gitlab:mr:search')
+        $this->setName('gitlab:mr')
             ->setDescription('WIP: Merge request search');
     }
 
@@ -37,12 +35,57 @@ class GitlabMergeRequestCommand extends GitlabCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /*$client = $this->getGitlabClient();
-        $config = $this->getGitlabConfig();
-        $projects = $client->api('projects')->search('spark-tool');
-        dump($projects); die;
-        //$project = new \Gitlab\Model\Project($config['project_name'], $client);
-        $merge_requests = $client->api('mr')->all($config['project_id']);
-        dump($merge_requests);*/
+        try {
+            $client = $this->getService()->getClient();
+
+            // Print debug informations if required.
+            if ($output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG) {
+                $output->writeln('<info>' . var_export($api_options, true) . '</info>');
+            }
+
+            // Run query.
+            $res = $client->api('mr')->getList(6, 'all', 1, 20, 'updated_at', 'desc');
+
+            if (!count($res)) {
+                return $output->writeln('<info>No Merge Requests found.</info>');
+            }
+
+            // Make a plain array.
+            foreach ($res as $key => $value) {
+                foreach ($value['author'] as $a_key => $a_value) {
+                    $res[$key]['author_' . $a_key] = $a_value;
+                }
+
+                $res[$key]['assignee_name'] = '';
+                if ($value['assignee'] != null) {
+                    foreach ($value['assignee'] as $as_key => $as_value) {
+                        $res[$key]['assignee_' . $as_key] = $as_value;
+                    }
+                }
+            }
+
+
+            // Fields to print.
+            $fields = array(
+                'id'            => 'ID',
+                'title'         => 'Title',
+                // 'description'   => 'Description',
+                'state'         => 'Status',
+                'created_at'    => 'Created',
+                'updated_at'    => 'Updated',
+                'source_branch' => 'From Branch',
+                'target_branch' => 'To Branch',
+                'upvotes'       => 'Upvotes',
+                'downvotes'     => 'Downvotes',
+                'author_name'   => 'Author',
+                'assignee_name' => 'Assignee',
+            );
+
+            // Render table.
+            $this->tableGitlabOutput($output, $fields, $res);
+
+        } catch (Exception $e) {
+            return $output->writeln('<error>'. $e->getMessage() . '</error>');
+        }
     }
 }
