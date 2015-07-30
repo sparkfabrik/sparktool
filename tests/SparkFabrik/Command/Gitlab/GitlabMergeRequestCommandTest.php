@@ -17,7 +17,7 @@ use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabMergeRequestCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GitlabCommandTest extends \PHPUnit_Framework_TestCase
+class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
 {
     private $application;
     private $tester;
@@ -27,6 +27,12 @@ class GitlabCommandTest extends \PHPUnit_Framework_TestCase
     private $service;
     private $redmineClient;
     private $redmineApiIssue;
+    private static $fixturesPath;
+
+    public static function setUpBeforeClass()
+    {
+        self::$fixturesPath = __DIR__.'/../../Fixtures/';
+    }
 
     protected function setUp()
     {
@@ -119,14 +125,21 @@ class GitlabCommandTest extends \PHPUnit_Framework_TestCase
     public function testNoMRsFound()
     {
         $command = $this->createCommand('gitlab:mr');
-        $this->createMocks();
+
+        $merge_request_output = file_get_contents(self::$fixturesPath . 'gitlab_merge_requests.serialized');
+        $this->createMocks(
+            array(
+                'gitlabApiMergeRequestsAll' => unserialize($merge_request_output),
+            )
+        );
 
         $options = array(
             'command' => $this->command->getName(),
+            '--page' => 1,
         );
 
         $this->tester->execute($options);
-        $res = trim($this->tester->getDisplay());
-        $this->assertEquals('No Merge Requests found.', $res);
+        $res = $expected = unserialize($merge_request_output);
+        $this->assertEquals($expected, $res);
     }
 }

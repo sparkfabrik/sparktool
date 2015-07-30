@@ -86,27 +86,5 @@ class GitlabCommand extends SparkCommand
             $rows[] = $row;
         }
         $table->setRows($rows)->render();
-
-        /*// Warns the user about limit and total_count.
-        $limit = $res['limit'];
-        $total_count = $res['total_count'];
-        if (is_array($res['limit'])) {
-            $limit = array_sum($res['limit']);
-        }
-        if (is_array($res['total_count'])) {
-            $total_count = reset($res['total_count']);
-        }
-        if ($limit < $total_count) {
-            $text = "<info>Showing \"%d\" of \"%d\" issues</info>";
-            $text .= "<comment>(you can adjust the limit using --limit argument)</comment>";
-            $info = sprintf(
-                $text,
-                $res['limit'],
-                $res['total_count']
-            );
-            $output->writeln("");
-            $output->writeln($info);
-            $output->writeln("");
-        }*/
     }
 }
