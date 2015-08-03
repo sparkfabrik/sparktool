@@ -69,7 +69,7 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
 
                 // Get Custom config.
                 $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
-                if (count($defaultConfig['spark']) !== count($customConfig['spark'])) {
+                if (count($defaultConfig['spark'], COUNT_RECURSIVE) !== count($customConfig['spark'], COUNT_RECURSIVE)) {
                     $merge['spark'] = array_merge($defaultConfig['spark'], $customConfig['spark']);
                     $yaml_merged = $dumper->dump($merge, 5);
                     file_put_contents($configFileStandardPath, $yaml_merged);
