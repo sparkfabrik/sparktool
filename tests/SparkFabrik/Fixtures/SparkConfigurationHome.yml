@@ -1,7 +1,15 @@
 spark:
-  services:
-    redmine_credentials:
-      redmine_url: "https://example.com"
-      redmine_api_key: abc0123000000000000999999999999999999999
-  projects:
-    redmine_project_id: "test-configuration"
+    services:
+        redmine_credentials:
+            redmine_url: 'url'
+            redmine_api_key: key
+        gitlab_credentials:
+            gitlab_url: 'url'
+            gitlab_token: token
+    projects:
+        redmine_project_id: test
+        gitlab_project_id: id
+    git:
+        branch_pattern: '%(story)_%(issue_id)_%(story_name)'
+    configuration:
+        redmine_output_fields: 'id|ID,project|Project,created_on|Created,updated_on|Updated,tracker|Traker,fixed_version|Version,author|Author,assigned_to|Assigned,status|Status,category|Category,estimated_hours|Estimated,subject|Subject'

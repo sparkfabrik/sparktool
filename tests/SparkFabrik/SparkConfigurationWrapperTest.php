@@ -179,7 +179,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $project_conf = file_get_contents(self::$fixturesPath . 'SparkConfigurationHomeWrongOptions.yml');
         $project_conf_parsed = Yaml::parse($project_conf);
 
-      // Write configuration file to workspace home.
+        // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
     }
