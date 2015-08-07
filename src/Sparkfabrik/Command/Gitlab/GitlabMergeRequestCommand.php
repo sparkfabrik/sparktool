@@ -3,7 +3,7 @@
 /*
  * This file is part of the Spark tool package.
  *
- * (c) Paolo Mainardi <paolo.mainardi@sparkfabrik.com>
+ * (c) Vincenzo Di Biaggio <vincenzo.dibiaggio@sparkfabrik.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -110,18 +110,7 @@ class GitlabMergeRequestCommand extends GitlabCommand
             }
 
             // Make a plain array.
-            foreach ($res as $key => $value) {
-                foreach ($value['author'] as $a_key => $a_value) {
-                    $res[$key]['author_' . $a_key] = $a_value;
-                }
-
-                $res[$key]['assignee_name'] = '';
-                if ($value['assignee'] != null) {
-                    foreach ($value['assignee'] as $as_key => $as_value) {
-                        $res[$key]['assignee_' . $as_key] = $as_value;
-                    }
-                }
-            }
+            $this->makePlainArray($res);
 
 
             // Fields to print.

@@ -87,4 +87,25 @@ class GitlabCommand extends SparkCommand
         }
         $table->setRows($rows)->render();
     }
+
+    /**
+     * Make the results array a plain array.
+     * @param  mixed[] &$results The
+     * @return [type]           [description]
+     */
+    protected function makePlainArray(&$results)
+    {
+        foreach ($results as $key => $value) {
+            foreach ($value['author'] as $a_key => $a_value) {
+                $results[$key]['author_' . $a_key] = $a_value;
+            }
+
+            $results[$key]['assignee_name'] = '';
+            if ($value['assignee'] != null) {
+                foreach ($value['assignee'] as $as_key => $as_value) {
+                    $results[$key]['assignee_' . $as_key] = $as_value;
+                }
+            }
+        }
+    }
 }
