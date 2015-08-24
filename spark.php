@@ -22,6 +22,7 @@ use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabMergeRequestCommand;
+use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabSearchMergeRequestCommand;
 use Sparkfabrik\Tools\Spark\Command\Welcome\WelcomeCommand;
 use Robo\Task\Development\SemVer;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -42,6 +43,7 @@ try {
     $application->add(new RedmineGitBranchCommand);
     $application->add(new WelcomeCommand);
     $application->add(new GitlabMergeRequestCommand);
+    $application->add(new GitlabSearchMergeRequestCommand);
 
     $application->setDefaultCommand('spark:welcome');
     $application->run();

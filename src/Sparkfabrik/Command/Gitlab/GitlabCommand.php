@@ -86,27 +86,26 @@ class GitlabCommand extends SparkCommand
             $rows[] = $row;
         }
         $table->setRows($rows)->render();
+    }
 
-        /*// Warns the user about limit and total_count.
-        $limit = $res['limit'];
-        $total_count = $res['total_count'];
-        if (is_array($res['limit'])) {
-            $limit = array_sum($res['limit']);
+    /**
+     * Make the results array a plain array.
+     * @param  mixed[] &$results The
+     * @return [type]           [description]
+     */
+    protected function makePlainArray(&$results)
+    {
+        foreach ($results as $key => $value) {
+            foreach ($value['author'] as $a_key => $a_value) {
+                $results[$key]['author_' . $a_key] = $a_value;
+            }
+
+            $results[$key]['assignee_name'] = '';
+            if ($value['assignee'] != null) {
+                foreach ($value['assignee'] as $as_key => $as_value) {
+                    $results[$key]['assignee_' . $as_key] = $as_value;
+                }
+            }
         }
-        if (is_array($res['total_count'])) {
-            $total_count = reset($res['total_count']);
-        }
-        if ($limit < $total_count) {
-            $text = "<info>Showing \"%d\" of \"%d\" issues</info>";
-            $text .= "<comment>(you can adjust the limit using --limit argument)</comment>";
-            $info = sprintf(
-                $text,
-                $res['limit'],
-                $res['total_count']
-            );
-            $output->writeln("");
-            $output->writeln($info);
-            $output->writeln("");
-        }*/
     }
 }
