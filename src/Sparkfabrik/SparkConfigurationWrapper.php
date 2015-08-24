@@ -133,8 +133,7 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
         }
         if (count($configs) > 1) {
             $configs = call_user_func_array(array($this, 'arrayMergeDeep'), $configs);
-        }
-        else {
+        } else {
             $configs = reset($configs);
         }
         try {
@@ -163,7 +162,8 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
     /**
      * @see https://api.drupal.org/api/drupal/includes%21bootstrap.inc/function/drupal_array_merge_deep/7
      */
-    public function arrayMergeDeep() {
+    public function arrayMergeDeep()
+    {
         $args = func_get_args();
         return $this->arrayMergeDeepArray($args);
     }
@@ -171,29 +171,28 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
     /**
      * @see https://api.drupal.org/api/drupal/includes%21bootstrap.inc/function/drupal_array_merge_deep_array/7
      */
-    public function arrayMergeDeepArray($arrays) {
-      $result = array();
+    public function arrayMergeDeepArray($arrays)
+    {
+        $result = array();
 
-      foreach ($arrays as $array) {
-        foreach ($array as $key => $value) {
-          // Renumber integer keys as array_merge_recursive() does. Note that PHP
-          // automatically converts array keys that are integer strings (e.g., '1')
-          // to integers.
-          if (is_integer($key)) {
-            $result [] = $value;
-          }
-          // Recurse when both values are arrays.
-          elseif (isset($result [$key]) && is_array($result [$key]) && is_array($value)) {
-            $result [$key] = $this->arrayMergeDeepArray(array($result [$key], $value));
-          }
-          // Otherwise, use the latter value, overriding any previous value.
-          else {
-            $result [$key] = $value;
-          }
+        foreach ($arrays as $array) {
+            foreach ($array as $key => $value) {
+              // Renumber integer keys as array_merge_recursive() does. Note that PHP
+              // automatically converts array keys that are integer strings (e.g., '1')
+              // to integers.
+                if (is_integer($key)) {
+                    $result [] = $value;
+                } // Recurse when both values are arrays.
+                elseif (isset($result [$key]) && is_array($result [$key]) && is_array($value)) {
+                    $result [$key] = $this->arrayMergeDeepArray(array($result [$key], $value));
+                } // Otherwise, use the latter value, overriding any previous value.
+                else {
+                    $result [$key] = $value;
+                }
+            }
         }
-      }
 
-      return $result;
+        return $result;
     }
 
     /**
