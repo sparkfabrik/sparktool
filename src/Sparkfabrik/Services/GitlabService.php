@@ -38,8 +38,13 @@ class GitlabService extends AbstractService
     protected function initClient()
     {
         if (empty($this->client)) {
+            $gitlab_url = $this->config['gitlab_url'];
+            if (substr($gitlab_url, -1) !== '/') {
+                $gitlab_url .= '/';
+            }
+            $gitlab_url .= 'api/v3/';
             $this->client = new \Gitlab\Client(
-                $this->config['gitlab_url']
+                $gitlab_url
             );
             $this->client->authenticate($this->config['gitlab_token'], \Gitlab\Client::AUTH_URL_TOKEN);
             if (empty($this->client)) {
