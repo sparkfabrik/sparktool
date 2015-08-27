@@ -14,6 +14,7 @@ namespace Sparkfabrik\Tools\Spark\Command\Gitlab;
 use Sparkfabrik\Tools\Spark\Command\SparkCommand;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Services\GitlabService;
+use Sparkfabrik\Tools\Spark\Services\CacheService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -111,22 +112,62 @@ class GitlabCommand extends SparkCommand
     }
 
     /**
+     * Gitlab project id.
+     *
+     * @param string|integer $project_id
+     *
+     * @return integer| ConsoleOutput output.
+     */
+    protected function handleAgumentProjectId($project_id = null)
+    {
+        $conf_project_id = $this->getService()->getConfig()['project_id'];
+        if (isset($project_id) && !is_integer($project_id)) {
+            $project_id = $this->findProjectId($project_id);
+        } else if (isset($conf_project_id) &&
+        !is_integer($conf_project_id)) {
+            $project_id = $this->findProjectId($conf_project_id);
+        }
+
+        return ($project_id ? $project_id : $conf_project_id);
+    }
+
+    /**
      * Help to find a project ID with a search by name.
      * @param  string $project_name
      *         A case-sensitive string contained in the project name.
-     * @return ConsoleOutput output and then exit.
+     * @return int project id|ConsoleOutput output and then exit.
+     * @throws Exception Exception on 0 results.
      */
-    protected function findProjectId($project_name)
+    private function findProjectId($project_name)
     {
-        $output = new ConsoleOutput;
+
+        // Check data into cache to avoid double calls.
+        $placeholder = 'project_id_' . str_replace(' ', '_', strtolower($project_name));
+        $cache = new CacheService();
+        $data = $cache->getData($placeholder);
+
+        if ($data !== null) {
+            return $data;
+        }
+
+        // Make the call.
         $client = $this->getService()->getClient();
         $res = $client->api('projects')->search($project_name);
+        $count = count($res);
 
-        $output->writeln('<info>Projects by name founds:</info>');
-        foreach ($res as $key => $project) {
-            $output->writeln('* ID: ' . $project['id'] . ' - ' . 'Name: ' . $project['name'] . ' - ' . $project['name_with_namespace']);
+        if ($count > 1) {
+            $output = new ConsoleOutput;
+            $output->writeln('<info>Projects by name founds:</info>');
+            foreach ($res as $key => $project) {
+                $output->writeln('* ID: ' . $project['id'] . ' - ' . 'Name: ' . $project['name'] . ' - ' . $project['name_with_namespace']);
+            }
+            $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
+            exit;
+        } else if ($count == 1) {
+            $cache->setData($placeholder, $res[0]['id']);
+            return $res[0]['id'];
+        } else {
+            throw new \Exception("No projects found. Remember: search string is case-sensitive", 1);
         }
-        $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
-        exit;
     }
 }
