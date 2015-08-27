@@ -33,7 +33,7 @@ class CacheService
             $cache = StorageFactory::factory(array(
                 'adapter' => array(
                     'name'    => 'filesystem',
-                    'options' => array('ttl' => 3600, 'cache_dir' => '/tmp'),
+                    'options' => array('ttl' => 3600, 'cache_dir' => sys_get_temp_dir()),
                     'namespace' => 'sparktool'
                 ),
                 'plugins' => array(
