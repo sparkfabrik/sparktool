@@ -16,6 +16,7 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Services\GitlabService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Base class for all gitlab commands.
@@ -107,5 +108,25 @@ class GitlabCommand extends SparkCommand
                 }
             }
         }
+    }
+
+    /**
+     * Help to find a project ID with a search by name.
+     * @param  string $project_name
+     *         A case-sensitive string contained in the project name.
+     * @return ConsoleOutput output and then exit.
+     */
+    protected function findProjectId($project_name)
+    {
+        $output = new ConsoleOutput;
+        $client = $this->getService()->getClient();
+        $res = $client->api('projects')->search($project_name);
+
+        $output->writeln('<info>Projects by name founds:</info>');
+        foreach ($res as $key => $project) {
+            $output->writeln('* ID: ' . $project['id'] . ' - ' . 'Name: ' . $project['name'] . ' - ' . $project['name_with_namespace']);
+        }
+        $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
+        exit;
     }
 }

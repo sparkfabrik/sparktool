@@ -159,11 +159,19 @@ class GitlabMergeRequestCommand extends GitlabCommand
      *
      * @param string|integer $project_id
      *
-     * @return integer|boolean
+     * @return integer| ConsoleOutput output.
      */
     private function handleAgumentProjectId($project_id = null)
     {
-        return ($project_id ? $project_id : $this->getService()->getConfig()['project_id']);
+        $conf_project_id = $this->getService()->getConfig()['project_id'];
+        if (isset($project_id) && !is_integer($project_id)) {
+            $project_id = $this->findProjectId($project_id);
+        } else if (isset($conf_project_id) &&
+        !is_integer($conf_project_id)) {
+            $project_id = $this->findProjectId($conf_project_id);
+        } else {
+            return ($project_id ? $project_id : $conf_project_id);
+        }
     }
 
     /**
