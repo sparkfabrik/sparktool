@@ -142,7 +142,7 @@ class GitlabCommand extends SparkCommand
     {
 
         // Check data into cache to avoid double calls.
-        $placeholder = 'project_id_' . str_replace(' ', '_', strtolower($project_name));
+        $placeholder = 'gitlab_project_id_' . str_replace(' ', '_', strtolower($project_name));
         $cache = new CacheService();
         $data = $cache->getData($placeholder);
 
