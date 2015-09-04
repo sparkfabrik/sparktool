@@ -56,6 +56,7 @@ class SparkConfiguration implements ConfigurationInterface
                     ->end()
                     ->children()
                         ->scalarNode('gitlab_project_id')
+                        ->info('Please fill in the value with a valid Gitlab Project Name or his numeric id. Partial matches will produce an output to recognize the right project. Feel free to use the --project_id option to fast searches.')
                         ->end()
                     ->end()
                 ->end()

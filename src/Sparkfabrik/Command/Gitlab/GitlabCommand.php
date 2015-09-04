@@ -140,7 +140,7 @@ class GitlabCommand extends SparkCommand
     protected function findProjectId($project_name)
     {
         // Check data into cache to avoid double calls.
-        $placeholder = 'gitlab_project_id_' . str_replace(' ', '_', strtolower($project_name));
+        $placeholder = 'gitlab_project_id_' . str_replace('/', '_', str_replace(' ', '_', strtolower($project_name)));
         $cache = new CacheService();
         $data = $cache->getData($placeholder);
 
