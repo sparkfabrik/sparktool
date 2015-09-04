@@ -95,42 +95,45 @@ class GitlabMergeRequestCommand extends GitlabCommand
                 $output->writeln('<info>' . var_export($api_options, true) . '</info>');
             }
 
-            // Run query.
-            $res = $client->api('mr')->getList(
-                $api_options['project_id'],
-                $api_options['state'],
-                $api_options['page'],
-                $api_options['results_per_page'],
-                $api_options['order_by'],
-                $api_options['sort']
-            );
+            // Manage output before run the query if it's necessary (contextual automatic searches for example).
+            if ($this->manageServiceOutput($api_options, $output)) {
+                // Run query.
+                $res = $client->api('mr')->getList(
+                    $api_options['project_id'],
+                    $api_options['state'],
+                    $api_options['page'],
+                    $api_options['results_per_page'],
+                    $api_options['order_by'],
+                    $api_options['sort']
+                );
 
-            if (!count($res)) {
-                return $output->writeln('<info>No Merge Requests found.</info>');
+                if (!count($res)) {
+                    return $output->writeln('<info>No Merge Requests found.</info>');
+                }
+
+                // Make a plain array.
+                $this->makePlainArray($res);
+
+
+                // Fields to print.
+                $fields = array(
+                    'id'            => 'ID',
+                    'title'         => 'Title',
+                    // 'description'   => 'Description',
+                    'state'         => 'Status',
+                    'created_at'    => 'Created',
+                    'updated_at'    => 'Updated',
+                    'source_branch' => 'From Branch',
+                    'target_branch' => 'To Branch',
+                    'upvotes'       => 'Upvotes',
+                    'downvotes'     => 'Downvotes',
+                    'author_name'   => 'Author',
+                    'assignee_name' => 'Assignee',
+                );
+
+                // Render table.
+                $this->tableGitlabOutput($output, $fields, $res);
             }
-
-            // Make a plain array.
-            $this->makePlainArray($res);
-
-
-            // Fields to print.
-            $fields = array(
-                'id'            => 'ID',
-                'title'         => 'Title',
-                // 'description'   => 'Description',
-                'state'         => 'Status',
-                'created_at'    => 'Created',
-                'updated_at'    => 'Updated',
-                'source_branch' => 'From Branch',
-                'target_branch' => 'To Branch',
-                'upvotes'       => 'Upvotes',
-                'downvotes'     => 'Downvotes',
-                'author_name'   => 'Author',
-                'assignee_name' => 'Assignee',
-            );
-
-            // Render table.
-            $this->tableGitlabOutput($output, $fields, $res);
 
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');

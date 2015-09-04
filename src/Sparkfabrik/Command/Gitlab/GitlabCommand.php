@@ -121,10 +121,9 @@ class GitlabCommand extends SparkCommand
     protected function handleAgumentProjectId($project_id = null)
     {
         $conf_project_id = $this->getService()->getConfig()['project_id'];
-        if (isset($project_id) && !is_integer($project_id)) {
+        if (isset($project_id) && !is_numeric($project_id)) {
             $project_id = $this->findProjectId($project_id);
-        } else if (isset($conf_project_id) &&
-        !is_integer($conf_project_id)) {
+        } else if (isset($conf_project_id) && !is_numeric($conf_project_id)) {
             $project_id = $this->findProjectId($conf_project_id);
         }
 
@@ -138,9 +137,8 @@ class GitlabCommand extends SparkCommand
      * @return int project id|ConsoleOutput output and then exit.
      * @throws Exception Exception on 0 results.
      */
-    private function findProjectId($project_name)
+    protected function findProjectId($project_name)
     {
-
         // Check data into cache to avoid double calls.
         $placeholder = 'gitlab_project_id_' . str_replace(' ', '_', strtolower($project_name));
         $cache = new CacheService();
@@ -156,18 +154,27 @@ class GitlabCommand extends SparkCommand
         $count = count($res);
 
         if ($count > 1) {
-            $output = new ConsoleOutput;
-            $output->writeln('<info>Projects by name founds:</info>');
-            foreach ($res as $key => $project) {
-                $output->writeln('* ID: ' . $project['id'] . ' - ' . 'Name: ' . $project['name'] . ' - ' . $project['name_with_namespace']);
-            }
-            $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
-            exit;
+            return $res;
         } else if ($count == 1) {
             $cache->setData($placeholder, $res[0]['id']);
             return $res[0]['id'];
         } else {
             throw new \Exception("No projects found. Remember: search string is case-sensitive", 1);
+        }
+    }
+
+    protected function manageServiceOutput($api_options, $output) {
+        // Manage service output before make the call.
+        if (is_array($api_options['project_id'])) {
+            $output->writeln('<info>Projects by name founds:</info>');
+            foreach ($api_options['project_id'] as $key => $project) {
+                $output->writeln('* ID: ' . $project['id'] . ' - ' . 'Name: ' . $project['name'] . ' - ' . $project['name_with_namespace']);
+            }
+            $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
+            $output->writeln("No projects found. Remember: search string is case-sensitive");
+        }
+        else {
+            return TRUE;
         }
     }
 }

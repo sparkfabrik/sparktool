@@ -27,6 +27,10 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
     private $service;
     private $redmineClient;
     private $redmineApiIssue;
+
+    private $searchProjectString = 'test';
+    private $projectId = 9;
+
     private static $fixturesPath;
 
     public static function setUpBeforeClass()
@@ -65,6 +69,14 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
         return $gitlabApiMergeRequests;
     }
 
+    private function getMockedGitlabApiProjectSearch()
+    {
+        $gitlabApiProjectSearch = $this->getMockBuilder('\Gitlab\Api\Projects')
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $gitlabApiProjectSearch;
+    }
+
     private function createCommand($name)
     {
         $this->command = $this->application->find($name);
@@ -78,10 +90,12 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
         $this->service = $this->getMockedService();
         $this->gitlabClient = $this->getMockedGitlabClient();
         $this->gitlabApiMergeRequests = $this->getMockedGitlabApiMergeRequests();
+        $this->gitlabApiProjectSearch = $this->getMockedGitlabApiProjectSearch();
 
         // Default returns for mock objects.
         $default_options = array_replace(
             array('gitlabApiMergeRequestsAll' => array()),
+            array('gitlabApiProjectSearch' => array()),
             $options
         );
 
@@ -90,12 +104,17 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
             ->method('getList')
             ->will($this->returnValue($default_options['gitlabApiMergeRequestsAll']));
 
+        $this->gitlabApiProjectSearch->expects($this->any())
+            ->method('search')
+            ->will($this->returnValue($default_options['gitlabApiProjectSearch']));
+
         // Mock method api of gitlab client.
         $this->gitlabClient->expects($this->any())
             ->method('api')
             ->with(
                 $this->logicalOr(
-                    $this->equalTo('mr')
+                    $this->equalTo('mr'),
+                    $this->equalTo('projects')
                 )
             )
             ->will(
@@ -104,6 +123,9 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
                         switch ($arg) {
                             case 'mr':
                                 return $this->gitlabApiMergeRequests;
+                                    break;
+                            case 'projects':
+                                return $this->gitlabApiProjectSearch;
                                     break;
                         }
                     }
@@ -121,25 +143,49 @@ class GitlabMergeRequestCommandTest extends \PHPUnit_Framework_TestCase
 
    /**
      * Test no MRs found.
+     *
     */
     public function testNoMRsFound()
     {
         $command = $this->createCommand('gitlab:mr');
+        $this->createMocks();
 
-        $merge_request_output = file_get_contents(self::$fixturesPath . 'gitlab_merge_requests.serialized');
+        $options = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 543534534543,
+        );
+
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('No Merge Requests found.', $res);
+    }
+
+    /**
+     * Test no MRs found.
+     *
+     * @group ciccio
+    */
+    public function testProjectResult()
+    {
+        $search_projects = unserialize(file_get_contents(self::$fixturesPath . "gitlab_projects_search_multiple_results.serialized"));
+        $search_mrs = unserialize(file_get_contents(self::$fixturesPath . "gitlab_search_mr_results.serialized"));
+
+        $command = $this->createCommand('gitlab:mr');
         $this->createMocks(
             array(
-                'gitlabApiMergeRequestsAll' => unserialize($merge_request_output),
+                'gitlabApiMergeRequestsAll' => $search_mrs,
+                'gitlabApiProjectSearch' => $search_projects,
             )
         );
 
         $options = array(
             'command' => $this->command->getName(),
-            '--page' => 1,
+            '--project_id' => 'Iperbole',
         );
 
         $this->tester->execute($options);
-        $res = $expected = unserialize($merge_request_output);
-        $this->assertEquals($expected, $res);
+        $res = trim($this->tester->getDisplay());
+
+        $this->assertContains('Select a project ID', $res);
     }
 }

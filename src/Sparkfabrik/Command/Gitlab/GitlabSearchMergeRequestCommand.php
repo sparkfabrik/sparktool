@@ -34,6 +34,13 @@ class GitlabSearchMergeRequestCommand extends GitlabCommand
                 ISSUE - STORY');
         // Add options.
         $this->addOption(
+            'project_id',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'The project Id. Default value from the conf file.',
+            null
+        );
+        $this->addOption(
             'issue',
             null,
             InputOption::VALUE_OPTIONAL,
@@ -83,70 +90,73 @@ class GitlabSearchMergeRequestCommand extends GitlabCommand
                 $output->writeln('<info>' . var_export($api_options, true) . '</info>');
             }
 
-            // Run query.
-            $res = array();
-            $page = 1;
-            while (count($res) < $api_options['limit']) {
-                $r = $client->api('mr')->getList(
-                    $api_options['project_id'],
-                    MergeRequests::STATE_ALL,
-                    $page,
-                    // Use limit option to manage result per page to get the minimum results possible.
-                    $api_options['limit'],
-                    MergeRequests::ORDER_BY,
-                    'desc'
+            // Manage output before run the query if it's necessary (contextual automatic searches for example).
+            if ($this->manageServiceOutput($api_options, $output)) {
+                // Run query.
+                $res = array();
+                $page = 1;
+                while (count($res) < $api_options['limit']) {
+                    $r = $client->api('mr')->getList(
+                        $api_options['project_id'],
+                        MergeRequests::STATE_ALL,
+                        $page,
+                        // Use limit option to manage result per page to get the minimum results possible.
+                        $api_options['limit'],
+                        MergeRequests::ORDER_BY,
+                        'desc'
+                    );
+                    $res = array_merge($res, $r);
+                    $page++;
+                }
+
+                if (!count($res)) {
+                    return $output->writeln('<info>No Merge Requests found.</info>');
+                }
+
+                // Make a plain array.
+                $this->makePlainArray($res);
+
+                // Reduce results, filter by content.
+                foreach ($res as $key => $mr) {
+                    // Issue.
+                    if (!is_null($api_options['issue'])) {
+                        if (stripos($mr[$api_options['position']], $api_options['issue']) === false) {
+                            unset($res[$key]);
+                        }
+                    }
+
+                    // Story.
+                    if (!is_null($api_options['story'])) {
+                        if (stripos($mr[$api_options['position']], $api_options['story']) === false) {
+                            unset($res[$key]);
+                        }
+                    }
+                }
+
+                // Re-check how many results we have now.
+                if (!count($res)) {
+                    return $output->writeln('<info>No Merge Requests found.</info>');
+                }
+
+                // Fields to print.
+                $fields = array(
+                    'id'            => 'ID',
+                    'title'         => 'Title',
+                    // 'description'   => 'Description',
+                    'state'         => 'Status',
+                    'created_at'    => 'Created',
+                    'updated_at'    => 'Updated',
+                    'source_branch' => 'From Branch',
+                    'target_branch' => 'To Branch',
+                    'upvotes'       => 'Upvotes',
+                    'downvotes'     => 'Downvotes',
+                    'author_name'   => 'Author',
+                    'assignee_name' => 'Assignee',
                 );
-                $res = array_merge($res, $r);
-                $page++;
+
+                // Render table.
+                $this->tableGitlabOutput($output, $fields, $res);
             }
-
-            if (!count($res)) {
-                return $output->writeln('<info>No Merge Requests found.</info>');
-            }
-
-            // Make a plain array.
-            $this->makePlainArray($res);
-
-            // Reduce results, filter by content.
-            foreach ($res as $key => $mr) {
-                // Issue.
-                if (!is_null($api_options['issue'])) {
-                    if (stripos($mr[$api_options['position']], $api_options['issue']) === false) {
-                        unset($res[$key]);
-                    }
-                }
-
-                // Story.
-                if (!is_null($api_options['story'])) {
-                    if (stripos($mr[$api_options['position']], $api_options['story']) === false) {
-                        unset($res[$key]);
-                    }
-                }
-            }
-
-            // Re-check how many results we have now.
-            if (!count($res)) {
-                return $output->writeln('<info>No Merge Requests found.</info>');
-            }
-
-            // Fields to print.
-            $fields = array(
-                'id'            => 'ID',
-                'title'         => 'Title',
-                // 'description'   => 'Description',
-                'state'         => 'Status',
-                'created_at'    => 'Created',
-                'updated_at'    => 'Updated',
-                'source_branch' => 'From Branch',
-                'target_branch' => 'To Branch',
-                'upvotes'       => 'Upvotes',
-                'downvotes'     => 'Downvotes',
-                'author_name'   => 'Author',
-                'assignee_name' => 'Assignee',
-            );
-
-            // Render table.
-            $this->tableGitlabOutput($output, $fields, $res);
 
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
