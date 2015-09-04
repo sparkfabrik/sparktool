@@ -163,7 +163,14 @@ class GitlabCommand extends SparkCommand
         }
     }
 
-    protected function manageServiceOutput($api_options, $output) {
+    /**
+     * Manage output before command api call.
+     * @param  mixed[] $api_options
+     * @param  OutputInteface Class $output
+     * @return boolean if call can be executed | console output otherwise.
+     */
+    protected function manageServiceOutput($api_options, $output)
+    {
         // Manage service output before make the call.
         if (is_array($api_options['project_id'])) {
             $output->writeln('<info>Projects by name founds:</info>');
@@ -172,9 +179,8 @@ class GitlabCommand extends SparkCommand
             }
             $output->writeln('<info>Select a project ID and put it into the config file such the value of "gitlab_project_id" or use it such the "project_id" option</info>');
             $output->writeln("No projects found. Remember: search string is case-sensitive");
-        }
-        else {
-            return TRUE;
+        } else {
+            return true;
         }
     }
 }
