@@ -21,6 +21,7 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitCommitCommand;
 use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabMergeRequestCommand;
 use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabSearchMergeRequestCommand;
 use Sparkfabrik\Tools\Spark\Command\Welcome\WelcomeCommand;
@@ -41,6 +42,7 @@ try {
     $application->add(new RedmineSearchCommand);
     $application->add(new RedmineShowCommand);
     $application->add(new RedmineGitBranchCommand);
+    $application->add(new RedmineGitCommitCommand);
     $application->add(new WelcomeCommand);
     $application->add(new GitlabMergeRequestCommand);
     $application->add(new GitlabSearchMergeRequestCommand);

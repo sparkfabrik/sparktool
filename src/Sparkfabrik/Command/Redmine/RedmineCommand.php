@@ -113,8 +113,8 @@ class RedmineCommand extends SparkCommand
     }
 
     /**
-   * Generate a mini report based on results.
-   */
+     * Generates a mini report based on results.
+     */
     protected function tableRedmineReportOutput($output, $res, $key)
     {
         $table = new Table($output);
@@ -146,5 +146,59 @@ class RedmineCommand extends SparkCommand
         );
 
         return $table->render();
+    }
+
+    /**
+     * Get the story code from the redmine issue.
+     * @param  array $issue
+     *   The returned array containing the Redmine custom fields.
+     * @param  boolean $required
+     *   If true an Expeption is thrown if the story code is not compiled.
+     */
+    protected function getStoryCode($issue, $required = true)
+    {
+        $story = null;
+        if (empty($issue)) {
+            $error = 'The Issue is empty, please check redmine client.';
+            throw new \Exception($error);
+        }
+        foreach ($issue['custom_fields'] as $field) {
+            if ($field['name'] === 'Jira Story Code') {
+                $story = $field['value'];
+            }
+        }
+        // Stop execution if the JIRA Code field is empty.
+        if ($required && empty($story)) {
+            $errors = 'The Issue is not consistent, please compile the Jira Story Code.';
+            throw new \Exception($errors);
+        }
+        return $story;
+    }
+
+    /**
+     * Cleans a story name to be used for branching and commits.
+     */
+    protected function getCleanStoryName($story_name, $story)
+    {
+
+        // Exit if argumets are empty.
+        if (empty($story_name) || empty($story)) {
+            $error = 'Please provide a story name and story code.';
+            throw new \Exception($error);
+        }
+
+        $story_name = str_replace($story, '', $story_name);
+        $story_name = trim($story_name);
+
+        // Clean up the story name.
+        if (mb_detect_encoding($story_name) === 'UTF-8') {
+            $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
+            if ($story_name_converted) {
+                $story_name = $story_name_converted;
+            } else {
+                $story_name = iconv('UTF-8', 'ASCII//IGNORE', $story_name);
+            }
+        }
+        return $story_name;
     }
 }
