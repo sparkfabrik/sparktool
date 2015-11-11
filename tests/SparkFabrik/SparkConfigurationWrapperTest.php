@@ -171,7 +171,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value_from_config, $project_conf_parsed['spark']['projects']['redmine_project_id']);
     }
 
-    /**
+    /*
      * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
      */
     public function testConfigurationMergeProjectConfigurationWithDefaultWrongOptions()
