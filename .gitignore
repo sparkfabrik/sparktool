@@ -1,8 +1,11 @@
-spark.phar
+/spark.phar
 patched-libraries
-.spark.yml
-vendor
-log
-build
+/.spark.yml
+/vendor
+/log
+/build
 reports
-bin
+/bin
+/tags
+/local.vimrc
+*.sublime-workspace

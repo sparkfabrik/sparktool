@@ -32,19 +32,7 @@ class RedmineSearchCommand extends RedmineCommand
         $this
             ->setName('redmine:search')
             ->setDescription('Search redmine issues')
-            ->setHelp(
-                <<<EOF
-The <info>%command.name%</info> command displays help for a given command:
-
-  <info>php %command.full_name% list</info>
-
-You can also output the help in other formats by using the <comment>--format</comment> option:
-
-  <info>php %command.full_name% --format=xml list</info>
-
-To display the list of available commands, please use the <info>list</info> command.
-EOF
-            );
+            ->setHelp('The <info>%command.name%</info> command searches issues on redmine.');
         // Add options.
         $this->addOption(
             'report',
@@ -79,21 +67,33 @@ EOF
             'Filter by project status name or id. Possible values: open, closed, *',
             'open'
         );
+        $this->addOption(
+            'category',
+            'c',
+            InputOption::VALUE_OPTIONAL,
+            'Filter by Category ID, available values depend on data on redmine (examples: Hotfix, QA, ...)'
+        );
+        $this->addOption(
+            'priority-order',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            "Order by issue priority. Format: Priority Name. Eg.: Normal
+Possible values:
+    Priorities: Normal, High, Urgent, Immediate
+    The remaining issues will be sorted by to the priority id"
+        );
         // @codingStandardsIgnoreStart
         $this->addOption(
             'assigned',
             false,
             InputOption::VALUE_OPTIONAL,
-            <<<EOF
-Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
+            'Filter by assigned to user-id or by username. Magic tokens: "me", "not me", "all", "anyone" and "none".
 Where:
  - "me" issues assigned to the calling user
  - "not me" issues not assigned to the calling user
  - "all" issues assigned and not assigned
  - "anyone" issues assigned
- - "none" issues not assigned
-EOF
-            ,
+ - "none" issues not assigned',
             'all'
         );
         // @codingStandardsIgnoreEnd
@@ -107,11 +107,10 @@ EOF
             'created',
             false,
             InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            <<<EOF
-Single date format: "<=|=> [date]"
+            'Single date format: "<=|=> [date]"
 Multiple date range format: "[date]"
 Where [date] can be any expression supported by strtotime.
-EOF
+        '
         );
         $this->addOption(
             'updated',
@@ -142,7 +141,7 @@ EOF
             false,
             InputOption::VALUE_OPTIONAL,
             <<<EOF
-Filter by field. Available fields are:
+Select which fields to output. Available fields are:
 - id
 - project
 - created_on
@@ -152,6 +151,7 @@ Filter by field. Available fields are:
 - author
 - assigned_to
 - status
+- category
 - estimated_hours
 - subject
 EOF
@@ -229,20 +229,47 @@ EOF
                 }
             }
 
-            // Fields to print.
-            $fields = array(
-            'id' => 'ID',
-            'project' => 'Project',
-            'created_on' => 'Created',
-            'updated_on' => 'Updated',
-            'tracker' => 'Tracker',
-            'fixed_version' => 'Version',
-            'author' => 'Author',
-            'assigned_to' => 'Assigned',
-            'status' => 'Status',
-            'estimated_hours' => 'Estimated',
-            'subject' => 'Subject',
-            );
+            // Manage fields to print.
+            $fieldsToPrint = $this->getService()->getConfig()['redmine_output_fields'];
+            $fieldsToPrint = explode(',', $fieldsToPrint);
+            $fields = array();
+            foreach ($fieldsToPrint as $fieldValue) {
+                $association = explode('|', $fieldValue);
+                $fields[$association[0]] = $association[1];
+            }
+
+            // Order by Priority.
+            if ($input->getOption('priority-order')) {
+                $queryPriorityParam = $input->getOption('priority-order');
+
+                $redminePriorities = $this->getService()->getClient()->api('issue_priority')->all()['issue_priorities'];
+
+                if (!$this->arrayFindDeep($redminePriorities, $queryPriorityParam)) {
+                    throw new \Exception('Priority not found.');
+                }
+
+                $prepend = array();
+                foreach ($res['issues'] as $key => &$value) {
+                    if ($value['priority']['name'] == $queryPriorityParam) {
+                        array_unshift($prepend, $value);
+                        unset($res['issues'][$key]);
+                    }
+                }
+
+                // Sort other issues on priority Id.
+                uasort(
+                    $res['issues'],
+                    function ($a, $b) use ($queryPriorityParam) {
+                        return $a['priority']['id'] < $b['priority']['id'];
+                    }
+                );
+
+                $res['issues'] = $prepend + $res['issues'];
+
+
+                $fields = $this->insertCustomFieldInOutput($fields, 'priority|Priority', 'id');
+
+            }
 
             if ($input->getOption('fields')) {
                 $filters = explode(',', strtolower($input->getOption('fields')));
@@ -257,7 +284,6 @@ EOF
             if (isset($api_options['project_id'])) {
                 unset($fields['project']);
             }
-
             // Render issue table.
             $this->tableRedmineOutput($output, $fields, $res, 'issues');
             if ($input->getOption('report')) {
@@ -266,6 +292,37 @@ EOF
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
         }
+    }
+
+    /**
+     * Read Category argument and translate to a redmine category_id.
+     *
+     * @param string|integer $category
+     *
+     * @return integer|boolean
+     */
+    private function handleArgumentCategoryId($category, $project_id = null)
+    {
+        if (!$project_id) {
+            throw new \Exception('Project must be specified when filtering by category.');
+        }
+        $categories = $this->getService()->getClient()->api('issue_category')->all($project_id);
+        if (!isset($categories['issue_categories'])) {
+            throw new \Exception('No categories have been found for this project.');
+        }
+        $category_names = [];
+        foreach ($categories['issue_categories'] as $category_from_redmine) {
+            $category_names[] = $category_from_redmine['name'];
+            if (is_numeric($category) && $category == $category_from_redmine['id']) {
+                return $category_from_redmine['id'];
+            } elseif (!is_numeric($category) && strtolower($category) == $category_from_redmine['name']) {
+                return $category_from_redmine['id'];
+            }
+        }
+        $text  = 'Specified category "%s" has not been found in this project.'.PHP_EOL;
+        $text .= 'Valid Categories are "%s"';
+        $string = sprintf($text, $category, implode(',', $category_names));
+        throw new \Exception($string);
     }
 
     /**
@@ -303,7 +360,9 @@ EOF
                 }
             }
         }
+
         $status_params = implode('|', $status_params);
+
         if (strlen($status_params) != 0) {
             return $status_params;
         }
@@ -313,7 +372,7 @@ EOF
     /**
      * Read project_id argument and translate to a redmine project_id.
      *
-     * @param string|integer $project_id
+     * @param string|integer $project_id The project id
      *
      * @return integer|boolean
      */
@@ -325,9 +384,12 @@ EOF
     /**
      * Read assigned argument and translate to a redmine assigned_to_id.
      *
+     * @param string|integer $assigned   Id or a magic token
+     * @param string|integer $project_id The project id
+     *
      * @return integer|boolean
      */
-    private function handleArgumentAssignedToId($assigned)
+    private function handleArgumentAssignedToId($assigned, $project_id)
     {
         if (is_numeric($assigned)) {
             return $assigned;
@@ -347,9 +409,10 @@ EOF
 
         // Translate object to first+last name.
         $name = strtolower($assigned);
-        $users = $this->getService()->getClient()->api('user')->all(array('limit' => 200));
+        $users = $this->redmineUsersGetAll($project_id, array('limit' => 200));
         $usernames = $this->redmineUsersObjectToFirstLastname($users);
-        if (!isset($name, $usernames)) {
+
+        if (!isset($name, $usernames, $usernames[$name])) {
             throw new \Exception('No user found.');
         }
         return $usernames[$name];
@@ -500,24 +563,46 @@ EOF
                 );
             }
         }
-        if ($input->getOption('status')) {
-            $api_options['status_id'] = $this->handleArgumentStatusId($input->getOption('status'));
+        $category = $input->getOption('category');
+        if ($category) {
+            $api_options['category_id'] = $this->handleArgumentCategoryId($category, $project_id);
         }
-        if ($input->getOption('assigned')) {
-            $assignment = ($input->getOption('assigned') ? $input->getOption('assigned') : 'me');
-            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($input->getOption('assigned'));
+        $status = $input->getOption('status');
+        if ($status) {
+            $api_options['status_id'] = $this->handleArgumentStatusId($status);
         }
-        if ($input->getOption('created')) {
-            $created_args = $input->getOption('created');
+        $assigned = $input->getOption('assigned');
+        if ($assigned) {
+            $api_options['assigned_to_id'] = $this->handleArgumentAssignedToId($assigned, $project_id);
+        }
+        $created_args = $input->getOption('created');
+        if ($created_args) {
             $api_options['created_on'] = $this->handleArgumentDate($created_args);
         }
-        if ($input->getOption('updated')) {
-            $updated_args = $input->getOption('updated');
+        $updated_args = $input->getOption('updated');
+        if ($updated_args) {
             $api_options['updated_on'] = $this->handleArgumentDate($updated_args);
         }
-        if ($input->getOption('tracker')) {
-            $tracker_args = $input->getOption('tracker');
+        $tracker_args = $input->getOption('tracker');
+        if ($tracker_args) {
             $api_options['tracker_id'] = $this->handleArgumentTracker($tracker_args);
         }
+    }
+
+    private function arrayFindDeep($array, $string)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $success = $this->arrayFindDeep($value, $string);
+                if ($success) {
+                    return true;
+                }
+            } else {
+                if (strcmp($string, $value) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

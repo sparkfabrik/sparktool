@@ -1,0 +1,1 @@
+a:4:{s:11:"memberships";a:1:{i:0;a:4:{s:2:"id";i:511;s:7:"project";a:2:{s:2:"id";i:112;s:4:"name";s:22:"SparkTool Test Project";}s:4:"user";a:2:{s:2:"id";i:7;s:4:"name";s:15:"Paolo Pustorino";}s:5:"roles";a:1:{i:0;a:2:{s:2:"id";i:4;s:4:"name";s:9:"Developer";}}}}s:11:"total_count";a:2:{i:0;i:17;i:1;i:17;}s:6:"offset";a:2:{i:0;i:0;i:1;i:100;}s:5:"limit";a:2:{i:0;i:100;i:1;i:100;}}

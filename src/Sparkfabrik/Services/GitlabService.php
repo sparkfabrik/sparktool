@@ -15,7 +15,7 @@ use Sparkfabrik\Tools\Spark\Services\AbstractService;
 use Sparkfabrik\Tools\Spark\Services\ServiceInterface;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapperInterface;
-use Redmine\Client;
+use Gitlab\Client;
 
 /**
  * Base class for all redmine commands.
@@ -24,27 +24,29 @@ use Redmine\Client;
  *
  * @api
  */
-class RedmineService extends AbstractService
+class GitlabService extends AbstractService
 {
     protected function initConfig(SparkConfigurationWrapperInterface $config = null)
     {
         if (empty($config)) {
             $config = new SparkConfigurationWrapper();
         }
-        $this->config = $config->getValueFromConfig('services', 'redmine_credentials');
-        $this->config['project_id'] = $config->getValueFromConfig('projects', 'redmine_project_id');
-        $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
-        $this->config['commit_pattern'] = $config->getValueFromConfig('git', 'commit_pattern');
-        $this->config['redmine_output_fields'] = $config->getValueFromConfig('configuration', 'redmine_output_fields');
+        $this->config = $config->getValueFromConfig('services', 'gitlab_credentials');
+        $this->config['project_id'] = $config->getValueFromConfig('projects', 'gitlab_project_id');
     }
 
     protected function initClient()
     {
         if (empty($this->client)) {
-            $this->client = new \Redmine\Client(
-                $this->config['redmine_url'],
-                $this->config['redmine_api_key']
+            $gitlab_url = $this->config['gitlab_url'];
+            if (substr($gitlab_url, -1) !== '/') {
+                $gitlab_url .= '/';
+            }
+            $gitlab_url .= 'api/v3/';
+            $this->client = new \Gitlab\Client(
+                $gitlab_url
             );
+            $this->client->authenticate($this->config['gitlab_token'], \Gitlab\Client::AUTH_URL_TOKEN);
             if (empty($this->client)) {
                 throw new \Exception('Cannot connect to redmine client, check your configurations.');
             }

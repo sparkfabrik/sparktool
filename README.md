@@ -22,7 +22,7 @@ https://github.com/orgs/sparkfabrik/people
 Download the latest release:
 
 ```
-wget -O /usr/local/bin/spark https://gitlab.agavee.com/paolo.mainardi/spark-tool/raw/release/spark.phar
+wget -O /usr/local/bin/spark https://raw.githubusercontent.com/sparkfabrik/sparktool/release/spark.phar
 ```
 
 Or just clone the project from: `git@github.com:sparkfabrik/sparktool.git`
