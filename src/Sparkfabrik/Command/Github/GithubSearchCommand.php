@@ -43,7 +43,7 @@ To display the list of available commands, please use the <info>list</info> comm
 EOF
             );
     }
-    
+
      /**
      * {@inheritdoc}
      */
@@ -66,15 +66,15 @@ EOF
 
             // Fields to print.
             $fields = array(
-            'number' => 'ID',
-            'title' => 'Title',
-            'url' => 'URL',
-            'state' => 'State'
+                'number' => 'ID',
+                'title' => 'Title',
+                'url' => 'URL',
+                'state' => 'State'
             );
-            
+
             // Render issue table.
             $this->tableGithubOutput($output, $fields, $res, 'issues');
-            
+
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
         }

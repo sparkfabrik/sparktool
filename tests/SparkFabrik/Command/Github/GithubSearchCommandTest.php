@@ -58,7 +58,7 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         return $githubClient;
     }
-    
+
     private function getMockedGithubApiIssue()
     {
         $httpClient = $this->getMock('Guzzle\Http\Client', array('send'));
@@ -66,10 +66,10 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('send');
         $mock = $this->getMock('Github\HttpClient\HttpClient', array(), array(array(), $httpClient));
-        
+
         $client = new \Github\Client($mock);
         $client->setHttpClient($mock);
-      
+
         $githubApiIssue = $this->getMockBuilder('\Github\Api\Issue')
             ->setMethods(array('get', 'post', 'postRaw', 'patch', 'delete', 'put', 'head'))
             ->setConstructorArgs(array($client))
@@ -106,7 +106,7 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
         $this->githubClient->expects($this->any())
             ->method('api')
             ->will($this->returnValue($this->githubApiIssue));
-        
+
         // Mock getClient on service object, just return mock github client.
         $this->service->expects($this->any())
             ->method('getClient')
@@ -126,9 +126,9 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
         $command = $this->createCommand('github:search');
         $this->createMocks();
 
-        // Execute with project_id
+        // Execute
         $options = array(
-        'command' => $this->command->getName(),
+            'command' => $this->command->getName(),
         );
         $this->tester->execute($options);
         $res = trim($this->tester->getDisplay());

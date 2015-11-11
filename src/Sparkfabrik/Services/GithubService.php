@@ -31,7 +31,7 @@ class GithubService extends AbstractService
         if (empty($config)) {
             $config = new SparkConfigurationWrapper();
         }
-        $this->config = $config->getValueFromConfig('services', 'github');
+        $this->config = $config->getValueFromConfig('services', 'github_credentials');
         $this->config['git_pattern'] = $config->getValueFromConfig('git', 'branch_pattern');
     }
 

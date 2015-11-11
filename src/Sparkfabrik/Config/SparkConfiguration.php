@@ -46,7 +46,7 @@ class SparkConfiguration implements ConfigurationInterface
                                     ->end()
                             ->end()
                         ->end()
-                        ->arrayNode('github')
+                        ->arrayNode('github_credentials')
                             ->isRequired()
                             ->children()
                                 ->scalarNode('github_user')
