@@ -59,36 +59,32 @@ class SparkConfigurationWrapper implements SparkConfigurationWrapperInterface
             $defaultConfig = $this->dumpDefaultConfigurationFile();
             file_put_contents($configFileStandardPath, $defaultConfig);
         } else {
-            try {
-                // Merge configurations if needed.
-                $dumper = new Dumper();
-                $merge = array();
+            // Merge configurations if needed.
+            $dumper = new Dumper();
+            $merge = array();
 
-                // Get default config.
-                $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
+            // Get default config.
+            $defaultConfig = Yaml::parse($this->dumpDefaultConfigurationFile());
 
-                // Get Custom config.
-                $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
+            // Get Custom config.
+            $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
 
-                // Merge configs.
-                if (count($defaultConfig['spark'], COUNT_RECURSIVE) !== count($customConfig['spark'], COUNT_RECURSIVE)) {
-                    $merge['spark'] = array_replace_recursive($defaultConfig['spark'], $customConfig['spark']);
-                    $yaml_merged = $dumper->dump($merge, 5);
-                    file_put_contents($configFileStandardPath, $yaml_merged);
-                }
-
-                $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
-
-                // Then validate.
-                $processor = new Processor();
-                $sparkConfiguration = new SparkConfiguration();
-                $processor->processConfiguration(
-                    $sparkConfiguration,
-                    $customConfig
-                );
-            } catch (\Exception $e) {
-                die($e->getMessage() . PHP_EOL);
+            // Merge configs.
+            if (count($defaultConfig['spark'], COUNT_RECURSIVE) !== count($customConfig['spark'], COUNT_RECURSIVE)) {
+                $merge['spark'] = array_replace_recursive($defaultConfig['spark'], $customConfig['spark']);
+                $yaml_merged = $dumper->dump($merge, 5);
+                file_put_contents($configFileStandardPath, $yaml_merged);
             }
+
+            $customConfig = Yaml::parse(file_get_contents($configFileStandardPath));
+
+            // Then validate.
+            $processor = new Processor();
+            $sparkConfiguration = new SparkConfiguration();
+            $processor->processConfiguration(
+                $sparkConfiguration,
+                $customConfig
+            );
         }
     }
 

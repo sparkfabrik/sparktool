@@ -166,7 +166,6 @@ class RedmineGitBranchCommandTest extends \PHPUnit_Framework_TestCase
             )
         );
         $this->createMocks($options);
-
         $input = array(
             'command' => $this->command->getName(),
             'issue' => '1234',

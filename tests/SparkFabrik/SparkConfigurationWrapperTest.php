@@ -15,7 +15,7 @@ use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Dumper;
 
-class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
+class SparkConfigurationWrapperTest extends \PHPUnit_Framework_TestCase
 {
     private $configuration = null;
     private $sparkFileName = '.spark.yml';
@@ -172,7 +172,7 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedExceptionMessage Unrecognized option "not_existing_project" under "spark.projects"
+     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function testConfigurationMergeProjectConfigurationWithDefaultWrongOptions()
     {
@@ -182,19 +182,5 @@ class RedmineIssueCommandTest extends \PHPUnit_Framework_TestCase
         // Write configuration file to workspace home.
         file_put_contents($this->fullPathWorkspace, $project_conf);
         $this->configuration = new SparkConfigurationWrapper($this->getArguments());
-    }
-
-    /**
-     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
-    public function testConfigurationWithout()
-    {
-        $nullmock = $this->getMockBuilder('Symfony\Component\Console\Output\NullOutput')
-                ->getMock();
-        $stub = $this->getMockBuilder('Symfony\Component\Console\Output\ConsoleOutput')
-                ->getMock();
-        $stub->method('getErrorOutput')->will($this->returnValue($nullmock));
-        $this->configuration = new SparkConfigurationWrapper($this->getArguments(), $stub);
-        $values = $this->configuration->getProcessedConfigurations();
     }
 }
