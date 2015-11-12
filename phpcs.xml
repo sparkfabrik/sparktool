@@ -2,8 +2,15 @@
 <ruleset name="sparktool_codesniffer">
  <description>The coding standard for sparktool.</description>
 
- <file>src</file>
- <file>tests</file>
+ <file>.</file>
+ <arg name="extensions" value="php"/>
+
+ <exclude-pattern>./bin/*</exclude-pattern>
+ <exclude-pattern>./build/*</exclude-pattern>
+ <exclude-pattern>./tools/*</exclude-pattern>
+ <exclude-pattern>./vendor/*</exclude-pattern>
+ <exclude-pattern>./tests/SparkFabrik/Fixtures/*</exclude-pattern>
+ <exclude-pattern>./Robofile.php</exclude-pattern>
 
  <arg name="error-severity" value="1"/>
  <arg name="warning-severity" value="8"/>
