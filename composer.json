@@ -10,7 +10,7 @@
         "symfony/yaml": "2.7.0",
         "m4tthumphrey/php-gitlab-api": "7.11.0",
         "kbsali/redmine-api": "1.5.4",
-        "codegyre/robo": "0.5.2"
+        "codegyre/robo": "0.6.0"
     },
     "license": "GPL3",
     "authors": [
