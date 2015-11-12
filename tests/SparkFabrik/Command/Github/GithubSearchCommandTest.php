@@ -134,4 +134,24 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
         $res = trim($this->tester->getDisplay());
         $this->assertEquals('No issues found.', $res);
     }
+
+    /**
+     * Test status syntax error.
+     *
+     * @group searchByStatus
+    */
+    public function testSearchByStatus()
+    {
+        $command = $this->createCommand('github:search');
+        $this->createMocks();
+
+        // Execute
+        $options = array(
+            'command' => $this->command->getName(),
+            '--status' => 'incorrect'
+        );
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('Invalid status "incorrect"', $res);
+    }
 }
