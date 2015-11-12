@@ -39,7 +39,7 @@ class GithubCommand extends SparkCommand
     {
         parent::__construct($name);
     }
-    
+
     /**
     * Initialize configurations and client.
     */
@@ -48,7 +48,7 @@ class GithubCommand extends SparkCommand
         $this->service = new GithubService();
         $this->service->run();
     }
-    
+
     /**
     * Generate output table.
     */

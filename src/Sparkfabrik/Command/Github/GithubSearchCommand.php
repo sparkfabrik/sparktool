@@ -29,19 +29,14 @@ class GithubSearchCommand extends GithubCommand
         $this
             ->setName('github:search')
             ->setDescription('Search github issues')
-            ->setHelp(
-                <<<EOF
-The <info>%command.name%</info> command displays help for a given command:
-
-  <info>php %command.full_name% list</info>
-
-You can also output the help in other formats by using the <comment>--format</comment> option:
-
-  <info>php %command.full_name% --format=xml list</info>
-
-To display the list of available commands, please use the <info>list</info> command.
-EOF
-            );
+            ->setHelp('The <info>%command.name%</info> command searches issues on GitHub.');
+        $this->addOption(
+            'status',
+            false,
+            InputOption::VALUE_OPTIONAL,
+            'Filter by project status name. Possible values: open, closed',
+            'open'
+        );
     }
 
      /**
@@ -51,12 +46,19 @@ EOF
     {
         try {
             $client = $this->getService()->getClient();
+            $api_options = array();
+            $api_options['status'] = $input->getOption('status');
+            try {
+                $this->handleArguments($input, $output, $api_options);
+            } catch (\Exception $e) {
+                return $output->writeln('<error>' . $e->getMessage() . '</error>');
+            }
             $res = $client
                 ->api('issue')
                 ->all(
                     $this->getService()->getConfig()['github_user'],
                     $this->getService()->getConfig()['github_repo'],
-                    array('state' => 'open')
+                    array('state' => $api_options['status'])
                 );
 
             // Github API returns empty array if it finds no issues.
@@ -77,6 +79,34 @@ EOF
 
         } catch (Exception $e) {
             return $output->writeln('<error>'. $e->getMessage() . '</error>');
+        }
+    }
+
+    /**
+     * Read status argument.
+     *
+     * @param string $status
+     *
+     * @return string|boolean
+     */
+    private function handleArgumentStatus($status)
+    {
+        if (is_numeric($status) || ($status !== 'open' && $status !== 'closed')) {
+            throw new \Exception('Invalid status "' . $status . '"');
+        }
+        return $status;
+    }
+
+    /**
+     * Handle standard arguments.
+     *
+     * @return integer|boolean
+     */
+    private function handleArguments(InputInterface $input, OutputInterface $output, &$api_options)
+    {
+        $status = $input->getOption('status');
+        if ($status) {
+            $api_options['status'] = $this->handleArgumentStatus($status);
         }
     }
 }
