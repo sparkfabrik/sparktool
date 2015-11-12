@@ -6,19 +6,21 @@
     ],
     "hash": "898bf8b05523a2442045b070b67591ad",
     "content-hash": "8cf94442539f7995c97e3611be33cde0",
+    "hash": "6f0c00fad83c6ad0d29591f01084ec74",
+    "content-hash": "d815c1790b20b6119b1e8c4e99680ab0",
     "packages": [
         {
             "name": "codegyre/robo",
-            "version": "0.5.2",
+            "version": "0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codegyre/Robo.git",
-                "reference": "a98a14a7d2284776c2038480b59edc142c80a01f"
+                "reference": "d18185f0494c854d36aa5ee0ad931ee23bbef552"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codegyre/Robo/zipball/a98a14a7d2284776c2038480b59edc142c80a01f",
-                "reference": "a98a14a7d2284776c2038480b59edc142c80a01f",
+                "url": "https://api.github.com/repos/Codegyre/Robo/zipball/d18185f0494c854d36aa5ee0ad931ee23bbef552",
+                "reference": "d18185f0494c854d36aa5ee0ad931ee23bbef552",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +33,8 @@
             },
             "require-dev": {
                 "codeception/aspect-mock": "0.5.*",
-                "codeception/codeception": "~2.0",
+                "codeception/base": "~2.1",
+                "codeception/codeception": "2.1",
                 "codeception/verify": "0.2.*",
                 "natxet/cssmin": "~3.0",
                 "patchwork/jsqueeze": "~1.0"
@@ -56,7 +59,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2015-02-24 01:42:23"
+            "time": "2015-10-30 11:29:52"
         },
         {
             "name": "guzzle/guzzle",

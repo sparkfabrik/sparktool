@@ -155,7 +155,7 @@ class RedmineCommand extends SparkCommand
      * @param  boolean $required
      *   If true an Expeption is thrown if the story code is not compiled.
      */
-    protected function getStoryCode($issue, $required = true)
+    protected function getStoryCode($issue, $required = false)
     {
         $story = null;
         if (empty($issue)) {
@@ -165,6 +165,7 @@ class RedmineCommand extends SparkCommand
         foreach ($issue['custom_fields'] as $field) {
             if ($field['name'] === 'Jira Story Code') {
                 $story = $field['value'];
+                break;
             }
         }
         // Stop execution if the JIRA Code field is empty.
@@ -178,18 +179,18 @@ class RedmineCommand extends SparkCommand
     /**
      * Cleans a story name to be used for branching and commits.
      */
-    protected function getCleanStoryName($story_name, $story)
+    protected function getCleanStoryName($story_name, $story = null)
     {
-
         // Exit if argumets are empty.
-        if (empty($story_name) || empty($story)) {
-            $error = 'Please provide a story name and story code.';
+        if (empty($story_name)) {
+            $error = 'Please provide a story name.';
             throw new \Exception($error);
         }
-
-        $story_name = str_replace($story, '', $story_name);
+        // Cleanup from story name.
+        if (!empty($story)) {
+            $story_name = str_replace($story, '', $story_name);
+        }
         $story_name = trim($story_name);
-
         // Clean up the story name.
         if (mb_detect_encoding($story_name) === 'UTF-8') {
             $story_name_converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $story_name);
