@@ -20,6 +20,7 @@ use Symfony\Component\Console\Application;
 use Sparkfabrik\Tools\Spark\SparkConfigurationWrapper;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineSearchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineShowCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineUpdateCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitBranchCommand;
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineGitCommitCommand;
 use Sparkfabrik\Tools\Spark\Command\Gitlab\GitlabMergeRequestCommand;
@@ -41,6 +42,7 @@ try {
     // Load commands.
     $application->add(new RedmineSearchCommand);
     $application->add(new RedmineShowCommand);
+    $application->add(new RedmineUpdateCommand);
     $application->add(new RedmineGitBranchCommand);
     $application->add(new RedmineGitCommitCommand);
     $application->add(new WelcomeCommand);
