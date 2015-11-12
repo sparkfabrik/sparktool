@@ -354,24 +354,24 @@ EOF
         /**
         * Test search by subject.
         */
-        public function testSearchSubject()
-        {
-            $command = $this->createCommand('redmine:search');
+    public function testSearchSubject()
+    {
+        $command = $this->createCommand('redmine:search');
 
-            // Issues to mock.
-            $issues = unserialize(file_get_contents(self::$fixturesPath . "redmine-search-not-estimated.serialized"));
+        // Issues to mock.
+        $issues = unserialize(file_get_contents(self::$fixturesPath . "redmine-search-not-estimated.serialized"));
 
-            // Create mocks.
-            $this->createMocks(array('redmineApiIssueAll' => $issues));
+        // Create mocks.
+        $this->createMocks(array('redmineApiIssueAll' => $issues));
 
-            // Execute with project_id
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--subject' => 'Find',
-                '--fields' => 'id'
-            );
-            $expected = <<<EOF
+        // Execute with project_id
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--subject' => 'Find',
+            '--fields' => 'id'
+        );
+        $expected = <<<EOF
 +------+
 | ID   |
 +------+
@@ -380,314 +380,314 @@ EOF
 | 8916 |
 +------+
 EOF
-            ;
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $this->assertEquals($expected, $res);
-        }
+        ;
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals($expected, $res);
+    }
 
 
         /**
     * @expectedException  Exception
     * @expectedExceptionMessage errors
     */
-        public function testIssueErrorResponse()
-        {
-            $command = $this->createCommand('redmine:search');
-            $error_response = array('errors' => array('errors'));
-            $this->createMocks(array('redmineApiIssueAll' => $error_response));
+    public function testIssueErrorResponse()
+    {
+        $command = $this->createCommand('redmine:search');
+        $error_response = array('errors' => array('errors'));
+        $this->createMocks(array('redmineApiIssueAll' => $error_response));
 
-            // Execute.
-            $this->tester->execute(
-                array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                )
-            );
-        }
+        // Execute.
+        $this->tester->execute(
+            array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            )
+        );
+    }
 
     /**
      * Test incorrect fields arguments.
      *
      * @group incorrectFields
      */
-        public function testIncorrectFields()
-        {
-            $command = $this->createCommand('redmine:search');
-            $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
-            $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+    public function testIncorrectFields()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
 
-            // Execute with project_id
-            $input = array(
-            'command' => $this->command->getName(),
-            '--project_id' => 'test_project_id',
-            );
-            $options = array('--fields' => 'incorrect_field');
-            $this->tester->execute($options);
-            $res = trim($this->tester->getDisplay());
-            $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
-        }
+        // Execute with project_id
+        $input = array(
+        'command' => $this->command->getName(),
+        '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'incorrect_field');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals('Incorrect filters inserted: incorrect_field', $res);
+    }
 
     /**
      * Test incorrect fields arguments.
      *
      * @group fieldsSingleFilter
      */
-        public function testFieldsSingleFilter()
-        {
-            $command = $this->createCommand('redmine:search');
-            $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
-            $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
+    public function testFieldsSingleFilter()
+    {
+        $command = $this->createCommand('redmine:search');
+        $data = file_get_contents(self::$fixturesPath . 'RedmineSearchResult');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($data)));
 
-            // Execute with project_id
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-            );
-            $options = array('--fields' => 'id');
-            $this->tester->execute($options);
-            $res = trim($this->tester->getDisplay());
-            $this->assertEquals("+------+\n| ID   |\n+------+", substr($res, 0, 26));
-        }
+        // Execute with project_id
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
+        $options = array('--fields' => 'id');
+        $this->tester->execute($options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals("+------+\n| ID   |\n+------+", substr($res, 0, 26));
+    }
 
     /**
      * Test search by status.
      */
-        public function testSearchByStatus()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_new.serialized');
-            // file_put_contents($path . 'response_one_issue_new.serialized', serialize($this->response_new_issue));die;
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
+    public function testSearchByStatus()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_new.serialized');
+        // file_put_contents($path . 'response_one_issue_new.serialized', serialize($this->response_new_issue));die;
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(array('redmineApiIssueAll' => unserialize($response_mock)));
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+        );
 
-            $options = array('--status' => 'new');
-            $this->tester->execute($input, $options);
-            $res = trim($this->tester->getDisplay());
-            $this->assertContains('New', $res);
-        }
+        $options = array('--status' => 'new');
+        $this->tester->execute($input, $options);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+    }
 
     /**
      * Test search by more than one status.
      *
      * @group fail
      */
-        public function testSearchByMoreThanOneStatus()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_two_issue_new_and_in_progress.serialized');
-            $response_mock_statues = file_get_contents(self::$fixturesPath . 'redmine-search-statuses.serialized');
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                'redmineApiIssueAll' => unserialize($response_mock),
-                'redmineApiIssueStatusAll' => array('issue_statuses' => unserialize($response_mock_statues))
-                )
-            );
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--status' => 'new, in progress'
-            );
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $this->assertContains('New', $res);
-            $this->assertContains('In Progress', $res);
-        }
+    public function testSearchByMoreThanOneStatus()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_two_issue_new_and_in_progress.serialized');
+        $response_mock_statues = file_get_contents(self::$fixturesPath . 'redmine-search-statuses.serialized');
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+            'redmineApiIssueAll' => unserialize($response_mock),
+            'redmineApiIssueStatusAll' => array('issue_statuses' => unserialize($response_mock_statues))
+            )
+        );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--status' => 'new, in progress'
+        );
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $this->assertContains('New', $res);
+        $this->assertContains('In Progress', $res);
+    }
 
     /**
      * Test search by assigned from not admin user.
      */
-        public function testSearchByAssignedFromNotAdminUser()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
-            $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
-            $user_show_mock = file_get_contents(self::$fixturesPath . 'response_user_show_user_not_admin.serialized');
-            $membership_all = file_get_contents(self::$fixturesPath . 'response_membership_all_user_not_admin.serialized');
+    public function testSearchByAssignedFromNotAdminUser()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
+        $user_show_mock = file_get_contents(self::$fixturesPath . 'response_user_show_user_not_admin.serialized');
+        $membership_all = file_get_contents(self::$fixturesPath . 'response_membership_all_user_not_admin.serialized');
 
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
-                    'redmineApiIssueAll' => unserialize($response_mock),
-                    'redmineApiUserShow' => unserialize($user_show_mock),
-                    'redmineApiMembershipAll' => unserialize($membership_all),
-                )
-            );
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserShow' => unserialize($user_show_mock),
+                'redmineApiMembershipAll' => unserialize($membership_all),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--assigned' => 'Paolo Pustorino',
-                '--fields' => 'id'
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'Paolo Pustorino',
+            '--fields' => 'id'
+        );
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $expected = <<<EOF
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
 +------+
 | ID   |
 +------+
 | 8921 |
 +------+
 EOF
-            ;
-            $this->assertContains($expected, $res);
-        }
+        ;
+        $this->assertContains($expected, $res);
+    }
 
     /**
      * Test search by assigned from admin user.
      */
-        public function testSearchByAssignedFromAdminUser()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
-            $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
-            $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
+    public function testSearchByAssignedFromAdminUser()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
+        $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
 
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
-                    'redmineApiIssueAll' => unserialize($response_mock),
-                    'redmineApiUserAll' => unserialize($users_mock),
-                )
-            );
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserAll' => unserialize($users_mock),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--assigned' => 'Paolo Pustorino',
-                '--fields' => 'id'
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'Paolo Pustorino',
+            '--fields' => 'id'
+        );
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $expected = <<<EOF
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
 +------+
 | ID   |
 +------+
 | 8921 |
 +------+
 EOF
-            ;
-            $this->assertContains($expected, $res);
-        }
+        ;
+        $this->assertContains($expected, $res);
+    }
 
     /**
      * Test search by assigned with user id.
      */
-        public function testSearchByAssignedWithUserId()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+    public function testSearchByAssignedWithUserId()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
 
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiIssueAll' => unserialize($response_mock),
-                )
-            );
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiIssueAll' => unserialize($response_mock),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--assigned' => 1,
-                '--fields' => 'id'
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 1,
+            '--fields' => 'id'
+        );
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $expected = <<<EOF
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = <<<EOF
 +------+
 | ID   |
 +------+
 | 8921 |
 +------+
 EOF
-            ;
-            $this->assertContains($expected, $res);
-        }
+        ;
+        $this->assertContains($expected, $res);
+    }
 
     /**
      * Test search by wrong assigned user.
      */
-        public function testSearchByAssignedUserNotFound()
-        {
-            $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
-            $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
-            $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
-                    'redmineApiIssueAll' => unserialize($response_mock),
-                    'redmineApiUserAll' => unserialize($users_mock),
-                )
-            );
+    public function testSearchByAssignedUserNotFound()
+    {
+        $response_mock = file_get_contents(self::$fixturesPath . 'response_one_issue_assigned_user.serialized');
+        $current_user_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_admin.serialized');
+        $users_mock = file_get_contents(self::$fixturesPath . 'response_users_user.serialized');
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_admin_mock),
+                'redmineApiIssueAll' => unserialize($response_mock),
+                'redmineApiUserAll' => unserialize($users_mock),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => 'test_project_id',
-                '--assigned' => 'WRONG NAME'
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => 'test_project_id',
+            '--assigned' => 'WRONG NAME'
+        );
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $expected = "No user found.";
-            $this->assertContains($expected, $res);
-        }
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = "No user found.";
+        $this->assertContains($expected, $res);
+    }
 
     /**
      * Test search by assigned user from not admin user without specify project.
      */
-        public function testSearchByAssignedUserFromNotAdminUserWithoutProjectId()
-        {
-            $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
+    public function testSearchByAssignedUserFromNotAdminUserWithoutProjectId()
+    {
+        $current_user_not_admin_mock = file_get_contents(self::$fixturesPath . 'response_current_user_not_admin.serialized');
 
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
-                )
-            );
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiUserGetCurrentUser' => unserialize($current_user_not_admin_mock),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--project_id' => '',
-                '--assigned' => 'Paolo Pustorino'
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--project_id' => '',
+            '--assigned' => 'Paolo Pustorino'
+        );
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $expected = "To perform search by assigned user specify the project id.";
-            $this->assertContains($expected, $res);
-        }
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $expected = "To perform search by assigned user specify the project id.";
+        $this->assertContains($expected, $res);
+    }
 
     /**
      * Test search with priority order.
      */
-        public function testSearchWithPriorityOrder()
-        {
-            $testRes = file_get_contents(self::$fixturesPath . 'redmine-search-with-normal-priority-order.serialized');
-            $issuePriorities = file_get_contents(self::$fixturesPath . 'redmine-issue-priorities.serialized');
+    public function testSearchWithPriorityOrder()
+    {
+        $testRes = file_get_contents(self::$fixturesPath . 'redmine-search-with-normal-priority-order.serialized');
+        $issuePriorities = file_get_contents(self::$fixturesPath . 'redmine-issue-priorities.serialized');
 
-            $command = $this->createCommand('redmine:search');
-            $this->createMocks(
-                array(
-                    'redmineApiIssuePriorities' => array('issue_priorities' => unserialize($issuePriorities)),
-                    'redmineApiIssueAll' => unserialize($testRes),
-                )
-            );
+        $command = $this->createCommand('redmine:search');
+        $this->createMocks(
+            array(
+                'redmineApiIssuePriorities' => array('issue_priorities' => unserialize($issuePriorities)),
+                'redmineApiIssueAll' => unserialize($testRes),
+            )
+        );
 
-            $input = array(
-                'command' => $this->command->getName(),
-                '--priority-order' => 'Normal',
-                '--limit' => '2',
-            );
+        $input = array(
+            'command' => $this->command->getName(),
+            '--priority-order' => 'Normal',
+            '--limit' => '2',
+        );
 
-            $expected = <<<EOF
+        $expected = <<<EOF
 +------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
 | ID   | Priority | Project | Created    | Updated             | Traker      | Version   | Author         | Assigned      | Status | Estimated | Subject                                            |
 +------+----------+---------+------------+---------------------+-------------+-----------+----------------+---------------+--------+-----------+----------------------------------------------------+
@@ -697,10 +697,10 @@ EOF
 
 Showing "2" of "1683" issues(you can adjust the limit using --limit argument)
 EOF
-            ;
+        ;
 
-            $this->tester->execute($input);
-            $res = trim($this->tester->getDisplay());
-            $this->assertEquals($expected, $res);
-        }
+        $this->tester->execute($input);
+        $res = trim($this->tester->getDisplay());
+        $this->assertEquals($expected, $res);
+    }
 }

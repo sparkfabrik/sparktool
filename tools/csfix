@@ -1,2 +1,2 @@
 #!/bin/bash
-bin/phpcbf --standard=PSR2 -v src test
+bin/phpcbf --standard=PSR2 -v src tests
