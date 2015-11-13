@@ -119,7 +119,7 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * Test no issues found.
      *
-     * @group noissues
+     * @group github
     */
     public function testNoIssuesFound()
     {
@@ -138,7 +138,7 @@ class GithubSearchCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * Test status syntax error.
      *
-     * @group searchByStatus
+     * @group github
     */
     public function testSearchByStatus()
     {
