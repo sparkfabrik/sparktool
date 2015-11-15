@@ -55,9 +55,10 @@ class GithubSearchCommand extends GithubCommand
             }
 
             // If the user provided a token, authenticate him.
-            if (!empty($this->getService()->getConfig()['github_token'])) {
+            $github_token = $this->getService()->getConfig()['github_token'];
+            if (!empty($github_token)) {
                 $client->authenticate(
-                    $this->getService()->getConfig()['github_token'],
+                    $github_token,
                     null,
                     \Github\Client::AUTH_URL_TOKEN
                 );
@@ -81,7 +82,7 @@ class GithubSearchCommand extends GithubCommand
                 'title' => 'Title',
                 'html_url' => 'URL',
                 'state' => 'State',
-                'user[login]' => 'Author',
+                'user/login' => 'Author',
                 'assignee/login' => 'Assigned to',
             );
 
