@@ -53,6 +53,15 @@ class GithubSearchCommand extends GithubCommand
             } catch (\Exception $e) {
                 return $output->writeln('<error>' . $e->getMessage() . '</error>');
             }
+
+            // If the user provided a token, authenticate him.
+            if (!empty($this->getService()->getConfig()['github_token'])) {
+                $client->authenticate(
+                    $this->getService()->getConfig()['github_token'],
+                    null,
+                    \Github\Client::AUTH_URL_TOKEN
+                );
+            }
             $res = $client
                 ->api('issue')
                 ->all(
