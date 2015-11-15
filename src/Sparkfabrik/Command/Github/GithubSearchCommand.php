@@ -79,8 +79,10 @@ class GithubSearchCommand extends GithubCommand
             $fields = array(
                 'number' => 'ID',
                 'title' => 'Title',
-                'url' => 'URL',
-                'state' => 'State'
+                'html_url' => 'URL',
+                'state' => 'State',
+                'user[login]' => 'Author',
+                'assignee/login' => 'Assigned to',
             );
 
             // Render issue table.

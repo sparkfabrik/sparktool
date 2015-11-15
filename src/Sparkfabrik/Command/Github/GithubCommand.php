@@ -60,11 +60,25 @@ class GithubCommand extends SparkCommand
         foreach ($res as $val) {
             $row = array();
             foreach ($fields as $field => $key) {
-                $field_val = $val[$field];
-                if (isset($val[$field])) {
-                    $row[] = $field_val;
+                if (strpos($field, '/') != false) {
+                    $field_arr = explode('/', $field);
+                    $field_val = $val[$field_arr[0]];
+                    if (isset($val[$field_arr[0]])) {
+                        if (isset($val[$field_arr[0]][$field_arr[1]])) {
+                            $row[] = $val[$field_arr[0]][$field_arr[1]];
+                        } else {
+                            $row[] = $val[$field_arr[0]];
+                        }
+                    } else {
+                        $row[] = '';
+                    }
                 } else {
-                    $row[] = '';
+                    $field_val = $val[$field];
+                    if (isset($val[$field])) {
+                        $row[] = $field_val;
+                    } else {
+                        $row[] = '';
+                    }
                 }
             }
             $rows[] = $row;
