@@ -13,11 +13,13 @@
 namespace Sparkfabrik\Tools\Spark\Command\Redmine;
 
 use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineCommand;
+use Sparkfabrik\Tools\Spark\Command\Redmine\RedmineUpdateCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
@@ -44,6 +46,13 @@ EOF
             InputArgument::OPTIONAL,
             'Branch to start from.',
             'develop'
+        );
+        $this->addOption(
+            'start',
+            false,
+            InputOption::OPTIONAL,
+            'Assign related redmine issue to the current user and change the state to the one specified.',
+            'In progress'
         );
         $this->addOption(
             'dry-run',
@@ -101,6 +110,25 @@ EOF
                 $git_process = new Process('git push --set-upstream origin feature/' . $branch);
                 $git_process->mustRun();
                 $output->writeln("<info>Branch: \"{$branch}\" tracked</info>");
+                
+                // Assign the issue and set it in progress
+                $currentUser = $client->api('users')->getCurrentUser()['id'];
+                $startStatus = $this->getRedmineContext($input->getOption('start'));
+                $command     = $this->getApplication()->find('redmine:update');
+                $arguments   = array(
+                    'command'       => 'redmine:update',
+                    'issue'         => $issue,
+                    '--assignee'    => $currentUser,
+                    '--status'      => $startStatus,
+                );
+
+                $updateInput = new ArrayInput($arguments);
+                $updateOutput = new NullOutput();
+
+                $ret = $command->run($updateInput, $updateOutput);
+                if ($ret) {
+                    $output->writeln("<info>Issue: \"{$issue}\" assigned</info>");
+                }
             } catch (ProcessFailedException $e) {
                 return $output->writeln("<comment>Error: " . $git_process->getErrorOutput() . "</comment>");
             }
@@ -110,4 +138,5 @@ EOF
             $output->writeln('I will execute: <info>git push --set-upstream origin feature/' . $branch . '</info>');
         }
     }
+
 }
