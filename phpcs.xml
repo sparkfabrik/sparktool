@@ -14,6 +14,8 @@
 
  <arg name="error-severity" value="1"/>
  <arg name="warning-severity" value="8"/>
+ <arg name="report-width" value="auto"/>
+ <arg name="colors"/>
 
  <rule ref="PSR2"/>
 </ruleset>
