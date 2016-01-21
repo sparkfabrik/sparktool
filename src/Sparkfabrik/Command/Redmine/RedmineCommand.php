@@ -206,7 +206,8 @@ class RedmineCommand extends SparkCommand
     /**
      * Shorthand to Redmine Client instance registered in the base service
      */
-    protected function getClient() {
+    protected function getClient()
+    {
         return $this->service->getClient();
     }
 }

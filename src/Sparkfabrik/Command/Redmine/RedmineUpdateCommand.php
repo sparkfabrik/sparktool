@@ -121,20 +121,21 @@ class RedmineUpdateCommand extends RedmineCommand
     /**
      * Returns a properly formatted custom fields array.
      */
-    protected function parseCustomFields($customFieldPairs) {
+    protected function parseCustomFields($customFieldPairs)
+    {
         $customFields = [];
         foreach ($customFieldPairs as $customFieldPair) {
             $customFields[] = $this->formatCustomFieldFromPair($customFieldPair);
         }
 
         // Clean up all missing keys
-        array_filter($customFields, function($v) {
-           return $v['name'] !== '>>>SPARK-DELETE<<<';
+        array_filter($customFields, function ($v) {
+            return $v['name'] !== '>>>SPARK-DELETE<<<';
         });
 
         // Clean up malformed pairs such as ":3" or ":"
-        array_filter($customFields, function($v) {
-           return !empty($v['id']);
+        array_filter($customFields, function ($v) {
+            return !empty($v['id']);
         });
 
         return $customFields;
@@ -143,10 +144,11 @@ class RedmineUpdateCommand extends RedmineCommand
     /**
      * Returns a properly formatted custom field item.
      */
-    protected function formatCustomFieldFromPair($pair) {
-        $pair = explode(':',$pair);
+    protected function formatCustomFieldFromPair($pair)
+    {
+        $pair = explode(':', $pair);
         if (count($pair) !== 2) {
-          throw new \Exception('Error in custom field format. Custom fields must be passed in "name:value" or "id:value" format.');
+            throw new \Exception('Error in custom field format. Custom fields must be passed in "name:value" or "id:value" format.');
         }
         list($key, $value) = $pair;
 
@@ -155,13 +157,13 @@ class RedmineUpdateCommand extends RedmineCommand
         if (is_numeric($key)) {
             $availableCustomFields = array_flip($this->getClient()->api('custom_fields')->listing());
             $customField['id'] = $key;
-            $customField['name'] = (array_key_exists($key,$availableCustomFields)) ? $availableCustomFields[$key] : '>>>SPARK-DELETE<<<';
+            $customField['name'] = (array_key_exists($key, $availableCustomFields)) ? $availableCustomFields[$key] : '>>>SPARK-DELETE<<<';
         } else {
             $customField['id']   = $this->getClient()->api('custom_fields')->getIdByName($key);
             $customField['name'] = $key;
         }
 
-        $customField['value'] = $value;      
+        $customField['value'] = $value;
         return $customField;
     }
 
@@ -169,7 +171,8 @@ class RedmineUpdateCommand extends RedmineCommand
      * Calls the 'redmine:show' command to display newly updated
      * issue information.
      */
-    protected function showIssue($issue_id, $showOutput) {
+    protected function showIssue($issue_id, $showOutput)
+    {
         $command = $this->getApplication()->find('redmine:show');
 
         $arguments = array(
@@ -217,7 +220,7 @@ class RedmineUpdateCommand extends RedmineCommand
 
         $returnCode = $output->writeln('<info>Issue ' . $issue_id . ' updated.</info>');
         if ($input->getOption('dump-issue')) {
-            $returnCode = $this->showIssue($issue_id,$output);    
+            $returnCode = $this->showIssue($issue_id, $output);
         }
         
         return $returnCode;

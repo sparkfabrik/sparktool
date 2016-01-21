@@ -51,7 +51,8 @@ class RedmineService extends AbstractService
         }
     }
     
-    public function getClient() {
+    public function getClient()
+    {
         return $this->client;
     }
 }
