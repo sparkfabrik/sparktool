@@ -202,4 +202,12 @@ class RedmineCommand extends SparkCommand
         }
         return $story_name;
     }
+    
+    /**
+     * Shorthand to Redmine Client instance registered in the base service
+     */
+    protected function getClient()
+    {
+        return $this->service->getClient();
+    }
 }
