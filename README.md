@@ -30,11 +30,11 @@ Or just clone the project from: `git@github.com:sparkfabrik/sparktool.git`
 
 [TBD]
 
-#<a name="usage"></a>Usage
+# <a name="usage"></a>Usage
 
-##Redmine
+## Redmine
 
-###Search issues by date
+### Search issues by date
 
 ```
 Ranges
